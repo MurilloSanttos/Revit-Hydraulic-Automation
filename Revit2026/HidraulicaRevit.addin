@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>Hidráulica Automação</Name>
+    <Assembly>%APPDATA%\Autodesk\Revit\Addins\2026\HidraulicaRevit\HidraulicaRevit.dll</Assembly>
+    <AddInId>7F3D8A1E-4B2C-4D5F-A6E8-9C1B3D5F7A2E</AddInId>
+    <FullClassName>Revit2026.App</FullClassName>
+    <VendorId>HidraulicaAutomacao</VendorId>
+    <VendorDescription>Plugin de Automação Hidráulica</VendorDescription>
+  </AddIn>
+</RevitAddIns>

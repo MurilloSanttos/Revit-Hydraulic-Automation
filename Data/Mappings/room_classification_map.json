@@ -1,0 +1,130 @@
+{
+  "versao": "1.0.0",
+  "descricao": "Mapeamento de nomes de ambientes para classificação hidráulica. Usado como referência pelo ClassificadorAmbientes.",
+  "classificacoes": {
+    "banheiro": {
+      "tipo": "Banheiro",
+      "variacoes": [
+        "banheiro",
+        "wc",
+        "bwc",
+        "banho",
+        "banheiro social",
+        "banheiro empregada",
+        "banheiro serviço",
+        "sanitário"
+      ],
+      "equipamentos_esperados": [
+        "vaso_sanitario",
+        "lavatorio",
+        "chuveiro",
+        "ralo"
+      ]
+    },
+    "lavabo": {
+      "tipo": "Lavabo",
+      "variacoes": [
+        "lavabo",
+        "lav",
+        "toilette",
+        "toilet"
+      ],
+      "equipamentos_esperados": [
+        "vaso_sanitario",
+        "lavatorio"
+      ]
+    },
+    "suite": {
+      "tipo": "Suite",
+      "variacoes": [
+        "suíte",
+        "suite",
+        "ste",
+        "banheiro suíte",
+        "banho suíte",
+        "wc suíte",
+        "bwc suíte"
+      ],
+      "equipamentos_esperados": [
+        "vaso_sanitario",
+        "lavatorio",
+        "chuveiro",
+        "ralo"
+      ]
+    },
+    "cozinha": {
+      "tipo": "Cozinha",
+      "variacoes": [
+        "cozinha",
+        "coz",
+        "coz.",
+        "copa",
+        "copa cozinha"
+      ],
+      "equipamentos_esperados": [
+        "pia_cozinha",
+        "ralo"
+      ]
+    },
+    "cozinha_gourmet": {
+      "tipo": "CozinhaGourmet",
+      "variacoes": [
+        "cozinha gourmet",
+        "coz gourmet",
+        "coz. gourmet",
+        "espaço gourmet",
+        "gourmet"
+      ],
+      "equipamentos_esperados": [
+        "pia_cozinha",
+        "ralo"
+      ]
+    },
+    "lavanderia": {
+      "tipo": "Lavanderia",
+      "variacoes": [
+        "lavanderia",
+        "lav. roupas",
+        "lav roupas",
+        "lavandaria"
+      ],
+      "equipamentos_esperados": [
+        "tanque",
+        "maquina_lavar",
+        "ralo"
+      ]
+    },
+    "area_de_servico": {
+      "tipo": "AreaDeServico",
+      "variacoes": [
+        "área de serviço",
+        "area de serviço",
+        "a.s.",
+        "a.s",
+        "serviço"
+      ],
+      "equipamentos_esperados": [
+        "tanque",
+        "ralo"
+      ]
+    },
+    "area_externa": {
+      "tipo": "AreaExterna",
+      "variacoes": [
+        "área externa",
+        "quintal",
+        "jardim",
+        "terraço",
+        "varanda",
+        "sacada",
+        "pergolado",
+        "churrasqueira",
+        "piscina"
+      ],
+      "equipamentos_esperados": [
+        "torneira_jardim",
+        "ralo"
+      ]
+    }
+  }
+}

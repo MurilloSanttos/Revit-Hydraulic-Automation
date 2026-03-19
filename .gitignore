@@ -1,0 +1,22 @@
+# Build
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+
+# Visual Studio
+.vs/
+*.rsuser
+*.userprefs
+
+# NuGet
+packages/
+*.nupkg
+
+# Logs gerados
+Data/Logs/*.json
+
+# Dynamo backups
+DynamoScripts/**/*.dyn.bak

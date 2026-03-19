@@ -1,0 +1,32 @@
+{
+  "versao": "1.0.0",
+  "normas": {
+    "agua_fria": "NBR 5626",
+    "esgoto": "NBR 8160"
+  },
+  "agua_fria": {
+    "sistema": "reservatorio_superior",
+    "pressao_minima_mca": 3.0,
+    "altura_reservatorio_m": 6.0,
+    "velocidade_maxima_ms": 3.0
+  },
+  "esgoto": {
+    "sistema": "com_ventilacao",
+    "declividade": {
+      "diametro_ate_75mm": 0.02,
+      "diametro_100mm_ou_mais": 0.01
+    },
+    "diametro_minimo_mm": 40
+  },
+  "unidades": {
+    "comprimento": "metros",
+    "area": "metros_quadrados",
+    "pressao": "mca",
+    "diametro": "milimetros"
+  },
+  "logs": {
+    "nivel_minimo": "Info",
+    "exportar_json": true,
+    "diretorio_relativo": "Data/Logs"
+  }
+}

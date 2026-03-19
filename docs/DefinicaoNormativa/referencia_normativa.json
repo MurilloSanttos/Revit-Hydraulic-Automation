@@ -1,0 +1,665 @@
+{
+  "metadata": {
+    "versao": "1.0.0",
+    "data_criacao": "2026-03-18",
+    "origem": ["NBR 5626:2020", "NBR 8160:1999"],
+    "tipo": "normativo",
+    "descricao": "Base normativa consolidada para automação hidráulica residencial",
+    "escopo": "Sistemas de água fria, esgoto sanitário e ventilação predial",
+    "aplicacao": "Projetos residenciais no Brasil",
+    "autor": "Plugin Hidráulico Revit",
+    "compatibilidade": {
+      "revit": ["2022", "2023", "2024", "2025"],
+      "plugin_versao_minima": "1.0.0"
+    }
+  },
+
+  "agua_fria": {
+    "norma": "NBR 5626:2020",
+
+    "unidades_consumo": [
+      { "id": "vaso_caixa_acoplada",   "nome": "Vaso Sanitário (Caixa Acoplada)",   "peso": 0.3,  "vazao_min_Ls": 0.15, "dn_min_subramal_mm": 20, "altura_instalacao_m": 0.20 },
+      { "id": "vaso_valvula_descarga", "nome": "Vaso Sanitário (Válvula Descarga)",  "peso": 32.0, "vazao_min_Ls": 1.70, "dn_min_subramal_mm": 50, "altura_instalacao_m": 0.20 },
+      { "id": "lavatorio",            "nome": "Lavatório",                          "peso": 0.5,  "vazao_min_Ls": 0.15, "dn_min_subramal_mm": 20, "altura_instalacao_m": 0.60 },
+      { "id": "bide",                 "nome": "Bidê",                               "peso": 0.1,  "vazao_min_Ls": 0.10, "dn_min_subramal_mm": 20, "altura_instalacao_m": 0.20 },
+      { "id": "chuveiro",             "nome": "Chuveiro",                            "peso": 0.5,  "vazao_min_Ls": 0.20, "dn_min_subramal_mm": 20, "altura_instalacao_m": 2.00 },
+      { "id": "banheira",             "nome": "Banheira",                            "peso": 1.0,  "vazao_min_Ls": 0.30, "dn_min_subramal_mm": 25, "altura_instalacao_m": 0.50 },
+      { "id": "pia_cozinha",          "nome": "Pia de Cozinha",                      "peso": 0.7,  "vazao_min_Ls": 0.25, "dn_min_subramal_mm": 20, "altura_instalacao_m": 1.00 },
+      { "id": "filtro_pressao",       "nome": "Filtro de Pressão",                   "peso": 0.1,  "vazao_min_Ls": 0.10, "dn_min_subramal_mm": 20, "altura_instalacao_m": 1.80 },
+      { "id": "tanque",               "nome": "Tanque de Lavar Roupa",               "peso": 0.7,  "vazao_min_Ls": 0.25, "dn_min_subramal_mm": 25, "altura_instalacao_m": 1.00 },
+      { "id": "maquina_lavar_roupa",  "nome": "Máquina de Lavar Roupa",              "peso": 1.0,  "vazao_min_Ls": 0.30, "dn_min_subramal_mm": 25, "altura_instalacao_m": 0.75 },
+      { "id": "maquina_lavar_louca",  "nome": "Máquina de Lavar Louça",              "peso": 1.0,  "vazao_min_Ls": 0.30, "dn_min_subramal_mm": 25, "altura_instalacao_m": 0.75 },
+      { "id": "torneira_jardim",      "nome": "Torneira de Jardim",                  "peso": 0.5,  "vazao_min_Ls": 0.20, "dn_min_subramal_mm": 20, "altura_instalacao_m": 0.60 }
+    ],
+
+    "metodo_dimensionamento": {
+      "id": "probabilistico",
+      "nome": "Método Probabilístico",
+      "formula": "Q = C * sqrt(soma_pesos)",
+      "coeficiente_C": 0.30,
+      "aplicacao": "Instalações com até 400 aparelhos (residencial e comercial pequeno)",
+      "excecoes": {
+        "aparelho_isolado": "Usar vazão mínima de projeto do aparelho",
+        "valvula_descarga": "Q = Q_vd + C * sqrt(soma_pesos_demais)"
+      }
+    },
+
+    "pressao": {
+      "minima_normativa_mca": 1.0,
+      "minima_pratica_mca": 3.0,
+      "maxima_estatica_mca": 40.0,
+      "por_aparelho_mca": {
+        "chuveiro": 3.0,
+        "torneira_pia": 2.0,
+        "valvula_descarga": 3.0,
+        "torneira_jardim": 0.5,
+        "maquina_lavar": 1.0
+      }
+    },
+
+    "velocidade": {
+      "maxima_ms": 3.0,
+      "minima_recomendada_ms": 0.5,
+      "critica_ms": 4.0,
+      "faixa_ideal_ms": [1.0, 2.5]
+    },
+
+    "perda_carga": {
+      "formula": "Fair-Whipple-Hsiao",
+      "expressao": "J = 8.69e6 * Q^1.75 / D^4.75",
+      "unidades": {
+        "J": "m/m",
+        "Q": "L/s",
+        "D": "mm (diâmetro interno)"
+      },
+      "fator_perdas_localizadas": {
+        "simplificado": 1.20,
+        "descricao": "Multiplicador sobre comprimento real (20% para perdas localizadas)"
+      },
+      "comprimentos_equivalentes_m": {
+        "curva_90":          { "20": 1.1, "25": 1.2, "32": 1.5, "40": 2.0, "50": 3.2 },
+        "curva_45":          { "20": 0.4, "25": 0.5, "32": 0.7, "40": 0.9, "50": 1.2 },
+        "tee_passagem":      { "20": 0.7, "25": 0.8, "32": 1.0, "40": 1.5, "50": 2.2 },
+        "tee_saida_lateral": { "20": 2.3, "25": 2.4, "32": 3.1, "40": 4.6, "50": 7.3 },
+        "registro_gaveta":   { "20": 0.2, "25": 0.3, "32": 0.4, "40": 0.5, "50": 0.7 },
+        "registro_pressao":  { "20": 3.5, "25": 4.3, "32": 5.0, "40": 6.0, "50": 8.1 },
+        "valvula_retencao":  { "20": 2.5, "25": 3.2, "32": 4.0, "40": 5.0, "50": 6.3 }
+      }
+    },
+
+    "diametros_comerciais_pvc_soldavel": [
+      { "dn_mm": 20,  "d_ext_mm": 20.0,  "d_int_mm": 17.0 },
+      { "dn_mm": 25,  "d_ext_mm": 25.0,  "d_int_mm": 21.6 },
+      { "dn_mm": 32,  "d_ext_mm": 32.0,  "d_int_mm": 27.8 },
+      { "dn_mm": 40,  "d_ext_mm": 40.0,  "d_int_mm": 35.2 },
+      { "dn_mm": 50,  "d_ext_mm": 50.0,  "d_int_mm": 44.0 },
+      { "dn_mm": 60,  "d_ext_mm": 60.0,  "d_int_mm": 53.4 },
+      { "dn_mm": 75,  "d_ext_mm": 75.0,  "d_int_mm": 66.6 },
+      { "dn_mm": 85,  "d_ext_mm": 85.0,  "d_int_mm": 75.6 },
+      { "dn_mm": 110, "d_ext_mm": 110.0, "d_int_mm": 97.8 }
+    ],
+
+    "diametros_minimos_trecho": {
+      "sub_ramal_mm": 20,
+      "ramal_distribuicao_mm": 20,
+      "barrilete_mm": 25,
+      "coluna_distribuicao_mm": 25,
+      "ramal_predial_mm": 25
+    }
+  },
+
+  "esgoto": {
+    "norma": "NBR 8160:1999",
+
+    "unidades_contribuicao": [
+      { "id": "vaso_caixa_acoplada",   "nome": "Vaso Sanitário (Caixa Acoplada)",   "uhc": 6, "dn_min_ramal_mm": 100, "desconector": "integrado",       "ramal_independente": true  },
+      { "id": "vaso_valvula_descarga", "nome": "Vaso Sanitário (Válvula Descarga)",  "uhc": 6, "dn_min_ramal_mm": 100, "desconector": "integrado",       "ramal_independente": true  },
+      { "id": "lavatorio",            "nome": "Lavatório",                          "uhc": 1, "dn_min_ramal_mm": 40,  "desconector": "sifao_externo",   "ramal_independente": false },
+      { "id": "bide",                 "nome": "Bidê",                               "uhc": 1, "dn_min_ramal_mm": 40,  "desconector": "sifao_externo",   "ramal_independente": false },
+      { "id": "chuveiro",             "nome": "Chuveiro",                            "uhc": 2, "dn_min_ramal_mm": 40,  "desconector": "caixa_sifonada",  "ramal_independente": false },
+      { "id": "banheira",             "nome": "Banheira",                            "uhc": 2, "dn_min_ramal_mm": 40,  "desconector": "sifao_externo",   "ramal_independente": false },
+      { "id": "pia_cozinha",          "nome": "Pia de Cozinha",                      "uhc": 3, "dn_min_ramal_mm": 50,  "desconector": "sifao_externo",   "ramal_independente": true, "cx_gordura": true },
+      { "id": "pia_cozinha_triturador","nome": "Pia de Cozinha (Triturador)",        "uhc": 3, "dn_min_ramal_mm": 75,  "desconector": "sifao_externo",   "ramal_independente": true, "cx_gordura": true },
+      { "id": "tanque",               "nome": "Tanque de Lavar Roupa",               "uhc": 3, "dn_min_ramal_mm": 40,  "desconector": "sifao_externo",   "ramal_independente": false },
+      { "id": "maquina_lavar_roupa",  "nome": "Máquina de Lavar Roupa",              "uhc": 3, "dn_min_ramal_mm": 50,  "desconector": "ralo_sifonado",   "ramal_independente": false },
+      { "id": "maquina_lavar_louca",  "nome": "Máquina de Lavar Louça",              "uhc": 2, "dn_min_ramal_mm": 50,  "desconector": "sifao_externo",   "ramal_independente": false },
+      { "id": "ralo_sifonado",        "nome": "Ralo Sifonado",                       "uhc": 1, "dn_min_ramal_mm": 40,  "desconector": "integrado",       "ramal_independente": false },
+      { "id": "ralo_seco",            "nome": "Ralo Seco",                           "uhc": 1, "dn_min_ramal_mm": 40,  "desconector": "nenhum",          "ramal_independente": false },
+      { "id": "caixa_sifonada_150",   "nome": "Caixa Sifonada 150×150",              "uhc": 0, "dn_min_saida_mm": 50,  "desconector": "integrado",       "ramal_independente": false, "nota": "UHC = soma dos aparelhos conectados" },
+      { "id": "caixa_sifonada_100",   "nome": "Caixa Sifonada 100×100",              "uhc": 0, "dn_min_saida_mm": 40,  "desconector": "integrado",       "ramal_independente": false, "nota": "UHC = soma dos aparelhos conectados" }
+    ],
+
+    "tabela_ramal_esgoto": [
+      { "uhc_max": 3,   "dn_mm": 40  },
+      { "uhc_max": 6,   "dn_mm": 50  },
+      { "uhc_max": 10,  "dn_mm": 50  },
+      { "uhc_max": 20,  "dn_mm": 75  },
+      { "uhc_max": 35,  "dn_mm": 75  },
+      { "uhc_max": 100, "dn_mm": 100 },
+      { "uhc_max": 160, "dn_mm": 100 },
+      { "uhc_max": 350, "dn_mm": 150 },
+      { "uhc_max": 620, "dn_mm": 150 }
+    ],
+
+    "tabela_tubo_queda": [
+      { "uhc_max": 2,    "dn_mm": 40  },
+      { "uhc_max": 4,    "dn_mm": 50  },
+      { "uhc_max": 10,   "dn_mm": 50  },
+      { "uhc_max": 30,   "dn_mm": 75  },
+      { "uhc_max": 70,   "dn_mm": 75  },
+      { "uhc_max": 240,  "dn_mm": 100 },
+      { "uhc_max": 500,  "dn_mm": 100 },
+      { "uhc_max": 960,  "dn_mm": 150 },
+      { "uhc_max": 2200, "dn_mm": 150 }
+    ],
+
+    "tabela_subcoletor": [
+      { "uhc_max": 21,  "dn_mm": 100, "declividade_min": 0.01   },
+      { "uhc_max": 60,  "dn_mm": 100, "declividade_min": 0.01   },
+      { "uhc_max": 180, "dn_mm": 150, "declividade_min": 0.0065 },
+      { "uhc_max": 700, "dn_mm": 200, "declividade_min": 0.005  }
+    ],
+
+    "diametros_comerciais_pvc_esgoto_mm": [40, 50, 75, 100, 150, 200],
+
+    "diametros_minimos_trecho": {
+      "ramal_descarga_sem_vaso_mm": 40,
+      "ramal_descarga_com_vaso_mm": 100,
+      "ramal_esgoto_sem_vaso_mm": 50,
+      "ramal_esgoto_com_vaso_mm": 100,
+      "tubo_queda_sem_vaso_mm": 50,
+      "tubo_queda_com_vaso_mm": 100,
+      "subcoletor_mm": 100,
+      "coletor_predial_mm": 100
+    },
+
+    "acessorios_obrigatorios": {
+      "cx_sifonada_banheiro": true,
+      "cx_gordura_cozinha": true,
+      "ci_mudanca_direcao": true,
+      "ci_distancia_max_m": 15.0,
+      "fecho_hidrico_minimo_mm": 50
+    }
+  },
+
+  "declividade": {
+    "norma": "NBR 8160:1999",
+
+    "por_diametro": {
+      "DN_40":  { "minima": 0.020,  "recomendada": 0.025, "desnivel_por_metro_cm": 2.0  },
+      "DN_50":  { "minima": 0.020,  "recomendada": 0.025, "desnivel_por_metro_cm": 2.0  },
+      "DN_75":  { "minima": 0.020,  "recomendada": 0.020, "desnivel_por_metro_cm": 2.0  },
+      "DN_100": { "minima": 0.010,  "recomendada": 0.015, "desnivel_por_metro_cm": 1.0  },
+      "DN_150": { "minima": 0.0065, "recomendada": 0.010, "desnivel_por_metro_cm": 0.65 },
+      "DN_200": { "minima": 0.005,  "recomendada": 0.007, "desnivel_por_metro_cm": 0.50 }
+    },
+
+    "limites": {
+      "maxima_recomendada": 0.05,
+      "maxima_absoluta": 0.08,
+      "maxima_proibida": 0.10
+    },
+
+    "regra_simplificada": [
+      { "condicao": "DN <= 75",  "declividade_min": 0.02   },
+      { "condicao": "DN == 100", "declividade_min": 0.01   },
+      { "condicao": "DN == 150", "declividade_min": 0.0065 },
+      { "condicao": "DN >= 200", "declividade_min": 0.005  }
+    ],
+
+    "calculo": {
+      "desnivel_formula": "desnivel = comprimento * declividade",
+      "z_final_formula": "Z_final = Z_inicial - desnivel"
+    }
+  },
+
+  "ventilacao": {
+    "norma": "NBR 8160:1999",
+
+    "coluna_por_tubo_queda": [
+      { "dn_tq_mm": 40,  "dn_coluna_mm": 40,  "comp_max_m": 7.6   },
+      { "dn_tq_mm": 50,  "dn_coluna_mm": 40,  "comp_max_m": 10.7  },
+      { "dn_tq_mm": 75,  "dn_coluna_mm": 50,  "comp_max_m": 19.8  },
+      { "dn_tq_mm": 100, "dn_coluna_mm": 75,  "comp_max_m": 98.4  },
+      { "dn_tq_mm": 150, "dn_coluna_mm": 100, "comp_max_m": 304.8 }
+    ],
+
+    "ramal_por_ramal_descarga": [
+      { "dn_descarga_mm": 40,  "dn_ramal_vent_mm": 40 },
+      { "dn_descarga_mm": 50,  "dn_ramal_vent_mm": 40 },
+      { "dn_descarga_mm": 75,  "dn_ramal_vent_mm": 40 },
+      { "dn_descarga_mm": 100, "dn_ramal_vent_mm": 50 },
+      { "dn_descarga_mm": 150, "dn_ramal_vent_mm": 75 }
+    ],
+
+    "comprimento_max_ramal_vent": [
+      { "dn_mm": 40,  "comp_max_m": 6.0  },
+      { "dn_mm": 50,  "comp_max_m": 7.6  },
+      { "dn_mm": 75,  "comp_max_m": 15.2 },
+      { "dn_mm": 100, "comp_max_m": 30.0 }
+    ],
+
+    "distancia_max_sem_ventilacao": [
+      { "dn_ramal_mm": 40,  "dist_max_m": 1.0 },
+      { "dn_ramal_mm": 50,  "dist_max_m": 1.2 },
+      { "dn_ramal_mm": 75,  "dist_max_m": 1.8 },
+      { "dn_ramal_mm": 100, "dist_max_m": 2.4 }
+    ],
+
+    "diametros_comerciais_vent_mm": [40, 50, 75, 100],
+
+    "regras_dimensionamento": {
+      "fator_coluna_vs_TQ": 0.667,
+      "fator_ramal_vs_descarga": 0.50,
+      "dn_minimo_absoluto_mm": 40
+    },
+
+    "terminal": {
+      "altura_minima_acima_cobertura_m": 0.30,
+      "distancia_minima_janela_m": 4.00,
+      "distancia_minima_porta_m": 4.00,
+      "aberto": true
+    },
+
+    "obrigatoriedade": {
+      "primaria_sempre": true,
+      "secundaria_pavimentos_minimo": 3,
+      "max_aparelhos_ramal_sem_vent": 4,
+      "max_comprimento_ramal_sem_vent_m": 6.0,
+      "max_comprimento_subcoletor_sem_vent_m": 15.0,
+      "alivio_pavimentos_intervalo": 10
+    }
+  },
+
+  "equipamentos": {
+    "mapeamento_ambiente_aparelhos": {
+      "Banheiro": {
+        "obrigatorios": ["vaso_caixa_acoplada", "lavatorio", "chuveiro", "ralo_sifonado"],
+        "opcionais": ["bide"],
+        "acessorios": ["caixa_sifonada_150"]
+      },
+      "Lavabo": {
+        "obrigatorios": ["vaso_caixa_acoplada", "lavatorio"],
+        "opcionais": [],
+        "acessorios": []
+      },
+      "Suite": {
+        "obrigatorios": ["vaso_caixa_acoplada", "lavatorio", "chuveiro", "ralo_sifonado"],
+        "opcionais": ["bide", "banheira"],
+        "acessorios": ["caixa_sifonada_150"]
+      },
+      "Cozinha": {
+        "obrigatorios": ["pia_cozinha"],
+        "opcionais": ["maquina_lavar_louca", "filtro_pressao"],
+        "acessorios": ["caixa_gordura"]
+      },
+      "CozinhaGourmet": {
+        "obrigatorios": ["pia_cozinha"],
+        "opcionais": [],
+        "acessorios": ["caixa_gordura"]
+      },
+      "Lavanderia": {
+        "obrigatorios": ["tanque", "ralo_sifonado"],
+        "opcionais": ["maquina_lavar_roupa"],
+        "acessorios": []
+      },
+      "AreaServico": {
+        "obrigatorios": ["tanque", "ralo_sifonado"],
+        "opcionais": ["maquina_lavar_roupa"],
+        "acessorios": []
+      },
+      "AreaExterna": {
+        "obrigatorios": ["torneira_jardim"],
+        "opcionais": ["ralo_seco"],
+        "acessorios": []
+      }
+    },
+
+    "totalizacao_exemplos": {
+      "banheiro_completo": {
+        "aparelhos": ["vaso_caixa_acoplada", "lavatorio", "chuveiro", "ralo_sifonado"],
+        "soma_peso_af": 1.3,
+        "soma_uhc_es": 10,
+        "vazao_provavel_Ls": 0.342
+      },
+      "lavabo": {
+        "aparelhos": ["vaso_caixa_acoplada", "lavatorio"],
+        "soma_peso_af": 0.8,
+        "soma_uhc_es": 7,
+        "vazao_provavel_Ls": 0.268
+      },
+      "cozinha": {
+        "aparelhos": ["pia_cozinha"],
+        "soma_peso_af": 0.7,
+        "soma_uhc_es": 3,
+        "vazao_provavel_Ls": 0.251
+      },
+      "lavanderia": {
+        "aparelhos": ["tanque", "maquina_lavar_roupa", "ralo_sifonado"],
+        "soma_peso_af": 1.7,
+        "soma_uhc_es": 7,
+        "vazao_provavel_Ls": 0.391
+      }
+    },
+
+    "frequencia_residencial": {
+      "sempre":          ["vaso_caixa_acoplada", "lavatorio", "chuveiro", "pia_cozinha", "ralo_sifonado"],
+      "muito_frequente":  ["tanque", "maquina_lavar_roupa"],
+      "frequente":        ["torneira_jardim", "filtro_pressao", "ralo_seco"],
+      "ocasional":        ["maquina_lavar_louca", "bide"],
+      "raro":             ["banheira", "vaso_valvula_descarga", "pia_cozinha_triturador"]
+    }
+  },
+
+  "regras_logicas": {
+    "vazao": [
+      {
+        "id": "RL-VZ-01",
+        "nome": "Vazão provável",
+        "condicao": "soma_pesos > 0 AND num_aparelhos > 1",
+        "formula": "Q = 0.30 * sqrt(soma_pesos)",
+        "unidade_saida": "L/s"
+      },
+      {
+        "id": "RL-VZ-02",
+        "nome": "Vazão mínima aparelho isolado",
+        "condicao": "num_aparelhos == 1",
+        "formula": "Q = MAX(Q_calculado, vazao_min_aparelho)",
+        "unidade_saida": "L/s"
+      },
+      {
+        "id": "RL-VZ-03",
+        "nome": "Vazão com válvula de descarga",
+        "condicao": "trecho_contem_valvula_descarga == true",
+        "formula": "Q = 1.70 + 0.30 * sqrt(soma_pesos_demais)",
+        "unidade_saida": "L/s"
+      }
+    ],
+
+    "diametro_af": [
+      {
+        "id": "RL-DN-01",
+        "nome": "Selecionar DN por velocidade",
+        "condicao": "para cada DN comercial",
+        "formula": "V = (Q / 1000) / (PI * (D_int/2000)^2)",
+        "criterio": "V <= 3.0 m/s",
+        "acao": "selecionar menor DN que atenda"
+      },
+      {
+        "id": "RL-DN-02",
+        "nome": "DN mínimo do aparelho",
+        "condicao": "DN_calculado < DN_min_aparelho",
+        "acao": "DN = DN_min_aparelho"
+      },
+      {
+        "id": "RL-DN-03",
+        "nome": "DN não aumenta para jusante (AF)",
+        "condicao": "DN_jusante > DN_montante",
+        "acao": "alerta_medio"
+      }
+    ],
+
+    "perda_carga": [
+      {
+        "id": "RL-PC-01",
+        "nome": "Perda de carga unitária FWH",
+        "formula": "J = 8.69e6 * Q^1.75 / D_int^4.75",
+        "unidade_saida": "m/m"
+      },
+      {
+        "id": "RL-PC-02",
+        "nome": "Perda no trecho",
+        "formula": "DH = J * L * K",
+        "variaveis": {
+          "K": "1.20 (simplificado) ou 1.0 + soma_Leq/L (avançado)"
+        }
+      },
+      {
+        "id": "RL-PC-03",
+        "nome": "Perda no caminho",
+        "formula": "DH_caminho = SOMA(DH_trecho)"
+      }
+    ],
+
+    "pressao": [
+      {
+        "id": "RL-PR-01",
+        "nome": "Pressão estática",
+        "formula": "P_est = Z_reservatorio - Z_ponto",
+        "unidade_saida": "m.c.a."
+      },
+      {
+        "id": "RL-PR-02",
+        "nome": "Pressão disponível",
+        "formula": "P_din = P_est - DH_caminho",
+        "criterio_ok": "P_din >= 3.0",
+        "criterio_critico": "P_din < 3.0",
+        "criterio_inviavel": "P_din < 1.0"
+      },
+      {
+        "id": "RL-PR-03",
+        "nome": "Pressão máxima",
+        "condicao": "P_est > 40.0",
+        "acao": "alerta_medio: válvula redutora necessária"
+      }
+    ],
+
+    "diametro_es": [
+      {
+        "id": "RL-ES-01",
+        "nome": "DN ramal de descarga",
+        "formula": "DN = tabela_dn_min_aparelho[tipo]",
+        "regra_vaso": "DN >= 100 sempre"
+      },
+      {
+        "id": "RL-ES-02",
+        "nome": "DN ramal de esgoto",
+        "formula": "DN = MAX(consulta_tabela(soma_uhc), MAX(DN_ramais_conectados))"
+      },
+      {
+        "id": "RL-ES-03",
+        "nome": "DN tubo de queda",
+        "formula": "DN = MAX(consulta_tabela_TQ(soma_uhc_total), MAX(DN_ramais))"
+      },
+      {
+        "id": "RL-ES-04",
+        "nome": "DN subcoletor",
+        "formula": "DN = MAX(consulta_tabela_SC(soma_uhc), MAX(DN_TQs), 100)"
+      },
+      {
+        "id": "RL-ES-05",
+        "nome": "DN nunca diminui no escoamento",
+        "condicao": "DN_jusante < DN_montante",
+        "acao": "erro_critico"
+      }
+    ],
+
+    "declividade": [
+      {
+        "id": "RL-DEC-01",
+        "nome": "Atribuir declividade mínima",
+        "regras": [
+          { "condicao": "DN <= 75",  "valor": 0.02   },
+          { "condicao": "DN == 100", "valor": 0.01   },
+          { "condicao": "DN == 150", "valor": 0.0065 },
+          { "condicao": "DN >= 200", "valor": 0.005  }
+        ]
+      },
+      {
+        "id": "RL-DEC-02",
+        "nome": "Validar declividade aplicada",
+        "regras": [
+          { "condicao": "Z_final >= Z_inicial",       "acao": "erro_critico: contra gravidade" },
+          { "condicao": "decliv < decliv_min",         "acao": "erro_critico: declividade insuficiente" },
+          { "condicao": "decliv > 0.05",               "acao": "alerta_leve: risco separação" },
+          { "condicao": "decliv > 0.08",               "acao": "alerta_medio: risco alto" }
+        ]
+      }
+    ],
+
+    "ventilacao": [
+      {
+        "id": "RL-VE-01",
+        "nome": "Ventilação primária obrigatória",
+        "condicao": "para cada TQ",
+        "acao": "prolongar acima da cobertura"
+      },
+      {
+        "id": "RL-VE-02",
+        "nome": "Necessidade de ventilação secundária",
+        "condicao": "dist_aparelho > dist_max_tabela OR num_pavimentos >= 3",
+        "acao": "criar coluna de ventilação + ramal de ventilação"
+      },
+      {
+        "id": "RL-VE-03",
+        "nome": "DN coluna de ventilação",
+        "formula": "DN_vent = arredondar_acima_comercial(2/3 * DN_TQ)",
+        "minimo": 40
+      },
+      {
+        "id": "RL-VE-04",
+        "nome": "Ramal de ventilação ascendente",
+        "condicao": "Z_final < Z_inicial em qualquer trecho",
+        "acao": "erro_critico"
+      }
+    ]
+  },
+
+  "validacoes": {
+    "niveis": {
+      "critico": {
+        "codigo": 1,
+        "cor": "#F44336",
+        "icone": "❌",
+        "bloqueia_pipeline": true,
+        "requer_correcao": true
+      },
+      "medio": {
+        "codigo": 2,
+        "cor": "#FF9800",
+        "icone": "⚠️",
+        "bloqueia_pipeline": false,
+        "requer_aceite": true
+      },
+      "leve": {
+        "codigo": 3,
+        "cor": "#2196F3",
+        "icone": "ℹ️",
+        "bloqueia_pipeline": false,
+        "requer_aceite": false
+      },
+      "info": {
+        "codigo": 4,
+        "cor": "#9E9E9E",
+        "icone": "📝",
+        "bloqueia_pipeline": false,
+        "requer_aceite": false
+      }
+    },
+
+    "regras": [
+      { "id": "VAL-001", "categoria": "agua_fria",   "descricao": "Pressão dinâmica < 3.0 m.c.a.",                      "nivel": "critico", "mensagem": "Pressão insuficiente: {valor} m.c.a. no ponto {ponto}" },
+      { "id": "VAL-002", "categoria": "agua_fria",   "descricao": "Velocidade > 3.0 m/s",                               "nivel": "critico", "mensagem": "Velocidade excedida: {valor} m/s no trecho {trecho}" },
+      { "id": "VAL-003", "categoria": "agua_fria",   "descricao": "Pressão estática > 40 m.c.a.",                        "nivel": "medio",   "mensagem": "Pressão estática alta: {valor} m.c.a. — válvula redutora necessária" },
+      { "id": "VAL-004", "categoria": "agua_fria",   "descricao": "Velocidade < 0.5 m/s",                               "nivel": "leve",    "mensagem": "Velocidade baixa: {valor} m/s — possível sedimentação" },
+      { "id": "VAL-005", "categoria": "agua_fria",   "descricao": "DN sub-ramal < mínimo do aparelho",                  "nivel": "critico", "mensagem": "DN {dn_aplicado}mm < mínimo {dn_min}mm para {aparelho}" },
+      { "id": "VAL-006", "categoria": "agua_fria",   "descricao": "Falta registro na entrada do ambiente",              "nivel": "medio",   "mensagem": "Ambiente {ambiente} sem registro de gaveta" },
+      { "id": "VAL-007", "categoria": "esgoto",      "descricao": "DN diminui no sentido do escoamento",                "nivel": "critico", "mensagem": "DN diminui de {dn_montante}mm para {dn_jusante}mm" },
+      { "id": "VAL-008", "categoria": "esgoto",      "descricao": "Ramal do vaso < DN 100",                             "nivel": "critico", "mensagem": "Ramal do vaso DN {dn}mm — mínimo obrigatório 100mm" },
+      { "id": "VAL-009", "categoria": "esgoto",      "descricao": "Banheiro sem caixa sifonada",                        "nivel": "medio",   "mensagem": "Banheiro {ambiente} sem caixa sifonada" },
+      { "id": "VAL-010", "categoria": "esgoto",      "descricao": "Cozinha sem caixa de gordura",                       "nivel": "medio",   "mensagem": "Cozinha {ambiente} sem caixa de gordura" },
+      { "id": "VAL-011", "categoria": "esgoto",      "descricao": "Ramal do vaso passa pela CX sifonada",               "nivel": "medio",   "mensagem": "Ramal do vaso no {ambiente} passando por CX sifonada" },
+      { "id": "VAL-012", "categoria": "esgoto",      "descricao": "Aparelho não conectado à rede",                      "nivel": "critico", "mensagem": "Aparelho {aparelho} no {ambiente} sem conexão ao sistema de esgoto" },
+      { "id": "VAL-013", "categoria": "esgoto",      "descricao": "Curva de 90° em trecho horizontal",                  "nivel": "leve",    "mensagem": "Curva 90° em trecho horizontal — usar 2×45°" },
+      { "id": "VAL-014", "categoria": "declividade",  "descricao": "Trecho contra gravidade (Z_final >= Z_inicial)",     "nivel": "critico", "mensagem": "Trecho {trecho} subindo — contra gravidade" },
+      { "id": "VAL-015", "categoria": "declividade",  "descricao": "Declividade < mínima para o DN",                     "nivel": "critico", "mensagem": "Declividade {valor}% < mínima {min}% para DN {dn}mm" },
+      { "id": "VAL-016", "categoria": "declividade",  "descricao": "Declividade > 5%",                                  "nivel": "leve",    "mensagem": "Declividade {valor}% — risco de separação sólido-líquido" },
+      { "id": "VAL-017", "categoria": "declividade",  "descricao": "Declividade > 8%",                                  "nivel": "medio",   "mensagem": "Declividade {valor}% — risco alto de erosão e turbulência" },
+      { "id": "VAL-018", "categoria": "ventilacao",   "descricao": "TQ sem ventilação primária",                         "nivel": "critico", "mensagem": "Tubo de queda {tq} sem ventilação primária" },
+      { "id": "VAL-019", "categoria": "ventilacao",   "descricao": "Ramal de ventilação descendente",                    "nivel": "critico", "mensagem": "Ramal de ventilação descendo — proibido" },
+      { "id": "VAL-020", "categoria": "ventilacao",   "descricao": "Terminal < 30cm da cobertura",                       "nivel": "medio",   "mensagem": "Terminal de ventilação a {valor}m da cobertura — mínimo 0.30m" },
+      { "id": "VAL-021", "categoria": "ventilacao",   "descricao": "Terminal < 4m de janela",                            "nivel": "medio",   "mensagem": "Terminal a {valor}m de abertura — mínimo 4.0m" },
+      { "id": "VAL-022", "categoria": "ventilacao",   "descricao": "Aparelho além da distância máxima sem ventilação",   "nivel": "medio",   "mensagem": "Aparelho {aparelho} a {dist}m — máximo {max}m sem ventilação" },
+      { "id": "VAL-023", "categoria": "ventilacao",   "descricao": "Coluna de vent sem saída para atmosfera",            "nivel": "critico", "mensagem": "Coluna de ventilação sem terminal aberto" },
+      { "id": "VAL-024", "categoria": "geral",        "descricao": "DN não é diâmetro comercial válido",                 "nivel": "critico", "mensagem": "DN {dn}mm não é diâmetro comercial do material {material}" },
+      { "id": "VAL-025", "categoria": "geral",        "descricao": "Nenhum Room encontrado no modelo",                  "nivel": "critico", "mensagem": "Modelo sem Rooms — pipeline bloqueado" },
+      { "id": "VAL-026", "categoria": "geral",        "descricao": "Nenhum ambiente hidráulico identificado",            "nivel": "critico", "mensagem": "Nenhum ambiente relevante classificado — pipeline bloqueado" }
+    ]
+  },
+
+  "parametros_padrao": {
+    "geral": {
+      "tipo_edificacao": "residencial",
+      "num_pavimentos": 2,
+      "material_af": "pvc_soldavel",
+      "material_es": "pvc_esgoto",
+      "tipo_abastecimento": "reservatorio_superior"
+    },
+    "agua_fria": {
+      "pressao_minima_mca": 3.0,
+      "pressao_maxima_mca": 40.0,
+      "velocidade_maxima_ms": 3.0,
+      "velocidade_minima_ms": 0.5,
+      "coeficiente_C": 0.30,
+      "tipo_vaso": "caixa_acoplada",
+      "altura_reservatorio_m": 6.0,
+      "fator_perdas_localizadas": 1.20,
+      "formula_perda_carga": "fair_whipple_hsiao",
+      "dn_minimo_subramal_mm": 20,
+      "dn_minimo_barrilete_mm": 25
+    },
+    "esgoto": {
+      "dn_minimo_ramal_vaso_mm": 100,
+      "dn_minimo_subcoletor_mm": 100,
+      "cx_sifonada_banheiro": true,
+      "cx_gordura_cozinha": true,
+      "ramal_vaso_independente": true,
+      "distancia_max_CI_m": 15.0,
+      "dn_nunca_diminui": true
+    },
+    "ventilacao": {
+      "dn_minimo_absoluto_mm": 40,
+      "fator_coluna_vs_TQ": 0.667,
+      "fator_ramal_vs_descarga": 0.50,
+      "terminal_altura_minima_m": 0.30,
+      "terminal_distancia_janela_m": 4.00,
+      "pavimentos_para_secundaria": 3,
+      "max_aparelhos_sem_vent": 4
+    },
+    "declividade": {
+      "modo_aplicacao": "recomendada",
+      "tolerancia_cota_m": 0.001,
+      "maxima_recomendada": 0.05,
+      "maxima_absoluta": 0.08,
+      "aplicar_em_cascata": true,
+      "reconectar_fittings": true
+    },
+    "dimensionamento": {
+      "metodo_af": "probabilistico",
+      "metodo_es": "uhc_tabela",
+      "margem_seguranca_af": 1.0,
+      "arredondar_dn_acima": true,
+      "atualizar_modelo": true,
+      "gerar_relatorio": true
+    },
+    "automacao": {
+      "modo": "semi_automatico",
+      "aprovacao_por_etapa": true,
+      "bloquear_em_erro_critico": true,
+      "taxa_falha_max_rollback": 0.30,
+      "roteamento_ferramenta": "dynamo"
+    },
+    "interface": {
+      "idioma": "pt_BR",
+      "nivel_log": "medio",
+      "mostrar_elementid": true,
+      "exportar_log_json": true,
+      "cores": {
+        "ok": "#4CAF50",
+        "erro": "#F44336",
+        "alerta": "#FF9800",
+        "info": "#9E9E9E"
+      }
+    }
+  }
+}
