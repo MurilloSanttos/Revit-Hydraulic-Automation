@@ -1,0 +1,354 @@
+<Window x:Class="HidraulicoPlugin.UI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:HidraulicoPlugin.UI.ViewModels"
+        xmlns:conv="clr-namespace:HidraulicoPlugin.UI.Converters"
+        mc:Ignorable="d"
+        Title="Hydraulic Automation"
+        Height="720" Width="1100"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgPrimaryBrush}">
+
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <conv:StatusToColorConverter x:Key="StatusToColor" />
+        <conv:StatusToIconConverter x:Key="StatusToIcon" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="32" />
+        </Grid.RowDefinitions>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!--  HEADER                                            -->
+        <!-- ══════════════════════════════════════════════════ -->
+        <Border Grid.Row="0"
+                Background="{StaticResource BgSecondaryBrush}"
+                BorderBrush="{StaticResource BorderDefaultBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid Margin="20,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="🔧" FontSize="22" VerticalAlignment="Center"
+                               Margin="0,0,10,0" />
+                    <TextBlock Text="Hydraulic Automation"
+                               Style="{StaticResource TextH2}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="2"
+                           Text="{Binding VersionText}"
+                           Style="{StaticResource TextCaption}"
+                           VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!--  CONTEÚDO PRINCIPAL                                -->
+        <!-- ══════════════════════════════════════════════════ -->
+        <Grid Grid.Row="1" Margin="20,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- ── PAINEL ESQUERDO: Lista de Etapas ─────────── -->
+            <Border Grid.Column="0"
+                    Background="{StaticResource BgSecondaryBrush}"
+                    CornerRadius="8"
+                    Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Etapas do Pipeline"
+                               Style="{StaticResource TextH3}" />
+
+                    <ListBox Grid.Row="2"
+                             ItemsSource="{Binding PipelineVM.Steps}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="8,6" />
+                                <Setter Property="Margin" Value="0,2" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="Bd"
+                                                    Background="Transparent"
+                                                    CornerRadius="6"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background"
+                                                            Value="{StaticResource BgHoverBrush}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="26" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding Status, Converter={StaticResource StatusToIcon}}"
+                                               VerticalAlignment="Center"
+                                               FontSize="13" />
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}"
+                                                   Style="{StaticResource TextBody}" />
+                                        <TextBlock Text="{Binding Description}"
+                                                   Style="{StaticResource TextCaption}"
+                                                   Margin="0,2,0,0" />
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding Id}"
+                                               Style="{StaticResource TextCaption}"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- Botões de controle -->
+                    <StackPanel Grid.Row="4" Orientation="Horizontal">
+                        <Button Content="▶ Iniciar"
+                                Style="{StaticResource BtnPrimary}"
+                                Command="{Binding PipelineVM.StartPipelineCommand}"
+                                Margin="0,0,8,0" />
+                        <Button Content="⏭ Simular"
+                                Style="{StaticResource BtnSecondary}"
+                                Command="{Binding PipelineVM.SimulateStepCommand}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ── PAINEL DIREITO ───────────────────────────── -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- ── Status e Progresso ────────────────────── -->
+                <Border Grid.Row="0"
+                        Background="{StaticResource BgSecondaryBrush}"
+                        CornerRadius="8"
+                        Padding="20,16">
+                    <StackPanel>
+                        <TextBlock Text="{Binding PipelineVM.StatusLine}"
+                                   Style="{StaticResource TextH3}"
+                                   Margin="0,0,0,12" />
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Style="{StaticResource TextCaption}">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Etapa atual: {0}">
+                                        <Binding Path="PipelineVM.CurrentStepName" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+
+                            <TextBlock Grid.Column="1"
+                                       Style="{StaticResource TextCaption}">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}/{1}">
+                                        <Binding Path="PipelineVM.CompletedSteps" />
+                                        <Binding Path="PipelineVM.TotalSteps" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Grid>
+
+                        <!-- Barra de progresso -->
+                        <Border Background="{StaticResource BgCardBrush}"
+                                CornerRadius="4" Height="8">
+                            <Border Background="{StaticResource AccentBlueBrush}"
+                                    CornerRadius="4"
+                                    HorizontalAlignment="Left">
+                                <Border.Width>
+                                    <MultiBinding>
+                                        <MultiBinding.Converter>
+                                            <conv:PercentToWidthConverter />
+                                        </MultiBinding.Converter>
+                                        <Binding Path="PipelineVM.OverallProgress" />
+                                        <Binding Path="ActualWidth"
+                                                 RelativeSource="{RelativeSource AncestorType=Border}" />
+                                    </MultiBinding>
+                                </Border.Width>
+                            </Border>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Painel de Aprovação ───────────────────── -->
+                <Border Grid.Row="2"
+                        Background="{StaticResource BgSecondaryBrush}"
+                        CornerRadius="8"
+                        Padding="20,16"
+                        Visibility="{Binding PipelineVM.IsWaitingApproval, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="⏸ Aprovação Necessária"
+                                   Style="{StaticResource TextH3}"
+                                   Foreground="{StaticResource AccentYellowBrush}"
+                                   Margin="0,0,0,8" />
+
+                        <TextBlock Style="{StaticResource TextBody}"
+                                   Margin="0,0,0,12">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="A etapa '{0}' foi concluída e aguarda sua aprovação.">
+                                    <Binding Path="PipelineVM.CurrentStepName" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+
+                        <TextBox Text="{Binding PipelineVM.ApprovalComment, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{StaticResource BgInputBrush}"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 BorderBrush="{StaticResource BorderDefaultBrush}"
+                                 Padding="10,8"
+                                 Margin="0,0,0,12"
+                                 FontSize="13" />
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="✅ Aprovar"
+                                    Style="{StaticResource BtnSuccess}"
+                                    Command="{Binding PipelineVM.ApproveCommand}"
+                                    Margin="0,0,10,0" />
+                            <Button Content="❌ Rejeitar"
+                                    Style="{StaticResource BtnDanger}"
+                                    Command="{Binding PipelineVM.RejectCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Log de Execução ───────────────────────── -->
+                <Border Grid.Row="4"
+                        Background="{StaticResource BgSecondaryBrush}"
+                        CornerRadius="8"
+                        Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Log de Execução"
+                                   Style="{StaticResource TextH3}" />
+
+                        <ListBox Grid.Row="2"
+                                 ItemsSource="{Binding PipelineVM.LogEntries}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="4,3" />
+                                    <Setter Property="Focusable" Value="False" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding TimeFormatted}"
+                                                   Style="{StaticResource TextMono}"
+                                                   Foreground="{StaticResource TextMutedBrush}"
+                                                   Margin="0,0,8,0"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Icon}"
+                                                   Margin="0,0,6,0"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Message}"
+                                                   Style="{StaticResource TextBody}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!--  FOOTER / STATUS BAR                               -->
+        <!-- ══════════════════════════════════════════════════ -->
+        <Border Grid.Row="2"
+                Background="{StaticResource BgSecondaryBrush}"
+                BorderBrush="{StaticResource BorderDefaultBrush}"
+                BorderThickness="0,1,0,0">
+            <Grid Margin="16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="{Binding StatusBarText}"
+                           Style="{StaticResource TextCaption}"
+                           VerticalAlignment="Center" />
+
+                <TextBlock Grid.Column="1"
+                           Text="Hydraulic Automation © 2026"
+                           Style="{StaticResource TextCaption}"
+                           VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
