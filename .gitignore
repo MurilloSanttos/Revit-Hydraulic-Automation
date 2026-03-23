@@ -1,22 +1,215 @@
-# Build
+# ══════════════════════════════════════════════════════════════
+#  .NET / C#
+# ══════════════════════════════════════════════════════════════
 bin/
 obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Arquivos de build
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.idb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.vspscc
+*.vssscc
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+!**/[Pp]ackages/*.props
+!**/[Pp]ackages/*.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ══════════════════════════════════════════════════════════════
+#  VISUAL STUDIO
+# ══════════════════════════════════════════════════════════════
+.vs/
 *.user
 *.suo
-*.cache
-*.log
-
-# Visual Studio
-.vs/
+*.userosscache
+*.sln.docstates
 *.rsuser
 *.userprefs
 
-# NuGet
-packages/
-*.nupkg
+# Build results
+[Dd]ebugPublic/
+[Rr]eleases/
+*_i.c
+*_p.c
+*_h.h
+*.cache
+*.ncb
+*.sdf
+*.opensdf
+*.opendb
+*.VC.db
+*.VC.VC.opendb
+*.psess
+*.vsp
+*.vspx
+*.sap
+*.e2e
 
-# Logs gerados
-Data/Logs/*.json
+# Scaffolding
+StyleCopReport.xml
+ScaffoldingReadMe.txt
 
-# Dynamo backups
+# Publish
+*.Publish.xml
+*.azurePubxml
+*.pubxml
+*.publishproj
+
+# ══════════════════════════════════════════════════════════════
+#  RIDER / JETBRAINS
+# ══════════════════════════════════════════════════════════════
+.idea/
+*.sln.iml
+
+# ══════════════════════════════════════════════════════════════
+#  VSCODE
+# ══════════════════════════════════════════════════════════════
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ══════════════════════════════════════════════════════════════
+#  REVIT
+# ══════════════════════════════════════════════════════════════
+
+# Lock files (Revit abre e trava o arquivo)
+*.rvt.lock
+*.rte.lock
+*.rfa.lock
+*.rft.lock
+
+# Revit backup files
+*.0001.rvt
+*.0002.rvt
+*.0003.rvt
+*.0001.rfa
+*.0002.rfa
+*.0003.rfa
+*.rvt.bak
+
+# Revit temp files
+*.slog
+
+# Revit journal files (logs de sessão)
+*.txt.lock
+
+# Addin output (gerado pelo build, não versionar)
+# As DLLs de output são copiadas automaticamente pelo post-build
+!Revit2026/HidraulicaRevit.addin
+
+# ══════════════════════════════════════════════════════════════
+#  DYNAMO
+# ══════════════════════════════════════════════════════════════
+
+# Backup de scripts
 DynamoScripts/**/*.dyn.bak
+DynamoScripts/**/*.dyn0
+DynamoScripts/**/*.dyn1
+
+# Dynamo packages locais
+DynamoScripts/**/backup/
+DynamoScripts/**/__pycache__/
+
+# ══════════════════════════════════════════════════════════════
+#  LOGS E DADOS GERADOS
+# ══════════════════════════════════════════════════════════════
+*.log
+*.log.*
+Data/Logs/*.json
+Data/Logs/*.txt
+!Data/Logs/.gitkeep
+
+# ══════════════════════════════════════════════════════════════
+#  SISTEMA OPERACIONAL
+# ══════════════════════════════════════════════════════════════
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.Trash-*
+.nfs*
+
+# ══════════════════════════════════════════════════════════════
+#  TESTES
+# ══════════════════════════════════════════════════════════════
+TestResults/
+[Cc]overage*/
+*.coverage
+*.coveragexml
+
+# ══════════════════════════════════════════════════════════════
+#  MISC
+# ══════════════════════════════════════════════════════════════
+
+# Node (caso use ferramentas JS)
+node_modules/
+
+# Python (caso use scripts auxiliares)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.venv/
+
+# Arquivos sensíveis
+*.pfx
+*.key
+*.pem
+appsettings.*.json
+!appsettings.json
+secrets.json
