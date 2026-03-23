@@ -49,6 +49,7 @@ namespace PluginCore.Services
 
         /// <summary>
         /// Verifica se há ambientes duplicados (mesmo número no mesmo nível).
+        /// Duplicatas são erros CRÍTICOS — bloqueiam avanço do pipeline.
         /// </summary>
         private void ValidarDuplicatas(List<AmbienteInfo> ambientes)
         {
@@ -60,9 +61,19 @@ namespace PluginCore.Services
             foreach (var grupo in duplicatas)
             {
                 var ids = string.Join(", ", grupo.Select(a => a.ElementId));
-                _log.Medio(ETAPA, COMPONENTE,
-                    $"Ambiente duplicado: Número '{grupo.Key.Numero}' no nível '{grupo.Key.Nivel}' " +
-                    $"aparece {grupo.Count()} vezes (IDs: {ids}).");
+
+                _log.Critico(ETAPA, COMPONENTE,
+                    $"Ambiente duplicado detectado: Número '{grupo.Key.Numero}', " +
+                    $"Nível '{grupo.Key.Nivel}' — aparece {grupo.Count()} vezes (IDs: {ids}).");
+
+                // Log individual de cada elemento duplicado
+                foreach (var ambiente in grupo)
+                {
+                    _log.Medio(ETAPA, COMPONENTE,
+                        $"  ↳ Duplicata: '{ambiente.NomeOriginal}' (#{ambiente.Numero}) " +
+                        $"no nível '{ambiente.Nivel}'.",
+                        ambiente.ElementId);
+                }
             }
         }
 
