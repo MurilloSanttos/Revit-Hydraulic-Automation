@@ -139,6 +139,22 @@ namespace PluginCore.Logging
             }
         }
 
+        /// <summary>Filtra logs por etapa (alias em inglês).</summary>
+        public IEnumerable<LogEntry> GetByEtapa(string etapa)
+            => FiltrarPorEtapa(etapa);
+
+        /// <summary>Filtra logs por nível E etapa combinados.</summary>
+        public IEnumerable<LogEntry> GetByLevelAndEtapa(LogLevel level, string etapa)
+        {
+            lock (_lock)
+            {
+                return _entries
+                    .Where(e => e.Level == level &&
+                                e.Etapa.Equals(etapa, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+        }
+
         /// <summary>Quantidade de entradas por nível.</summary>
         public int ContarPorNivel(LogLevel level)
         {
