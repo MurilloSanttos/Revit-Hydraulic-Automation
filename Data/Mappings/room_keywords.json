@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "description": "Mapeamento de nomes de Room para RoomType",
+  "keywords": {
+    "Bathroom": [
+      "banheiro", "banho", "wc", "bwc", "sanitário", "sanitario",
+      "banh", "bathroom"
+    ],
+    "MasterBathroom": [
+      "suíte", "suite", "master"
+    ],
+    "Lavatory": [
+      "lavabo", "toilette", "toalete", "toilet"
+    ],
+    "Kitchen": [
+      "cozinha", "kitchen", "copa", "gourmet"
+    ],
+    "Laundry": [
+      "serviço", "servico", "lavanderia", "laundry",
+      "área de serviço", "area de servico"
+    ],
+    "Balcony": [
+      "varanda", "sacada", "terraço", "terraco", "balcão", "balcony"
+    ],
+    "Garage": [
+      "garagem", "garage", "estacionamento", "vaga", "parking"
+    ],
+    "ServiceArea": [
+      "área externa", "area externa", "piscina", "churrasqueira"
+    ],
+    "DryArea": [
+      "sala", "quarto", "dormitório", "dormitorio", "escritório", "escritorio",
+      "closet", "corredor", "hall", "circulação", "circulacao",
+      "escada", "depósito", "deposito", "despensa", "rouparia",
+      "home office", "estúdio", "studio", "biblioteca", "ateliê",
+      "living", "bedroom", "hallway", "adega", "vestíbulo"
+    ]
+  },
+  "combinationRules": [
+    {
+      "requires": ["banheiro", "suíte"],
+      "result": "MasterBathroom",
+      "note": "Banheiro + Suíte = MasterBathroom"
+    },
+    {
+      "requires": ["varanda", "gourmet"],
+      "result": "Balcony",
+      "note": "Varanda Gourmet = Balcony (não Kitchen)"
+    }
+  ],
+  "genericNames": [
+    "ambiente", "espaço", "espaco", "room", "area", "área",
+    "undefined", "novo ambiente", "a definir", "???"
+  ]
+}
