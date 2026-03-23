@@ -57,8 +57,8 @@ namespace PluginCore.Services
             var resultado = new ResultadoDimensionamento
             {
                 ReferenciaId = sistema.Id,
-                Sistema = sistema.Sistema,
-                NormaUtilizada = sistema.Sistema == HydraulicSystem.ColdWater
+                Sistema = sistema.Tipo,
+                NormaUtilizada = sistema.Tipo == HydraulicSystem.ColdWater
                     ? "NBR 5626:2020"
                     : "NBR 8160:1999",
             };
@@ -72,7 +72,7 @@ namespace PluginCore.Services
                 trecho.Vazao = CalcularVazaoProvavel(trecho.SomaPesos);
 
                 // Determinar diâmetro
-                trecho.DiametroNominal = DeterminarDiametro(trecho.Vazao, sistema.Sistema);
+                trecho.DiametroNominal = DeterminarDiametro(trecho.Vazao, sistema.Tipo);
                 trecho.DiametroInterno = GetDiametroInterno(trecho.DiametroNominal);
 
                 // Calcular velocidade
