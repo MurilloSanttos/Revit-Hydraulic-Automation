@@ -65,6 +65,18 @@ namespace PluginCore.Logging
             get { lock (_lock) { return _entries.Any(e => e.Level == LogLevel.Critico); } }
         }
 
+        /// <summary>Verifica se existem erros críticos (alias EN).</summary>
+        public bool HasCriticalErrors()
+        {
+            lock (_lock) { return _entries.Any(e => e.Level == LogLevel.Critico); }
+        }
+
+        /// <summary>Retorna todos os erros críticos.</summary>
+        public IEnumerable<LogEntry> GetCriticalErrors()
+        {
+            lock (_lock) { return _entries.Where(e => e.Level == LogLevel.Critico).ToList(); }
+        }
+
         // ══════════════════════════════════════════════════════════
         //  MÉTODOS DE REGISTRO (ATALHOS)
         // ══════════════════════════════════════════════════════════
