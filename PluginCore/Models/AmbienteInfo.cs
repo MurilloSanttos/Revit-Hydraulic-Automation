@@ -63,6 +63,11 @@ namespace PluginCore.Models
         public PontoXYZ PontoCentral { get; set; } = new();
 
         /// <summary>
+        /// Lista de nomes dos equipamentos existentes no ambiente (modelados no Revit).
+        /// </summary>
+        public List<string> EquipamentosExistentes { get; set; } = new();
+
+        /// <summary>
         /// Indica se o ambiente possui relevância hidráulica.
         /// Ambientes como salas, quartos, corredores não são relevantes.
         /// </summary>

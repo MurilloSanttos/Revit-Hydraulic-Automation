@@ -613,5 +613,111 @@ namespace PluginCore.Services
 
             return resumo;
         }
+
+        // ══════════════════════════════════════════════════════════
+        //  VALIDAÇÃO DE EQUIPAMENTOS (público)
+        // ══════════════════════════════════════════════════════════
+
+        private const string ETAPA_EQUIP = "03_Equipamentos";
+
+        /// <summary>
+        /// Valida equipamentos existentes vs esperados por ambiente.
+        /// Detecta faltantes obrigatórios (Critico), opcionais faltantes (Leve) e extras (Leve).
+        /// </summary>
+        /// <returns>true se não há bloqueios, false se há erros críticos.</returns>
+        public bool ValidateEquipamentos(IEnumerable<AmbienteInfo> ambientes)
+        {
+            if (ambientes == null)
+                return true;
+
+            var lista = ambientes.Where(a => a != null && a.EhRelevante).ToList();
+
+            if (lista.Count == 0)
+                return true;
+
+            var totalFaltantesObr = 0;
+            var totalFaltantesOpc = 0;
+            var totalExtras = 0;
+            var totalOk = 0;
+
+            _log.Info(ETAPA_EQUIP, COMPONENTE,
+                $"Validando equipamentos de {lista.Count} ambientes relevantes.");
+
+            foreach (var ambiente in lista)
+            {
+                var esperados = EquipamentosPorAmbiente.Get(ambiente.Classificacao.Tipo);
+
+                if (esperados.Count == 0)
+                    continue;
+
+                // Normalizar existentes
+                var existentesNorm = ambiente.EquipamentosExistentes
+                    .Select(e => e.Trim().ToLowerInvariant())
+                    .ToHashSet();
+
+                // Normalizar esperados
+                var esperadosNorm = esperados
+                    .Select(e => (Nome: e.Nome.Trim().ToLowerInvariant(), e.Obrigatorio))
+                    .ToList();
+
+                var nomesEsperadosNorm = esperadosNorm
+                    .Select(e => e.Nome)
+                    .ToHashSet();
+
+                // ── Verificar faltantes ────────────────────────
+                foreach (var (nome, obrigatorio) in esperadosNorm)
+                {
+                    if (!existentesNorm.Contains(nome))
+                    {
+                        if (obrigatorio)
+                        {
+                            totalFaltantesObr++;
+                            _log.Critico(ETAPA_EQUIP, COMPONENTE,
+                                $"Equipamento obrigatório ausente: '{nome}' " +
+                                $"no ambiente '{ambiente.NomeOriginal}' " +
+                                $"(#{ambiente.Numero}, Nível: '{ambiente.Nivel}').",
+                                ambiente.ElementId);
+                        }
+                        else
+                        {
+                            totalFaltantesOpc++;
+                            _log.Leve(ETAPA_EQUIP, COMPONENTE,
+                                $"Equipamento opcional ausente: '{nome}' " +
+                                $"no ambiente '{ambiente.NomeOriginal}' " +
+                                $"(#{ambiente.Numero}).",
+                                ambiente.ElementId);
+                        }
+                    }
+                }
+
+                // ── Verificar extras ───────────────────────────
+                foreach (var existente in existentesNorm)
+                {
+                    if (!nomesEsperadosNorm.Contains(existente))
+                    {
+                        totalExtras++;
+                        _log.Leve(ETAPA_EQUIP, COMPONENTE,
+                            $"Equipamento não esperado: '{existente}' " +
+                            $"no ambiente '{ambiente.NomeOriginal}' " +
+                            $"(#{ambiente.Numero}, Tipo: {ambiente.Classificacao.Tipo}).",
+                            ambiente.ElementId);
+                    }
+                    else
+                    {
+                        totalOk++;
+                    }
+                }
+            }
+
+            // Resumo
+            _log.Info(ETAPA_EQUIP, COMPONENTE,
+                $"Validação de equipamentos: " +
+                $"{totalOk} OK, " +
+                $"{totalFaltantesObr} obrigatórios faltantes, " +
+                $"{totalFaltantesOpc} opcionais faltantes, " +
+                $"{totalExtras} extras.");
+
+            return !_log.TemBloqueio;
+        }
     }
 }
