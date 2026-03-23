@@ -1,3 +1,5 @@
+using PluginCore.Common;
+using PluginCore.Domain.Enums;
 using PluginCore.Interfaces;
 using PluginCore.Logging;
 using PluginCore.Models;
@@ -12,7 +14,9 @@ namespace PluginCore.Services
     {
         private readonly ILogService _log;
         private const string ETAPA = "01_Ambientes";
+        private const string ETAPA_CLASS = "02_Classificacao";
         private const string COMPONENTE = "Validador";
+        private const double LOW_CONFIDENCE_THRESHOLD = 0.6;
 
         public ValidadorAmbientes(ILogService log)
         {
@@ -193,6 +197,111 @@ namespace PluginCore.Services
             return $"Resumo da detecção:\n" +
                    string.Join("\n", porTipo) +
                    $"\n  Não classificados: {naoClassificados}";
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  VALIDAÇÃO DE CLASSIFICAÇÃO (ClassificationResult)
+        // ══════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Valida resultados de classificação: detecta não classificados e baixa confiança.
+        /// </summary>
+        /// <returns>true se pode avançar, false se há bloqueios.</returns>
+        public bool ValidateClassificacao(IEnumerable<ClassificationResult> resultados)
+        {
+            if (resultados == null)
+                return true;
+
+            var lista = resultados.ToList();
+            var total = lista.Count;
+            var naoClassificados = 0;
+            var baixaConfianca = 0;
+            var classificados = 0;
+
+            _log.Info(ETAPA_CLASS, COMPONENTE,
+                $"Validando classificação de {total} ambientes.");
+
+            foreach (var resultado in lista)
+            {
+                if (resultado == null)
+                    continue;
+
+                // Caso 1: Não classificado
+                if (!resultado.Found || resultado.Tipo == null)
+                {
+                    naoClassificados++;
+                    _log.Critico(ETAPA_CLASS, COMPONENTE,
+                        $"Ambiente não identificado pelo classificador. " +
+                        $"Input: '{resultado.InputNormalizado}'. " +
+                        $"Estratégia: {resultado.Estrategia}.");
+                    continue;
+                }
+
+                // Caso 2: Baixa confiança
+                if (resultado.Confianca < LOW_CONFIDENCE_THRESHOLD)
+                {
+                    baixaConfianca++;
+                    _log.Medio(ETAPA_CLASS, COMPONENTE,
+                        $"Classificação com baixa confiança ({resultado.Confianca:P0}). " +
+                        $"Input: '{resultado.InputNormalizado}' → {resultado.Tipo} " +
+                        $"(Pattern: '{resultado.PatternMatched}', " +
+                        $"Estratégia: {resultado.Estrategia}). Requer validação humana.");
+                    continue;
+                }
+
+                classificados++;
+            }
+
+            // Resumo
+            _log.Info(ETAPA_CLASS, COMPONENTE,
+                $"Resultado da validação: " +
+                $"{classificados}/{total} classificados OK, " +
+                $"{baixaConfianca} com baixa confiança, " +
+                $"{naoClassificados} não identificados.");
+
+            // Gerar alerta se taxa de classificação for baixa
+            if (total > 0)
+            {
+                var taxa = (double)classificados / total;
+                if (taxa < 0.5)
+                {
+                    _log.Critico(ETAPA_CLASS, COMPONENTE,
+                        $"Taxa de classificação muito baixa: {taxa:P0}. " +
+                        $"Verifique a nomenclatura dos Rooms no modelo.");
+                }
+                else if (taxa < 0.8)
+                {
+                    _log.Medio(ETAPA_CLASS, COMPONENTE,
+                        $"Taxa de classificação abaixo do ideal: {taxa:P0}. " +
+                        $"Revise os ambientes não classificados.");
+                }
+            }
+
+            return !_log.TemBloqueio;
+        }
+
+        /// <summary>
+        /// Valida classificação por lote (BatchResult).
+        /// </summary>
+        public bool ValidateClassificacaoBatch(BatchClassifier.BatchResult batchResult)
+        {
+            if (batchResult == null)
+                return true;
+
+            _log.Info(ETAPA_CLASS, COMPONENTE,
+                $"Validando lote: {batchResult.Total} ambientes, " +
+                $"Taxa de acerto: {batchResult.TaxaAcerto:P0}, " +
+                $"Confiança média: {batchResult.ConfiancaMedia:P0}.");
+
+            if (batchResult.PorEstrategia.Count > 0)
+            {
+                var estrategias = string.Join(", ",
+                    batchResult.PorEstrategia.Select(kv => $"{kv.Key}: {kv.Value}"));
+                _log.Info(ETAPA_CLASS, COMPONENTE,
+                    $"Distribuição por estratégia: {estrategias}.");
+            }
+
+            return ValidateClassificacao(batchResult.Resultados);
         }
     }
 }
