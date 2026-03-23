@@ -1,3 +1,4 @@
+using System.Text;
 using PluginCore.Common;
 using PluginCore.Domain.Enums;
 using PluginCore.Interfaces;
@@ -560,6 +561,57 @@ namespace PluginCore.Services
             }
 
             return !_log.TemBloqueio;
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  RESUMO POR TIPO (público)
+        // ══════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Gera resumo consolidado de ambientes por TipoAmbiente.
+        /// </summary>
+        /// <returns>Resumo textual formatado.</returns>
+        public string GenerateResumoPorTipo(IEnumerable<AmbienteInfo> ambientes)
+        {
+            if (ambientes == null)
+                return "Nenhum ambiente fornecido.";
+
+            var lista = ambientes.ToList();
+
+            if (lista.Count == 0)
+                return "Nenhum ambiente fornecido.";
+
+            var grupos = lista
+                .GroupBy(a => a.Classificacao.Tipo)
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            var relevantes = lista.Count(a => a.EhRelevante);
+            var total = lista.Count;
+            var taxa = total > 0 ? (double)relevantes / total : 0;
+
+            var sb = new StringBuilder();
+            sb.AppendLine("══════════════════════════════");
+            sb.AppendLine("  Resumo de Ambientes por Tipo");
+            sb.AppendLine("══════════════════════════════");
+
+            foreach (var grupo in grupos)
+            {
+                var icon = grupo.Key == TipoAmbiente.NaoIdentificado ? "❓" : "✅";
+                sb.AppendLine($"  {icon} {grupo.Key,-20} {grupo.Count(),3}");
+            }
+
+            sb.AppendLine("──────────────────────────────");
+            sb.AppendLine($"  Total:                {total,5}");
+            sb.AppendLine($"  Relevantes:           {relevantes,5} ({taxa:P0})");
+            sb.AppendLine($"  Não identificados:    {total - relevantes,5}");
+            sb.AppendLine("══════════════════════════════");
+
+            var resumo = sb.ToString();
+
+            _log.Info(ETAPA, COMPONENTE, $"Resumo por tipo:\n{resumo}");
+
+            return resumo;
         }
     }
 }
