@@ -17,6 +17,9 @@ namespace Revit2026
         {
             try
             {
+                // Inicializar PluginCore
+                PluginCore.CoreBootstrap.Initialize();
+
                 // Criar aba personalizada
                 application.CreateRibbonTab(TAB_NAME);
 

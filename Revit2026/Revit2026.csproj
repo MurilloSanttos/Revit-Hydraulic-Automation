@@ -8,8 +8,16 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>x64</PlatformTarget>
+
+    <!-- Informações do assembly -->
+    <Authors>Murillo Santtos</Authors>
+    <Product>Hydraulic Automation Plugin - Revit Integration</Product>
+    <Description>Camada de integração com o Autodesk Revit 2026</Description>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
+  <!-- Referência ao PluginCore (domínio) -->
   <ItemGroup>
     <ProjectReference Include="..\PluginCore\PluginCore.csproj" />
   </ItemGroup>
@@ -29,5 +37,13 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
+
+  <!-- Copiar .addin para pasta de addins do Revit após build -->
+  <Target Name="CopyAddinToRevit" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+    <Copy
+      SourceFiles="$(ProjectDir)HidraulicaRevit.addin"
+      DestinationFolder="$(AppData)\Autodesk\Revit\Addins\2026\"
+      SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>
