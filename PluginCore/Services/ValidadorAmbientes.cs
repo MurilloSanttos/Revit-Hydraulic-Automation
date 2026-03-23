@@ -17,6 +17,8 @@ namespace PluginCore.Services
         private const string ETAPA_CLASS = "02_Classificacao";
         private const string COMPONENTE = "Validador";
         private const double LOW_CONFIDENCE_THRESHOLD = 0.6;
+        private const double MIN_AREA = 1.5;
+        private const double MAX_AREA = 100.0;
 
         public ValidadorAmbientes(ILogService log)
         {
@@ -302,6 +304,84 @@ namespace PluginCore.Services
             }
 
             return ValidateClassificacao(batchResult.Resultados);
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  VALIDAÇÃO DE ÁREAS (público)
+        // ══════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Valida áreas dos ambientes: detecta áreas zero, muito pequenas e muito grandes.
+        /// </summary>
+        /// <returns>true se não há bloqueios, false se há erros críticos.</returns>
+        public bool ValidateArea(IEnumerable<AmbienteInfo> ambientes)
+        {
+            if (ambientes == null)
+                return true;
+
+            var lista = ambientes.ToList();
+            var areaZero = 0;
+            var areaPequena = 0;
+            var areaGrande = 0;
+            var areaOk = 0;
+
+            _log.Info(ETAPA, COMPONENTE,
+                $"Validando áreas de {lista.Count} ambientes " +
+                $"(Min: {MIN_AREA} m², Max: {MAX_AREA} m²).");
+
+            foreach (var ambiente in lista)
+            {
+                if (ambiente == null)
+                    continue;
+
+                // Caso 0: Área zero ou negativa
+                if (ambiente.AreaM2 <= 0)
+                {
+                    areaZero++;
+                    _log.Critico(ETAPA, COMPONENTE,
+                        $"Área inválida ({ambiente.AreaM2:F2} m²) para ambiente " +
+                        $"'{ambiente.NomeOriginal}' (#{ambiente.Numero}). " +
+                        $"Room pode não estar delimitado.",
+                        ambiente.ElementId);
+                    continue;
+                }
+
+                // Caso 1: Área muito pequena
+                if (ambiente.AreaM2 < MIN_AREA)
+                {
+                    areaPequena++;
+                    _log.Medio(ETAPA, COMPONENTE,
+                        $"Área muito pequena ({ambiente.AreaM2:F2} m²) para ambiente " +
+                        $"'{ambiente.NomeOriginal}' (#{ambiente.Numero}, Nível: {ambiente.Nivel}). " +
+                        $"Pode indicar Room mal delimitado.",
+                        ambiente.ElementId);
+                    continue;
+                }
+
+                // Caso 2: Área muito grande
+                if (ambiente.AreaM2 > MAX_AREA)
+                {
+                    areaGrande++;
+                    _log.Leve(ETAPA, COMPONENTE,
+                        $"Área muito grande ({ambiente.AreaM2:F2} m²) para ambiente " +
+                        $"'{ambiente.NomeOriginal}' (#{ambiente.Numero}, Nível: {ambiente.Nivel}). " +
+                        $"Verifique se não é um ambiente composto.",
+                        ambiente.ElementId);
+                    continue;
+                }
+
+                areaOk++;
+            }
+
+            // Resumo
+            _log.Info(ETAPA, COMPONENTE,
+                $"Validação de áreas: " +
+                $"{areaOk} OK, " +
+                $"{areaPequena} pequenas, " +
+                $"{areaGrande} grandes, " +
+                $"{areaZero} inválidas.");
+
+            return !_log.TemBloqueio;
         }
     }
 }
