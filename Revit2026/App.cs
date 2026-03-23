@@ -1,26 +1,16 @@
 using System.Reflection;
-using System.Windows.Media.Imaging;
 using Autodesk.Revit.UI;
 
 namespace Revit2026
 {
     /// <summary>
     /// Ponto de entrada do plugin — implementa IExternalApplication.
-    /// Registra aba, painel e botões na ribbon do Revit.
+    /// Registra aba "Hidráulica", painel "Automação" e botões na ribbon.
     /// </summary>
     public class App : IExternalApplication
     {
-        // ══════════════════════════════════════════════════════════
-        //  CONSTANTES
-        // ══════════════════════════════════════════════════════════
-
         private const string TAB_NAME = "Hidráulica";
-        private const string PANEL_AMBIENTES = "Ambientes";
-        private const string PANEL_PIPELINE = "Pipeline";
-
-        // ══════════════════════════════════════════════════════════
-        //  STARTUP
-        // ══════════════════════════════════════════════════════════
+        private const string PANEL_NAME = "Automação";
 
         public Result OnStartup(UIControlledApplication application)
         {
@@ -29,12 +19,21 @@ namespace Revit2026
                 // 1. Inicializar PluginCore
                 PluginCore.CoreBootstrap.Initialize();
 
-                // 2. Criar aba personalizada na ribbon
-                application.CreateRibbonTab(TAB_NAME);
+                // 2. Criar aba (ignora se já existir)
+                try
+                {
+                    application.CreateRibbonTab(TAB_NAME);
+                }
+                catch
+                {
+                    // Aba já existe — ok
+                }
 
-                // 3. Registrar painéis e botões
-                RegistrarPainelAmbientes(application);
-                RegistrarPainelPipeline(application);
+                // 3. Criar painel
+                var panel = application.CreateRibbonPanel(TAB_NAME, PANEL_NAME);
+
+                // 4. Registrar botões
+                RegistrarBotoes(panel);
 
                 return Result.Succeeded;
             }
@@ -45,10 +44,6 @@ namespace Revit2026
                 return Result.Failed;
             }
         }
-
-        // ══════════════════════════════════════════════════════════
-        //  SHUTDOWN
-        // ══════════════════════════════════════════════════════════
 
         public Result OnShutdown(UIControlledApplication application)
         {
@@ -63,19 +58,14 @@ namespace Revit2026
             }
         }
 
-        // ══════════════════════════════════════════════════════════
-        //  REGISTRO DE PAINÉIS
-        // ══════════════════════════════════════════════════════════
-
         /// <summary>
-        /// Painel "Ambientes" — botão de detecção e classificação.
+        /// Registra todos os botões no painel "Automação".
         /// </summary>
-        private void RegistrarPainelAmbientes(UIControlledApplication application)
+        private void RegistrarBotoes(RibbonPanel panel)
         {
-            var panel = application.CreateRibbonPanel(TAB_NAME, PANEL_AMBIENTES);
             var assemblyPath = Assembly.GetExecutingAssembly().Location;
 
-            // Botão: Detectar Ambientes
+            // ── Botão: Detectar Ambientes ──────────────────────
             var btnDetectar = new PushButtonData(
                 "DetectarAmbientes",
                 "Detectar\nAmbientes",
@@ -85,32 +75,26 @@ namespace Revit2026
                 ToolTip = "Detecta e classifica automaticamente os ambientes " +
                           "do modelo (Rooms → Spaces MEP).",
                 LongDescription = "Etapa 1 do fluxo hidráulico:\n" +
-                                  "• Lê todos os Rooms do modelo arquitetônico\n" +
-                                  "• Classifica cada ambiente (Banheiro, Cozinha, etc.)\n" +
+                                  "• Lê todos os Rooms do modelo\n" +
+                                  "• Classifica cada ambiente\n" +
                                   "• Cria Spaces MEP correspondentes\n" +
                                   "• Gera relatório com diagnóstico"
             };
 
             panel.AddItem(btnDetectar);
-        }
 
-        /// <summary>
-        /// Painel "Pipeline" — botão de execução do pipeline completo.
-        /// </summary>
-        private void RegistrarPainelPipeline(UIControlledApplication application)
-        {
-            var panel = application.CreateRibbonPanel(TAB_NAME, PANEL_PIPELINE);
-            var assemblyPath = Assembly.GetExecutingAssembly().Location;
+            // ── Separador ──────────────────────────────────────
+            panel.AddSeparator();
 
-            // Botão: Iniciar Pipeline
+            // ── Botão: Iniciar Pipeline ────────────────────────
             var btnPipeline = new PushButtonData(
                 "StartPipeline",
                 "Iniciar\nPipeline",
                 assemblyPath,
                 "Revit2026.Commands.StartPipelineCommand")
             {
-                ToolTip = "Abre a interface de automação e inicia o pipeline " +
-                          "completo do projeto hidráulico.",
+                ToolTip = "Abre a interface de automação e inicia o " +
+                          "pipeline completo do projeto hidráulico.",
                 LongDescription = "Pipeline completo:\n" +
                                   "• Detectar e classificar ambientes\n" +
                                   "• Inserir equipamentos\n" +
