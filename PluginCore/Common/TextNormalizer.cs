@@ -61,6 +61,31 @@ namespace PluginCore.Common
         }
 
         /// <summary>
+        /// Remove números no final da string (ex: "Banheiro 01" → "Banheiro").
+        /// Não remove números no meio do texto.
+        /// </summary>
+        public static string RemoveTrailingNumbers(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            // Remove espaços + dígitos apenas no final
+            var result = Regex.Replace(input, @"\s*\d+$", "").Trim();
+
+            return result.Length > 0 ? result : input.Trim();
+        }
+
+        /// <summary>
+        /// Normaliza para classificação: Normalize + remove números finais.
+        /// Ideal para o ClassificadorAmbientes.
+        /// </summary>
+        public static string NormalizeForClassification(string input)
+        {
+            var normalized = Normalize(input);
+            return RemoveTrailingNumbers(normalized);
+        }
+
+        /// <summary>
         /// Verifica se o texto normalizado contém a palavra-chave.
         /// </summary>
         public static bool Contains(string input, string keyword)
@@ -127,12 +152,13 @@ namespace PluginCore.Common
         }
 
         // Exemplos:
-        // TextNormalizer.Normalize("  Banheiro - Suíte  ")   → "banheiro suite"
-        // TextNormalizer.Normalize("Área de Serviço")        → "area de servico"
-        // TextNormalizer.Normalize("Cozinha (Principal)")    → "cozinha principal"
-        // TextNormalizer.Normalize("BWC")                    → "bwc"
-        // TextNormalizer.Contains("Banheiro - Social", "banheiro")  → true
-        // TextNormalizer.StartsWith("Cozinha Gourmet", "cozinha")   → true
-        // TextNormalizer.Similarity("Banhero", "Banheiro")          → 0.875
+        // TextNormalizer.Normalize("  Banheiro - Suíte  ")           → "banheiro suite"
+        // TextNormalizer.Normalize("Área de Serviço")                → "area de servico"
+        // TextNormalizer.RemoveTrailingNumbers("Banheiro 01")        → "Banheiro"
+        // TextNormalizer.RemoveTrailingNumbers("Quarto 3")            → "Quarto"
+        // TextNormalizer.RemoveTrailingNumbers("Sala 101 Norte")      → "Sala 101 Norte"
+        // TextNormalizer.NormalizeForClassification("Quarto - 02")   → "quarto"
+        // TextNormalizer.NormalizeForClassification("Cozinha")       → "cozinha"
+        // TextNormalizer.Similarity("Banhero", "Banheiro")           → 0.875
     }
 }
