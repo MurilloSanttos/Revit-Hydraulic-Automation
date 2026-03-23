@@ -1,0 +1,130 @@
+{
+  "version": "1.0.0",
+  "description": "Mapeamento de famílias Revit para tipos de equipamento do plugin hidráulico",
+  "familyMappings": [
+    {
+      "familyNameContains": "Toilet",
+      "equipmentType": "Toilet",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.30,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 20 },
+        "sanitary": { "count": 1, "nominalDiameter": 100 }
+      },
+      "requiredInRoomTypes": ["Bathroom", "MasterBathroom", "Lavatory"]
+    },
+    {
+      "familyNameContains": "Lavatory",
+      "equipmentType": "Sink",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.30,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 20 },
+        "hotWater": { "count": 1, "nominalDiameter": 20 },
+        "sanitary": { "count": 1, "nominalDiameter": 40 }
+      },
+      "requiredInRoomTypes": ["Bathroom", "MasterBathroom", "Lavatory"]
+    },
+    {
+      "familyNameContains": "Shower",
+      "equipmentType": "Shower",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.40,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 25 },
+        "hotWater": { "count": 1, "nominalDiameter": 25 },
+        "sanitary": { "count": 1, "nominalDiameter": 40 }
+      },
+      "requiredInRoomTypes": ["Bathroom", "MasterBathroom"]
+    },
+    {
+      "familyNameContains": "Bathtub",
+      "equipmentType": "Bathtub",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.30,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 25 },
+        "hotWater": { "count": 1, "nominalDiameter": 25 },
+        "sanitary": { "count": 1, "nominalDiameter": 40 }
+      },
+      "requiredInRoomTypes": ["MasterBathroom"]
+    },
+    {
+      "familyNameContains": "KitchenSink",
+      "equipmentType": "KitchenSink",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.70,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 25 },
+        "hotWater": { "count": 1, "nominalDiameter": 25 },
+        "sanitary": { "count": 1, "nominalDiameter": 50 }
+      },
+      "requiredInRoomTypes": ["Kitchen"]
+    },
+    {
+      "familyNameContains": "LaundryTub",
+      "equipmentType": "LaundryTub",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.70,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 25 },
+        "sanitary": { "count": 1, "nominalDiameter": 50 }
+      },
+      "requiredInRoomTypes": ["Laundry"]
+    },
+    {
+      "familyNameContains": "WashingMachine",
+      "equipmentType": "WashingMachine",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.30,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 25 },
+        "sanitary": { "count": 1, "nominalDiameter": 50 }
+      },
+      "requiredInRoomTypes": ["Laundry"]
+    },
+    {
+      "familyNameContains": "Dishwasher",
+      "equipmentType": "Dishwasher",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.30,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 20 },
+        "sanitary": { "count": 1, "nominalDiameter": 50 }
+      },
+      "requiredInRoomTypes": ["Kitchen"]
+    },
+    {
+      "familyNameContains": "FloorDrain",
+      "equipmentType": "FloorDrain",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.00,
+      "expectedConnectors": {
+        "sanitary": { "count": 1, "nominalDiameter": 75 }
+      },
+      "requiredInRoomTypes": ["Bathroom", "MasterBathroom", "Laundry"]
+    },
+    {
+      "familyNameContains": "Bidet",
+      "equipmentType": "Bidet",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.10,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 20 },
+        "sanitary": { "count": 1, "nominalDiameter": 40 }
+      },
+      "requiredInRoomTypes": ["MasterBathroom"]
+    },
+    {
+      "familyNameContains": "Urinal",
+      "equipmentType": "Urinal",
+      "category": "Plumbing Fixtures",
+      "weight_UHC": 0.15,
+      "expectedConnectors": {
+        "coldWater": { "count": 1, "nominalDiameter": 20 },
+        "sanitary": { "count": 1, "nominalDiameter": 75 }
+      },
+      "requiredInRoomTypes": ["Bathroom"]
+    }
+  ]
+}
