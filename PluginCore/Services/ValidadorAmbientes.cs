@@ -383,5 +383,183 @@ namespace PluginCore.Services
 
             return !_log.TemBloqueio;
         }
+
+        // ══════════════════════════════════════════════════════════
+        //  VALIDAÇÃO DE NOMES (público)
+        // ══════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Valida nomes dos ambientes: detecta nomes vazios, inválidos e genéricos.
+        /// </summary>
+        /// <returns>true se não há bloqueios, false se há erros críticos.</returns>
+        public bool ValidateNome(IEnumerable<AmbienteInfo> ambientes)
+        {
+            if (ambientes == null)
+                return true;
+
+            var lista = ambientes.ToList();
+            var vazios = 0;
+            var genericos = 0;
+            var validos = 0;
+
+            _log.Info(ETAPA, COMPONENTE,
+                $"Validando nomes de {lista.Count} ambientes.");
+
+            foreach (var ambiente in lista)
+            {
+                if (ambiente == null)
+                    continue;
+
+                // Caso 1: Nome vazio ou apenas espaços
+                if (string.IsNullOrWhiteSpace(ambiente.NomeOriginal))
+                {
+                    vazios++;
+                    _log.Critico(ETAPA, COMPONENTE,
+                        $"Ambiente com nome vazio ou inválido. " +
+                        $"Número: '{ambiente.Numero}', Nível: '{ambiente.Nivel}'. " +
+                        $"Defina um nome para o Room antes de prosseguir.",
+                        ambiente.ElementId);
+                    continue;
+                }
+
+                // Caso 2: Nome genérico (apenas números, "Room", etc.)
+                var normalized = ambiente.NomeOriginal.Trim();
+                if (IsNomeGenerico(normalized))
+                {
+                    genericos++;
+                    _log.Medio(ETAPA, COMPONENTE,
+                        $"Ambiente com nome genérico: '{normalized}' " +
+                        $"(#{ambiente.Numero}, Nível: '{ambiente.Nivel}'). " +
+                        $"Pode não ser classificado corretamente.",
+                        ambiente.ElementId);
+                    continue;
+                }
+
+                validos++;
+            }
+
+            // Resumo
+            _log.Info(ETAPA, COMPONENTE,
+                $"Validação de nomes: " +
+                $"{validos} válidos, " +
+                $"{genericos} genéricos, " +
+                $"{vazios} vazios.");
+
+            if (vazios > 0)
+            {
+                _log.Critico(ETAPA, COMPONENTE,
+                    $"{vazios} ambiente(s) sem nome definido. " +
+                    $"O classificador não conseguirá identificá-los.");
+            }
+
+            return !_log.TemBloqueio;
+        }
+
+        /// <summary>
+        /// Verifica se o nome é genérico (números, "Room", placeholders).
+        /// </summary>
+        private static bool IsNomeGenerico(string nome)
+        {
+            if (string.IsNullOrWhiteSpace(nome))
+                return true;
+
+            var lower = nome.Trim().ToLowerInvariant();
+
+            // Apenas números
+            if (lower.All(c => char.IsDigit(c) || c == ' '))
+                return true;
+
+            // Nomes genéricos conhecidos
+            var genericos = new HashSet<string>
+            {
+                "room", "space", "ambiente", "espaco",
+                "novo", "novo ambiente", "undefined",
+                "a definir", "sem nome", "???", "teste",
+                "temp", "temporario", "x", "xx", "xxx",
+            };
+
+            return genericos.Contains(lower);
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  VALIDAÇÃO DE COBERTURA MÍNIMA (público)
+        // ══════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Verifica presença mínima de ambientes essenciais (banheiro, cozinha).
+        /// </summary>
+        /// <returns>true se não há bloqueios, false se há erros críticos.</returns>
+        public bool ValidateCoberturaMinima(IEnumerable<AmbienteInfo> ambientes)
+        {
+            if (ambientes == null)
+                return true;
+
+            var lista = ambientes.ToList();
+
+            if (lista.Count == 0)
+            {
+                _log.Critico(ETAPA, COMPONENTE,
+                    "Nenhum ambiente fornecido para validação de cobertura.");
+                return false;
+            }
+
+            _log.Info(ETAPA, COMPONENTE,
+                $"Validando cobertura mínima de {lista.Count} ambientes.");
+
+            // ── Verificar banheiro / suíte / lavabo ────────────
+            var temBanheiro = lista.Any(a =>
+                a.Classificacao.Tipo is TipoAmbiente.Banheiro
+                                    or TipoAmbiente.Suite
+                                    or TipoAmbiente.Lavabo);
+
+            if (!temBanheiro)
+            {
+                _log.Critico(ETAPA, COMPONENTE,
+                    "Modelo não possui nenhum banheiro, suíte ou lavabo. " +
+                    "O pipeline hidráulico requer ao menos 1 ambiente sanitário.");
+            }
+
+            // ── Verificar cozinha ──────────────────────────────
+            var temCozinha = lista.Any(a =>
+                a.Classificacao.Tipo is TipoAmbiente.Cozinha
+                                    or TipoAmbiente.CozinhaGourmet);
+
+            if (!temCozinha)
+            {
+                _log.Medio(ETAPA, COMPONENTE,
+                    "Modelo não possui cozinha. " +
+                    "Verifique se os Rooms estão nomeados corretamente.");
+            }
+
+            // ── Resumo de cobertura ────────────────────────────
+            var relevantes = lista.Count(a => a.EhRelevante);
+            var total = lista.Count;
+            var taxa = total > 0 ? (double)relevantes / total : 0;
+
+            var porTipo = lista
+                .Where(a => a.EhRelevante)
+                .GroupBy(a => a.Classificacao.Tipo)
+                .OrderBy(g => g.Key)
+                .Select(g => $"{g.Key}: {g.Count()}")
+                .ToList();
+
+            _log.Info(ETAPA, COMPONENTE,
+                $"Cobertura: {relevantes}/{total} relevantes ({taxa:P0}). " +
+                $"Distribuição: {string.Join(", ", porTipo)}.");
+
+            if (taxa < 0.3)
+            {
+                _log.Critico(ETAPA, COMPONENTE,
+                    $"Cobertura muito baixa: apenas {taxa:P0} dos ambientes são relevantes. " +
+                    $"Verifique a nomenclatura dos Rooms.");
+            }
+            else if (taxa < 0.5)
+            {
+                _log.Medio(ETAPA, COMPONENTE,
+                    $"Cobertura abaixo do ideal: {taxa:P0} dos ambientes são relevantes.");
+            }
+
+            return !_log.TemBloqueio;
+        }
     }
 }
