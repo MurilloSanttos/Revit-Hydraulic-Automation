@@ -38,12 +38,25 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-  <!-- Copiar .addin para pasta de addins do Revit após build -->
-  <Target Name="CopyAddinToRevit" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+  <!-- Deploy: copiar .addin + DLLs para pasta do Revit após build -->
+  <Target Name="DeployToRevit" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+
+    <!-- 1. Copiar arquivo .addin para pasta raiz de Addins -->
     <Copy
       SourceFiles="$(ProjectDir)HidraulicaRevit.addin"
       DestinationFolder="$(AppData)\Autodesk\Revit\Addins\2026\"
       SkipUnchangedFiles="true" />
+
+    <!-- 2. Copiar DLLs para subpasta HidraulicaRevit -->
+    <ItemGroup>
+      <DeployFiles Include="$(OutputPath)**\*.*"
+                   Exclude="$(OutputPath)**\RevitAPI.dll;$(OutputPath)**\RevitAPIUI.dll" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(DeployFiles)"
+      DestinationFolder="$(AppData)\Autodesk\Revit\Addins\2026\HidraulicaRevit\%(RecursiveDir)"
+      SkipUnchangedFiles="true" />
+
   </Target>
 
 </Project>

@@ -108,7 +108,7 @@ namespace PluginCore.Pipeline
                     "Iniciando dimensionamento de água fria.");
 
                 var dimensionamento = new DimensionamentoService();
-                var perdaCarga = new PerdaCargaService(_log);
+                // PerdaCargaService é static — chamar diretamente
                 var trechoValidator = new TrechoValidator(_log);
                 var pontoValidator = new PontoValidator(_log);
                 var prumadaService = new PrumadaService(_log, dimensionamento);
