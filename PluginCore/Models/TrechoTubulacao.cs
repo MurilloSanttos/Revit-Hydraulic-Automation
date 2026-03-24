@@ -57,4 +57,10 @@ public class TrechoTubulacao
 
     /// <summary>Comprimento total (real + equivalente).</summary>
     public double ComprimentoTotal => Comprimento + ComprimentoEquivalente;
+
+    /// <summary>Se o trecho possui ponto de ventilação conectado.</summary>
+    public bool PossuiVentilacao { get; set; }
+
+    /// <summary>Diâmetro da ventilação conectada (mm).</summary>
+    public int DiametroVentilacao { get; set; }
 }
