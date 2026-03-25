@@ -63,9 +63,28 @@ namespace PluginCore.Models
         public PontoXYZ PontoCentral { get; set; } = new();
 
         /// <summary>
-        /// Lista de nomes dos equipamentos existentes no ambiente (modelados no Revit).
+        /// IDs das paredes que fazem fronteira com o ambiente.
+        /// Usados para posicionamento de equipamentos hidráulicos.
         /// </summary>
-        public List<string> EquipamentosExistentes { get; set; } = new();
+        public List<long> ParedesIds { get; set; } = new();
+
+        /// <summary>
+        /// IDs das portas pertencentes ao ambiente.
+        /// Usados como restrição de posicionamento (evitar bloqueio de passagem).
+        /// </summary>
+        public List<long> PortasIds { get; set; } = new();
+
+        /// <summary>
+        /// IDs das janelas pertencentes ao ambiente.
+        /// Usados como restrição de posicionamento.
+        /// </summary>
+        public List<long> JanelasIds { get; set; } = new();
+
+        /// <summary>
+        /// Equipamentos hidráulicos existentes no ambiente (modelados no Revit).
+        /// Preenchido pelo MEPFixtureReaderService.
+        /// </summary>
+        public List<EquipamentoHidraulico> EquipamentosExistentes { get; set; } = new();
 
         /// <summary>
         /// Indica se o ambiente possui relevância hidráulica.

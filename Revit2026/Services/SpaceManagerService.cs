@@ -1,17 +1,16 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using PluginCore.Interfaces;
-using PluginCore.Logging;
 using PluginCore.Models;
 
 namespace Revit2026.Services
 {
     /// <summary>
-    /// Serviço responsável pela criação e validação de Spaces MEP.
-    /// 
+    /// Serviço responsável pela leitura, correspondência e criação de MEP Spaces.
+    ///
     /// Fluxo:
-    /// 1. Lê Spaces existentes no modelo
-    /// 2. Compara com Rooms para encontrar correspondências
+    /// 1. Lê Spaces existentes no modelo com dados geométricos completos
+    /// 2. Compara com Rooms para encontrar correspondências por proximidade
     /// 3. Cria Spaces faltantes para Rooms relevantes
     /// 4. Valida a correspondência final
     /// </summary>
@@ -19,64 +18,158 @@ namespace Revit2026.Services
     {
         private readonly Document _doc;
         private readonly ILogService _log;
+
         private const string ETAPA = "01_Ambientes";
         private const string COMPONENTE = "SpaceManager";
+        private const string FILTRO = "FiltroSpace";
+        private const string GEOMETRIA = "GeometriaSpace";
 
-        private const double FEET_TO_METERS = 0.3048;
-        private const double SQFEET_TO_SQM = 0.3048 * 0.3048;
-
-        // Tolerância para considerar que Room e Space estão na mesma posição (em metros)
+        // Tolerância para considerar Room e Space na mesma posição (metros)
         private const double TOLERANCIA_POSICAO = 0.5;
+
+        // Área mínima em m² para considerar Space válido
+        private const double AREA_MINIMA_M2 = 0.1;
 
         public SpaceManagerService(Document doc, ILogService log)
         {
-            _doc = doc;
-            _log = log;
+            _doc = doc ?? throw new ArgumentNullException(nameof(doc));
+            _log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
-        /// <summary>
-        /// Lê todos os Spaces MEP existentes no modelo.
-        /// </summary>
-        public List<AmbienteInfo> LerTodosOsSpaces()
-        {
-            _log.Info(ETAPA, COMPONENTE, "Lendo Spaces MEP existentes...");
+        // ══════════════════════════════════════════════════════════
+        //  LEITURA DE SPACES
+        // ══════════════════════════════════════════════════════════
 
-            var collector = new FilteredElementCollector(_doc)
+        /// <summary>
+        /// Lê todos os MEP Spaces válidos do modelo.
+        /// Extrai área, perímetro (via boundary segments) e ponto central.
+        /// Filtra Spaces inválidos com logs estruturados.
+        /// </summary>
+        public List<AmbienteInfo> LerSpaces(Document doc)
+        {
+            if (doc == null) throw new ArgumentNullException(nameof(doc));
+
+            _log.Info(ETAPA, COMPONENTE, "Iniciando leitura de Spaces MEP...");
+
+            var collector = new FilteredElementCollector(doc)
                 .OfCategory(BuiltInCategory.OST_MEPSpaces)
                 .WhereElementIsNotElementType();
 
-            var spaces = new List<AmbienteInfo>();
+            var todosElementos = collector.ToList();
 
-            foreach (var element in collector)
+            _log.Info(ETAPA, COMPONENTE,
+                $"Collector retornou {todosElementos.Count} elementos MEPSpace.");
+
+            var spaces = new List<AmbienteInfo>();
+            int descartados = 0;
+            int semLocation = 0;
+            int semArea = 0;
+            int naoDelimitados = 0;
+
+            foreach (var element in todosElementos)
             {
                 if (element is not Space space)
                     continue;
 
-                if (space.Location == null || space.Area <= 0)
+                // ── Validações ────────────────────────────────
+                // V1: Sem localização
+                if (space.Location == null)
+                {
+                    semLocation++;
+                    descartados++;
+                    _log.Medio(ETAPA, FILTRO,
+                        $"Space descartado: sem localização. " +
+                        $"('{space.Name}' #{space.Number}, Id={space.Id.Value})",
+                        space.Id.Value);
                     continue;
+                }
 
-                var nivel = _doc.GetElement(space.LevelId) as Level;
+                // V2: Sem área
+                var areaM2 = ConverterArea(space.Area);
+                if (space.Area <= 0 || areaM2 < AREA_MINIMA_M2)
+                {
+                    semArea++;
+                    descartados++;
+                    _log.Medio(ETAPA, FILTRO,
+                        $"Space descartado: área zero ou insuficiente ({areaM2:F4} m²). " +
+                        $"('{space.Name}', Id={space.Id.Value})",
+                        space.Id.Value);
+                    continue;
+                }
 
+                // V3: Sem LevelId válido
+                var nivel = doc.GetElement(space.LevelId) as Level;
+                if (nivel == null)
+                {
+                    descartados++;
+                    _log.Medio(ETAPA, FILTRO,
+                        $"Space descartado: LevelId inválido. " +
+                        $"('{space.Name}', Id={space.Id.Value})",
+                        space.Id.Value);
+                    continue;
+                }
+
+                // ── Extrair geometria ─────────────────────────
+                var pontoCentral = ObterPontoCentral(space);
+                var perimetroM = CalcularPerimetro(space);
+
+                // V4: Verificar se delimitado
+                if (perimetroM <= 0)
+                {
+                    naoDelimitados++;
+                    _log.Leve(ETAPA, GEOMETRIA,
+                        $"Space '{space.Name}' sem boundary segments. " +
+                        $"Usando Perimeter property como fallback.",
+                        space.Id.Value);
+                    perimetroM = ConverterComprimento(space.Perimeter);
+                }
+
+                // ── Criar AmbienteInfo ────────────────────────
                 var ambiente = new AmbienteInfo
                 {
                     ElementId = space.Id.Value,
                     NomeOriginal = space.Name ?? string.Empty,
                     Numero = space.Number ?? string.Empty,
-                    Nivel = nivel?.Name ?? "Sem Nível",
-                    AreaM2 = space.Area * SQFEET_TO_SQM,
-                    PerimetroM = space.Perimeter * FEET_TO_METERS,
+                    Nivel = nivel.Name ?? "Sem Nível",
+                    AreaM2 = areaM2,
+                    PerimetroM = perimetroM,
                     TipoElemento = TipoElemento.Space,
-                    PontoCentral = ObterPontoCentral(space)
+                    PontoCentral = pontoCentral
                 };
 
                 spaces.Add(ambiente);
+
+                _log.Info(ETAPA, COMPONENTE,
+                    $"Space válido: '{space.Name}' (#{space.Number}) " +
+                    $"Id={space.Id.Value}, " +
+                    $"Area={areaM2:F2} m², " +
+                    $"Perímetro={perimetroM:F2} m, " +
+                    $"Centro=({pontoCentral.X:F3}, {pontoCentral.Y:F3}, {pontoCentral.Z:F3}) m, " +
+                    $"Nível='{nivel.Name}'");
             }
 
+            // ── Resumo ───────────────────────────────────────
             _log.Info(ETAPA, COMPONENTE,
-                $"{spaces.Count} Spaces MEP existentes encontrados.");
+                $"Leitura concluída: {spaces.Count} Spaces válidos, " +
+                $"{descartados} descartados " +
+                $"({semLocation} sem localização, " +
+                $"{semArea} sem área, " +
+                $"{naoDelimitados} não delimitados).");
 
             return spaces;
         }
+
+        /// <summary>
+        /// Sobrecarga que usa o documento do construtor.
+        /// </summary>
+        public List<AmbienteInfo> LerTodosOsSpaces()
+        {
+            return LerSpaces(_doc);
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  CORRESPONDÊNCIA ROOM ↔ SPACE
+        // ══════════════════════════════════════════════════════════
 
         /// <summary>
         /// Valida a correspondência entre Rooms e Spaces.
@@ -110,6 +203,10 @@ namespace Revit2026.Services
                     resultado.Correspondentes.Add((room, spaceMaisProximo.Space));
                     spacesUsados.Add(spaceMaisProximo.Space.ElementId);
                     room.SpaceIdCorrespondente = spaceMaisProximo.Space.ElementId;
+
+                    _log.Info(ETAPA, COMPONENTE,
+                        $"Match: Room '{room.NomeOriginal}' ↔ Space '{spaceMaisProximo.Space.NomeOriginal}' " +
+                        $"(dist={spaceMaisProximo.Distancia:F3} m)");
                 }
                 else
                 {
@@ -117,12 +214,12 @@ namespace Revit2026.Services
                 }
             }
 
-            // Spaces que não foram associados a nenhum Room
+            // Spaces não associados
             resultado.SpacesOrfaos = spaces
                 .Where(s => !spacesUsados.Contains(s.ElementId))
                 .ToList();
 
-            // Logs de resultado
+            // Logs
             _log.Info(ETAPA, COMPONENTE,
                 $"Correspondência: {resultado.Correspondentes.Count} pares, " +
                 $"{resultado.RoomsSemSpace.Count} Rooms sem Space, " +
@@ -145,6 +242,10 @@ namespace Revit2026.Services
             return resultado;
         }
 
+        // ══════════════════════════════════════════════════════════
+        //  CRIAÇÃO DE SPACES
+        // ══════════════════════════════════════════════════════════
+
         /// <summary>
         /// Cria Spaces MEP para Rooms que não possuem Space correspondente.
         /// IMPORTANTE: Deve ser executado dentro de uma Transaction.
@@ -156,16 +257,23 @@ namespace Revit2026.Services
 
             var spacesCriados = new List<AmbienteInfo>();
 
+            // Cache de Levels
+            var levelsPorNome = new FilteredElementCollector(_doc)
+                .OfClass(typeof(Level))
+                .Cast<Level>()
+                .ToDictionary(l => l.Name ?? "", l => l, StringComparer.OrdinalIgnoreCase);
+
             foreach (var room in roomsSemSpace)
             {
                 try
                 {
-                    var space = CriarSpaceParaRoom(room);
+                    var space = CriarSpaceParaRoom(room, levelsPorNome);
                     if (space != null)
                     {
                         spacesCriados.Add(space);
                         _log.Info(ETAPA, COMPONENTE,
-                            $"Space criado para Room '{room.NomeOriginal}' (#{room.Numero}).",
+                            $"Space criado para Room '{room.NomeOriginal}' " +
+                            $"(#{room.Numero}) → SpaceId={space.ElementId}.",
                             room.ElementId);
                     }
                 }
@@ -187,16 +295,10 @@ namespace Revit2026.Services
         /// <summary>
         /// Cria um Space MEP individual a partir de um Room.
         /// </summary>
-        private AmbienteInfo? CriarSpaceParaRoom(AmbienteInfo room)
+        private AmbienteInfo? CriarSpaceParaRoom(
+            AmbienteInfo room, Dictionary<string, Level> levelsPorNome)
         {
-            // Encontrar o Level correspondente
-            var levels = new FilteredElementCollector(_doc)
-                .OfClass(typeof(Level))
-                .Cast<Level>()
-                .ToList();
-
-            var level = levels.FirstOrDefault(l => l.Name == room.Nivel);
-            if (level == null)
+            if (!levelsPorNome.TryGetValue(room.Nivel, out var level))
             {
                 _log.Medio(ETAPA, COMPONENTE,
                     $"Nível '{room.Nivel}' não encontrado para criação de Space.",
@@ -204,15 +306,14 @@ namespace Revit2026.Services
                 return null;
             }
 
-            // Ponto de inserção (converter de volta para pés)
-            var pontoInsercao = new XYZ(
-                room.PontoCentral.X / FEET_TO_METERS,
-                room.PontoCentral.Y / FEET_TO_METERS,
-                room.PontoCentral.Z / FEET_TO_METERS
+            // Converter ponto de metros de volta para pés (unidade interna do Revit)
+            var pontoInsercao = new UV(
+                ConverterParaPes(room.PontoCentral.X),
+                ConverterParaPes(room.PontoCentral.Y)
             );
 
             // Criar o Space
-            var space = _doc.Create.NewSpace(level, new UV(pontoInsercao.X, pontoInsercao.Y));
+            var space = _doc.Create.NewSpace(level, pontoInsercao);
 
             if (space == null)
             {
@@ -226,25 +327,144 @@ namespace Revit2026.Services
             space.Name = room.NomeOriginal;
             space.Number = room.Numero;
 
-            // Criar AmbienteInfo para o Space criado
+            // Criar AmbienteInfo do Space criado
             var spaceInfo = new AmbienteInfo
             {
                 ElementId = space.Id.Value,
                 NomeOriginal = space.Name,
                 Numero = space.Number,
                 Nivel = room.Nivel,
-                AreaM2 = space.Area * SQFEET_TO_SQM,
-                PerimetroM = space.Perimeter * FEET_TO_METERS,
+                AreaM2 = ConverterArea(space.Area),
+                PerimetroM = ConverterComprimento(space.Perimeter),
                 TipoElemento = TipoElemento.Space,
                 SpaceCriadoAutomaticamente = true,
                 PontoCentral = room.PontoCentral
             };
 
-            // Atualizar o Room original com o ID do Space
+            // Atualizar o Room original
             room.SpaceIdCorrespondente = space.Id.Value;
             room.SpaceCriadoAutomaticamente = true;
 
             return spaceInfo;
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  GEOMETRIA
+        // ══════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Obtém o ponto central de um Space.
+        /// Estratégia 1: LocationPoint. Estratégia 2: BoundingBox.
+        /// Fallback: (0,0,0) com log Critico.
+        /// </summary>
+        private PontoXYZ ObterPontoCentral(Space space)
+        {
+            // Estratégia 1: LocationPoint
+            try
+            {
+                if (space.Location is LocationPoint locationPoint)
+                    return ConverterPonto(locationPoint.Point);
+            }
+            catch (Exception ex)
+            {
+                _log.Leve(ETAPA, GEOMETRIA,
+                    $"Erro ao obter LocationPoint do Space '{space.Name}': {ex.Message}",
+                    space.Id.Value);
+            }
+
+            // Estratégia 2: BoundingBox centroide
+            try
+            {
+                var bbox = space.get_BoundingBox(null);
+                if (bbox != null)
+                {
+                    var centroide = (bbox.Min + bbox.Max) / 2.0;
+                    _log.Leve(ETAPA, GEOMETRIA,
+                        $"Ponto central via BoundingBox (fallback): Space '{space.Name}'.",
+                        space.Id.Value);
+                    return ConverterPonto(centroide);
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Leve(ETAPA, GEOMETRIA,
+                    $"Erro ao obter BoundingBox do Space '{space.Name}': {ex.Message}",
+                    space.Id.Value);
+            }
+
+            // Fallback
+            _log.Critico(ETAPA, GEOMETRIA,
+                $"Não foi possível obter ponto central do Space '{space.Name}' " +
+                $"(Id={space.Id.Value}). Usando (0,0,0).",
+                space.Id.Value);
+
+            return new PontoXYZ();
+        }
+
+        /// <summary>
+        /// Calcula o perímetro real do Space via BoundarySegments.
+        /// Soma os comprimentos de todos os segmentos de todos os loops.
+        /// Retorna 0 se não houver boundary segments.
+        /// </summary>
+        private double CalcularPerimetro(Space space)
+        {
+            try
+            {
+                var boundaries = space.GetBoundarySegments(
+                    new SpatialElementBoundaryOptions());
+
+                if (boundaries == null || boundaries.Count == 0)
+                    return 0;
+
+                double perimetroInterno = 0;
+
+                foreach (var loop in boundaries)
+                {
+                    foreach (var segment in loop)
+                    {
+                        var curve = segment.GetCurve();
+                        if (curve != null)
+                            perimetroInterno += curve.Length;
+                    }
+                }
+
+                return ConverterComprimento(perimetroInterno);
+            }
+            catch (Exception ex)
+            {
+                _log.Leve(ETAPA, GEOMETRIA,
+                    $"Erro ao calcular perímetro do Space '{space.Name}': {ex.Message}",
+                    space.Id.Value);
+                return 0;
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  CONVERSÃO DE UNIDADES
+        // ══════════════════════════════════════════════════════════
+
+        private static double ConverterArea(double areaInterna)
+        {
+            return UnitUtils.ConvertFromInternalUnits(areaInterna, UnitTypeId.SquareMeters);
+        }
+
+        private static double ConverterComprimento(double comprimentoInterno)
+        {
+            return UnitUtils.ConvertFromInternalUnits(comprimentoInterno, UnitTypeId.Meters);
+        }
+
+        private static double ConverterParaPes(double metros)
+        {
+            return UnitUtils.ConvertToInternalUnits(metros, UnitTypeId.Meters);
+        }
+
+        private static PontoXYZ ConverterPonto(XYZ point)
+        {
+            return new PontoXYZ(
+                UnitUtils.ConvertFromInternalUnits(point.X, UnitTypeId.Meters),
+                UnitUtils.ConvertFromInternalUnits(point.Y, UnitTypeId.Meters),
+                UnitUtils.ConvertFromInternalUnits(point.Z, UnitTypeId.Meters)
+            );
         }
 
         /// <summary>
@@ -255,31 +475,6 @@ namespace Revit2026.Services
             var dx = a.X - b.X;
             var dy = a.Y - b.Y;
             return Math.Sqrt(dx * dx + dy * dy);
-        }
-
-        /// <summary>
-        /// Obtém o ponto central de um Space.
-        /// </summary>
-        private PontoXYZ ObterPontoCentral(Space space)
-        {
-            try
-            {
-                if (space.Location is LocationPoint locationPoint)
-                {
-                    var point = locationPoint.Point;
-                    return new PontoXYZ(
-                        point.X * FEET_TO_METERS,
-                        point.Y * FEET_TO_METERS,
-                        point.Z * FEET_TO_METERS
-                    );
-                }
-            }
-            catch
-            {
-                // Silencioso — ponto padrão será usado
-            }
-
-            return new PontoXYZ();
         }
     }
 }

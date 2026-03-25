@@ -21,18 +21,51 @@ namespace PluginCore.Services
         /// Dicionário interno de padrões: chave normalizada → tipo de ambiente.
         /// Organizado por prioridade (padrões mais específicos primeiro).
         /// </summary>
+        // ══════════════════════════════════════════════════════════
+        //  EXCLUSÕES — termos que NÃO são ambientes hidráulicos
+        // ══════════════════════════════════════════════════════════
+
+        private static readonly HashSet<string> _exclusoes = new()
+        {
+            // Salas
+            "sala", "sala de estar", "sala de jantar", "sala de tv",
+            "sala intima", "living", "estar", "jantar",
+
+            // Quartos
+            "dormitorio", "quarto", "quarto de casal", "quarto solteiro",
+
+            // Circulação
+            "circulacao", "corredor", "hall", "escada", "elevador",
+            "circulacao descoberta",
+
+            // Garagem
+            "garagem", "garagem descoberta", "estacionamento", "vaga",
+
+            // Cobertura
+            "cobertura", "telhado", "laje",
+
+            // Outros não-hidráulicos
+            "deposito", "escritorio", "home office", "closet",
+            "roupeiro", "despensa", "adega",
+        };
+
+        /// <summary>
+        /// Dicionário interno de padrões: chave normalizada → tipo de ambiente.
+        /// Organizado por prioridade (padrões mais específicos primeiro).
+        /// </summary>
         private static readonly List<(string Padrao, TipoAmbiente Tipo, double PesoBase)> _padroes = new()
         {
             // === Cozinha Gourmet (mais específico, antes de "cozinha") ===
             ("cozinha gourmet", TipoAmbiente.CozinhaGourmet, 1.0),
             ("coz gourmet", TipoAmbiente.CozinhaGourmet, 1.0),
             ("coz. gourmet", TipoAmbiente.CozinhaGourmet, 1.0),
-            ("espaco gourmet", TipoAmbiente.CozinhaGourmet, 0.9),
+            ("espaco gourmet", TipoAmbiente.CozinhaGourmet, 0.95),
+            ("area gourmet", TipoAmbiente.CozinhaGourmet, 0.95),
             ("gourmet", TipoAmbiente.CozinhaGourmet, 0.75),
 
             // === Suíte (antes de "banheiro" para capturar "banheiro suíte") ===
             ("suite", TipoAmbiente.Suite, 1.0),
-            ("ste", TipoAmbiente.Suite, 0.85),
+            ("suíte", TipoAmbiente.Suite, 1.0),
             ("banheiro suite", TipoAmbiente.Suite, 1.0),
             ("banho suite", TipoAmbiente.Suite, 1.0),
             ("wc suite", TipoAmbiente.Suite, 1.0),
@@ -40,7 +73,6 @@ namespace PluginCore.Services
 
             // === Lavabo (antes de "banheiro") ===
             ("lavabo", TipoAmbiente.Lavabo, 1.0),
-            ("lav", TipoAmbiente.Lavabo, 0.7),
             ("toilette", TipoAmbiente.Lavabo, 0.95),
             ("toilet", TipoAmbiente.Lavabo, 0.9),
 
@@ -65,7 +97,6 @@ namespace PluginCore.Services
             ("area servico", TipoAmbiente.AreaDeServico, 0.95),
             ("a.s.", TipoAmbiente.AreaDeServico, 0.85),
             ("a.s", TipoAmbiente.AreaDeServico, 0.85),
-            ("servico", TipoAmbiente.AreaDeServico, 0.6),
 
             // === Cozinha (genérica) ===
             ("cozinha", TipoAmbiente.Cozinha, 1.0),
@@ -76,6 +107,7 @@ namespace PluginCore.Services
 
             // === Área Externa ===
             ("area externa", TipoAmbiente.AreaExterna, 1.0),
+            ("area coberta", TipoAmbiente.AreaExterna, 0.7),
             ("quintal", TipoAmbiente.AreaExterna, 1.0),
             ("jardim", TipoAmbiente.AreaExterna, 0.9),
             ("terraco", TipoAmbiente.AreaExterna, 0.85),
@@ -104,6 +136,19 @@ namespace PluginCore.Services
             }
 
             var textoNormalizado = Normalizar(nomeAmbiente);
+
+            // Verificar exclusões PRIMEIRO — se contém termo excluído, não é hidráulico
+            if (EhExcluido(textoNormalizado))
+            {
+                return new ResultadoClassificacao
+                {
+                    Tipo = TipoAmbiente.NaoIdentificado,
+                    Confianca = 1.0,
+                    PadraoUtilizado = $"exclusao:{textoNormalizado}"
+                };
+            }
+
+            // textoNormalizado já calculado acima
 
             // Estratégia 1: Match exato
             foreach (var (padrao, tipo, pesoBase) in _padroes)
@@ -141,13 +186,15 @@ namespace PluginCore.Services
                 return melhorResultado;
 
             // Estratégia 3: Padrão contido no texto com palavras parciais
+            // Requer match completo de palavras (não substring)
             foreach (var (padrao, tipo, pesoBase) in _padroes)
             {
                 var palavrasPadrao = padrao.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 var palavrasTexto = textoNormalizado.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
+                // Exigir match EXATO de palavra (não parcial)
                 var matches = palavrasPadrao.Count(pp =>
-                    palavrasTexto.Any(pt => pt.Contains(pp) || pp.Contains(pt)));
+                    palavrasTexto.Any(pt => pt == pp));
 
                 if (matches > 0)
                 {
@@ -226,6 +273,26 @@ namespace PluginCore.Services
             }
 
             return sb.ToString().Normalize(NormalizationForm.FormC);
+        }
+
+        /// <summary>
+        /// Verifica se o texto normalizado corresponde a um ambiente excluído.
+        /// </summary>
+        private static bool EhExcluido(string textoNormalizado)
+        {
+            // Match exato
+            if (_exclusoes.Contains(textoNormalizado))
+                return true;
+
+            // Texto começa com termo excluído (ex: "sala de estar grande")
+            foreach (var exclusao in _exclusoes)
+            {
+                if (textoNormalizado.StartsWith(exclusao + " ") ||
+                    textoNormalizado == exclusao)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

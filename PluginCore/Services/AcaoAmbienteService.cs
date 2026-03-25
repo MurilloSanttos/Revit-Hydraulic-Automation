@@ -127,7 +127,7 @@ namespace PluginCore.Services
                 return acoes;
 
             var existentesNorm = ambiente.EquipamentosExistentes
-                .Select(e => e.Trim().ToLowerInvariant())
+                .Select(e => e.FamilyName.Trim().ToLowerInvariant())
                 .ToHashSet();
 
             var nomesEsperadosNorm = esperados
@@ -168,14 +168,14 @@ namespace PluginCore.Services
             // ── Equipamentos extras ──────────────────────────
             foreach (var existente in ambiente.EquipamentosExistentes)
             {
-                var existenteNorm = existente.Trim().ToLowerInvariant();
+                var existenteNorm = existente.FamilyName.Trim().ToLowerInvariant();
 
                 if (!nomesEsperadosNorm.Contains(existenteNorm))
                 {
                     acoes.Add(CriarAcao(ambiente, TipoAcao.Ajustar,
                         PrioridadeAcao.Media,
-                        $"Verificar equipamento não esperado: {existente}",
-                        existente, "Equipamento"));
+                        $"Verificar equipamento não esperado: {existente.FamilyName}",
+                        existente.FamilyName, "Equipamento"));
                 }
             }
 

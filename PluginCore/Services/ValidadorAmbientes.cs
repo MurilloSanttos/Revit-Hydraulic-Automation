@@ -652,7 +652,7 @@ namespace PluginCore.Services
 
                 // Normalizar existentes
                 var existentesNorm = ambiente.EquipamentosExistentes
-                    .Select(e => e.Trim().ToLowerInvariant())
+                    .Select(e => e.FamilyName.Trim().ToLowerInvariant())
                     .ToHashSet();
 
                 // Normalizar esperados
