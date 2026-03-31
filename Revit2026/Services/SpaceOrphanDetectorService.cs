@@ -365,7 +365,7 @@ namespace Revit2026.Services
 
                 _log.Critico(ETAPA, COMPONENTE,
                     $"Transaction de remoção falhou: {ex.Message}",
-                    stackTrace: ex.StackTrace);
+                    detalhes: ex.StackTrace);
 
                 return 0;
             }

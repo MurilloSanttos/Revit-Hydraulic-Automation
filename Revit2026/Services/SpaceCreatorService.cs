@@ -151,7 +151,7 @@ namespace Revit2026.Services
 
                 log.Critico(ETAPA, COMPONENTE,
                     $"Transaction falhou: {ex.Message}",
-                    stackTrace: ex.StackTrace);
+                    detalhes: ex.StackTrace);
             }
 
             log.Info(ETAPA, COMPONENTE,
@@ -258,7 +258,7 @@ namespace Revit2026.Services
 
                 _log.Critico(ETAPA, COMPONENTE,
                     $"Transaction falhou: {ex.Message}",
-                    stackTrace: ex.StackTrace);
+                    detalhes: ex.StackTrace);
 
                 return new ResultadoCriacaoSpaces
                 {

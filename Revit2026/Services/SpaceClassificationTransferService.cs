@@ -155,7 +155,7 @@ namespace Revit2026.Services
 
                 log.Critico(ETAPA, COMPONENTE,
                     $"Transaction de transferência falhou: {ex.Message}",
-                    stackTrace: ex.StackTrace);
+                    detalhes: ex.StackTrace);
 
                 resultado.Falhas++;
                 resultado.Erros.Add($"Transaction: {ex.Message}");
