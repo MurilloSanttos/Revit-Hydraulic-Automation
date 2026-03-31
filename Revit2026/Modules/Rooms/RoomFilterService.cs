@@ -83,7 +83,7 @@ namespace Revit2026.Modules.Rooms
     public class FilterDiscardEntry
     {
         [JsonPropertyName("elementId")]
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = "";
@@ -104,7 +104,7 @@ namespace Revit2026.Modules.Rooms
         public string ReasonCode { get; set; } = "";
 
         [JsonPropertyName("duplicateOfId")]
-        public int? DuplicateOfId { get; set; }
+        public long? DuplicateOfId { get; set; }
 
         [JsonPropertyName("distanceM")]
         public double? DistanceM { get; set; }
@@ -154,7 +154,7 @@ namespace Revit2026.Modules.Rooms
 
         // ── Accessors ──
 
-        public ValidRoom? GetById(int elementId) =>
+        public ValidRoom? GetById(long elementId) =>
             ValidRooms.FirstOrDefault(r => r.ElementId == elementId);
 
         public List<ValidRoom> GetByLevel(string levelName) =>
@@ -423,7 +423,7 @@ namespace Revit2026.Modules.Rooms
             RoomFilterResult result)
         {
             var unicos = new List<ValidRoom>();
-            var processados = new HashSet<int>();
+            var processados = new HashSet<long>();
 
             // Agrupar por Level — duplicatas só existem no mesmo nível
             var porLevel = candidatos

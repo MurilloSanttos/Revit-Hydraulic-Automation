@@ -30,7 +30,7 @@ namespace Revit2026.Modules.UnMEP
     public class PipeSnapshot
     {
         [JsonPropertyName("elementId")]
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
 
         [JsonPropertyName("startPoint")]
         public double[] StartPoint { get; set; } = Array.Empty<double>();
@@ -45,13 +45,13 @@ namespace Revit2026.Modules.UnMEP
         public double SlopePercent { get; set; }
 
         [JsonPropertyName("levelId")]
-        public int LevelId { get; set; }
+        public long LevelId { get; set; }
 
         [JsonPropertyName("systemName")]
         public string SystemName { get; set; } = "";
 
         [JsonPropertyName("connectedIds")]
-        public List<int> ConnectedIds { get; set; } = new();
+        public List<long> ConnectedIds { get; set; } = new();
 
         [JsonPropertyName("capturedAt")]
         public DateTime CapturedAt { get; set; } = DateTime.UtcNow;
@@ -67,7 +67,7 @@ namespace Revit2026.Modules.UnMEP
         public string AdjustmentId { get; set; } = Guid.NewGuid().ToString("N")[..8];
 
         [JsonPropertyName("elementId")]
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
 
         [JsonPropertyName("type")]
         public string Type { get; set; } = "";
@@ -107,42 +107,42 @@ namespace Revit2026.Modules.UnMEP
 
     public class MoveEndpointParams
     {
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
         public int EndpointIndex { get; set; } // 0 = start, 1 = end
         public XYZ NewPosition { get; set; } = XYZ.Zero;
     }
 
     public class ChangeHeightParams
     {
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
         public double NewHeightM { get; set; }
         public bool MaintainSlope { get; set; } = true;
     }
 
     public class ChangeSlopeParams
     {
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
         public double NewSlopePercent { get; set; }
         public int AnchorEnd { get; set; } // 0 = fixar start, 1 = fixar end
     }
 
     public class ChangeOffsetParams
     {
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
         public double OffsetXM { get; set; }
         public double OffsetYM { get; set; }
     }
 
     public class ChangeDiameterParams
     {
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
         public double NewDiameterMm { get; set; }
     }
 
     public class ReconnectParams
     {
-        public int ElementId { get; set; }
-        public int TargetElementId { get; set; }
+        public long ElementId { get; set; }
+        public long TargetElementId { get; set; }
         public int ConnectorIndex { get; set; } // qual conector do pipe
     }
 
@@ -177,7 +177,7 @@ namespace Revit2026.Modules.UnMEP
         public List<RouteAdjustment> Adjustments { get; set; } = new();
 
         [JsonPropertyName("disconnectedElements")]
-        public List<int> DisconnectedElements { get; set; } = new();
+        public List<long> DisconnectedElements { get; set; } = new();
 
         [JsonPropertyName("executionTimeMs")]
         public long ExecutionTimeMs { get; set; }
@@ -878,7 +878,7 @@ namespace Revit2026.Modules.UnMEP
         {
             var snapshot = new PipeSnapshot
             {
-                ElementId = pipe.Id.IntegerValue,
+                ElementId = pipe.Id.Value,
                 CapturedAt = DateTime.UtcNow
             };
 
@@ -905,7 +905,7 @@ namespace Revit2026.Modules.UnMEP
             // Level
             var levelParam = pipe.get_Parameter(
                 BuiltInParameter.RBS_START_LEVEL_PARAM);
-            snapshot.LevelId = levelParam?.AsElementId().IntegerValue ?? -1;
+            snapshot.LevelId = levelParam?.AsElementId().Value ?? -1;
 
             // Sistema
             var sysParam = pipe.get_Parameter(
@@ -926,7 +926,7 @@ namespace Revit2026.Modules.UnMEP
                     {
                         if (other.Owner.Id != pipe.Id)
                             snapshot.ConnectedIds.Add(
-                                other.Owner.Id.IntegerValue);
+                                other.Owner.Id.Value);
                     }
                 }
             }
@@ -990,7 +990,7 @@ namespace Revit2026.Modules.UnMEP
             try
             {
                 var valResult = _validator.ValidarRotasPorIds(
-                    doc, new List<int> { adj.ElementId });
+                    doc, new List<long> { adj.ElementId });
 
                 var item = valResult.Items.FirstOrDefault();
                 if (item != null)
@@ -1010,7 +1010,7 @@ namespace Revit2026.Modules.UnMEP
         }
 
         private RouteAdjustment CriarAjuste(
-            int elementId, AdjustmentType type)
+            long elementId, AdjustmentType type)
         {
             return new RouteAdjustment
             {

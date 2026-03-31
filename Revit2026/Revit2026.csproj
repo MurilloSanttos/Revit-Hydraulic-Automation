@@ -39,6 +39,26 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
   </ItemGroup>
 
+  <!-- Dynamo SDK — DLLs carregadas pelo Revit em runtime -->
+  <ItemGroup>
+    <Reference Include="DynamoCore">
+      <HintPath>C:\Program Files\Autodesk\Revit 2026\AddIns\DynamoForRevit\DynamoCore.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="DynamoCoreWpf">
+      <HintPath>C:\Program Files\Autodesk\Revit 2026\AddIns\DynamoForRevit\DynamoCoreWpf.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="DynamoServices">
+      <HintPath>C:\Program Files\Autodesk\Revit 2026\AddIns\DynamoForRevit\DynamoServices.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="DynamoUtilities">
+      <HintPath>C:\Program Files\Autodesk\Revit 2026\AddIns\DynamoForRevit\DynamoUtilities.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
   <!-- Deploy: copiar .addin + DLLs para pasta do Revit após build -->
   <Target Name="DeployToRevit" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
 

@@ -147,10 +147,10 @@ namespace Revit2026.Modules.UnMEP
         public int UhcTotal { get; set; }
 
         [JsonPropertyName("pipesCreated")]
-        public List<int> PipesCreated { get; set; } = new();
+        public List<long> PipesCreated { get; set; } = new();
 
         [JsonPropertyName("fittingsCreated")]
-        public List<int> FittingsCreated { get; set; } = new();
+        public List<long> FittingsCreated { get; set; } = new();
 
         [JsonPropertyName("trechosGerados")]
         public int TrechosGerados { get; set; }
@@ -183,7 +183,7 @@ namespace Revit2026.Modules.UnMEP
     public class SlopeDetail
     {
         [JsonPropertyName("pipeId")]
-        public int PipeId { get; set; }
+        public long PipeId { get; set; }
 
         [JsonPropertyName("diameterMm")]
         public double DiameterMm { get; set; }
@@ -541,7 +541,7 @@ namespace Revit2026.Modules.UnMEP
                                     result.FixturesFailed++;
                                     result.ManualReview.Add(new ManualReviewItem
                                     {
-                                        FixtureId = fixture.Id.IntegerValue,
+                                        FixtureId = fixture.Id.Value,
                                         FixtureName =
                                             $"{fixture.FamilyName}: {fixture.TypeName}",
                                         Reason =
@@ -860,13 +860,13 @@ namespace Revit2026.Modules.UnMEP
                 if (paramSlope != null && !paramSlope.IsReadOnly)
                     paramSlope.Set(slopeFraction);
 
-                result.PipesCreated.Add(pipe.Id.IntegerValue);
+                result.PipesCreated.Add(pipe.Id.Value);
 
                 // Registrar detalhes do slope
                 var lenM = dist * 0.3048;
                 result.SlopeDetails.Add(new SlopeDetail
                 {
-                    PipeId = pipe.Id.IntegerValue,
+                    PipeId = pipe.Id.Value,
                     DiameterMm = diamMm,
                     SlopePercent = slopePercent,
                     LengthM = Math.Round(lenM, 4),
@@ -884,7 +884,7 @@ namespace Revit2026.Modules.UnMEP
             {
                 result.Errors.Add(new RoutingError
                 {
-                    ElementId = fixture.Id.IntegerValue,
+                    ElementId = fixture.Id.Value,
                     Stage = "RotearFixtureEsgoto",
                     Message = ex.Message
                 });
@@ -962,11 +962,11 @@ namespace Revit2026.Modules.UnMEP
                 if (paramSlope != null && !paramSlope.IsReadOnly)
                     paramSlope.Set(slopeFraction);
 
-                result.PipesCreated.Add(subPipe.Id.IntegerValue);
+                result.PipesCreated.Add(subPipe.Id.Value);
 
                 result.SlopeDetails.Add(new SlopeDetail
                 {
-                    PipeId = subPipe.Id.IntegerValue,
+                    PipeId = subPipe.Id.Value,
                     DiameterMm = subDiamMm,
                     SlopePercent = slopePercent,
                     LengthM = Math.Round(totalLen * 0.3048, 4),
@@ -1047,8 +1047,7 @@ namespace Revit2026.Modules.UnMEP
                         {
                             var pst = c.PipeSystemType;
                             if (pst == PipeSystemType.Sanitary ||
-                                pst == PipeSystemType.OtherPipe ||
-                                pst == PipeSystemType.Undefined)
+                                pst == PipeSystemType.OtherPipe)
                             {
                                 info.HasDrainConnector = true;
                                 info.DrainConnector = c;
@@ -1148,7 +1147,7 @@ namespace Revit2026.Modules.UnMEP
 
         private static int ConectarTrechosAdjacentes(
             Document doc,
-            List<int> pipeIds,
+            List<long> pipeIds,
             double toleranceMm)
         {
             var toleranceFt = toleranceMm / 304.8;

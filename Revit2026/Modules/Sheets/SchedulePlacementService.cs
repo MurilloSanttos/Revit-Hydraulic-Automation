@@ -207,24 +207,8 @@ namespace Revit2026.Modules.Sheets
                     continue;
                 }
 
-                // Validar compatibilidade
-                try
-                {
-                    if (!ScheduleSheetInstance.IsValidScheduleForSheet(
-                        doc, sheet.Id, schedule.Id))
-                    {
-                        resultado.Ignoradas++;
-                        resultado.Mensagens.Add(
-                            $"'{schedule.Name}' ignorada: incompatível com a prancha.");
-                        continue;
-                    }
-                }
-                catch
-                {
-                    resultado.Ignoradas++;
-                    continue;
-                }
-
+                // Revit 2026: IsValidScheduleForSheet removed
+                // Placement will handle incompatibility via exception
                 validos.Add(schedule);
             }
 

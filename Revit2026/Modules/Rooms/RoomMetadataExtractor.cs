@@ -14,7 +14,7 @@ namespace Revit2026.Modules.Rooms
         // ── Identificação ──
 
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = "";
@@ -28,7 +28,7 @@ namespace Revit2026.Modules.Rooms
         public string Level { get; set; } = "";
 
         [JsonPropertyName("levelId")]
-        public int LevelId { get; set; }
+        public long LevelId { get; set; }
 
         [JsonPropertyName("levelElevationM")]
         public double LevelElevationM { get; set; }
@@ -86,7 +86,7 @@ namespace Revit2026.Modules.Rooms
         // ── Adjacências ──
 
         [JsonPropertyName("adjacentRoomIds")]
-        public List<int> AdjacentRoomIds { get; set; } = new();
+        public List<long> AdjacentRoomIds { get; set; } = new();
 
         [JsonPropertyName("adjacentRoomNames")]
         public List<string> AdjacentRoomNames { get; set; } = new();
@@ -133,7 +133,7 @@ namespace Revit2026.Modules.Rooms
     public class WallData
     {
         [JsonPropertyName("wallId")]
-        public int WallId { get; set; }
+        public long WallId { get; set; }
 
         [JsonPropertyName("wallName")]
         public string WallName { get; set; } = "";
@@ -151,7 +151,7 @@ namespace Revit2026.Modules.Rooms
     public class FixtureData
     {
         [JsonPropertyName("fixtureId")]
-        public int FixtureId { get; set; }
+        public long FixtureId { get; set; }
 
         [JsonPropertyName("familyName")]
         public string FamilyName { get; set; } = "";
@@ -201,7 +201,7 @@ namespace Revit2026.Modules.Rooms
 
         // ── Accessors ──
 
-        public RoomMetadata? GetById(int id) =>
+        public RoomMetadata? GetById(long id) =>
             Rooms.FirstOrDefault(r => r.Id == id);
 
         public RoomMetadata? GetByName(string name) =>
@@ -229,7 +229,7 @@ namespace Revit2026.Modules.Rooms
     public class ExtractionError
     {
         [JsonPropertyName("roomId")]
-        public int RoomId { get; set; }
+        public long RoomId { get; set; }
 
         [JsonPropertyName("roomName")]
         public string RoomName { get; set; } = "";
@@ -331,7 +331,7 @@ namespace Revit2026.Modules.Rooms
                     {
                         result.Errors.Add(new ExtractionError
                         {
-                            RoomId = vr.ElementId,
+                            RoomId = (long)vr.ElementId,
                             RoomName = vr.Name,
                             Field = "Element",
                             Message = "Room não encontrado no modelo"
@@ -347,7 +347,7 @@ namespace Revit2026.Modules.Rooms
                 {
                     result.Errors.Add(new ExtractionError
                     {
-                        RoomId = vr.ElementId,
+                        RoomId = (long)vr.ElementId,
                         RoomName = vr.Name,
                         Field = "Global",
                         Message = ex.Message
@@ -394,12 +394,12 @@ namespace Revit2026.Modules.Rooms
             Document doc,
             Room room,
             ValidRoom vr,
-            Dictionary<int, List<FamilyInstance>> fixturesByRoom,
+            Dictionary<long, List<FamilyInstance>> fixturesByRoom,
             List<ExtractionError> errors)
         {
             var meta = new RoomMetadata
             {
-                Id = room.Id.IntegerValue,
+                Id = room.Id.Value,
                 RevitRoom = room
             };
 
@@ -410,7 +410,7 @@ namespace Revit2026.Modules.Rooms
             // ── 2. Level ──
             var level = doc.GetElement(room.LevelId) as Level;
             meta.Level = level?.Name ?? "";
-            meta.LevelId = room.LevelId.IntegerValue;
+            meta.LevelId = (long)room.LevelId.Value;
             meta.LevelElevationM = Round(
                 (level?.Elevation ?? 0) * FtToM);
 
@@ -492,7 +492,7 @@ namespace Revit2026.Modules.Rooms
                     return;
 
                 meta.BoundaryLoopCount = loops.Count;
-                var wallIds = new HashSet<int>();
+                var wallIds = new HashSet<long>();
                 int segCount = 0;
 
                 foreach (var loop in loops)
@@ -508,10 +508,10 @@ namespace Revit2026.Modules.Rooms
                         var elem = doc.GetElement(elemId);
                         if (elem is not Wall wall) continue;
 
-                        if (wallIds.Contains(wall.Id.IntegerValue))
+                        if (wallIds.Contains((long)wall.Id.Value))
                             continue;
 
-                        wallIds.Add(wall.Id.IntegerValue);
+                        wallIds.Add((long)wall.Id.Value);
 
                         var wallType = doc.GetElement(
                             wall.GetTypeId()) as WallType;
@@ -527,7 +527,7 @@ namespace Revit2026.Modules.Rooms
 
                         meta.Walls.Add(new WallData
                         {
-                            WallId = wall.Id.IntegerValue,
+                            WallId = wall.Id.Value,
                             WallName = wall.Name,
                             WallType = wallType?.Name ?? "",
                             LengthM = Round(segLen * FtToM),
@@ -543,7 +543,7 @@ namespace Revit2026.Modules.Rooms
             {
                 errors.Add(new ExtractionError
                 {
-                    RoomId = room.Id.IntegerValue,
+                    RoomId = room.Id.Value,
                     RoomName = room.Name,
                     Field = "Boundaries",
                     Message = ex.Message
@@ -566,7 +566,7 @@ namespace Revit2026.Modules.Rooms
                 var loops = room.GetBoundarySegments(options);
                 if (loops == null) return;
 
-                var adjacentIds = new HashSet<int>();
+                var adjacentIds = new HashSet<long>();
 
                 foreach (var loop in loops)
                 {
@@ -583,11 +583,11 @@ namespace Revit2026.Modules.Rooms
                             doc, wall, room);
 
                         if (otherRoom != null &&
-                            !adjacentIds.Contains(otherRoom.Id.IntegerValue))
+                            !adjacentIds.Contains(otherRoom.Id.Value))
                         {
-                            adjacentIds.Add(otherRoom.Id.IntegerValue);
+                            adjacentIds.Add(otherRoom.Id.Value);
                             meta.AdjacentRoomIds.Add(
-                                otherRoom.Id.IntegerValue);
+                                otherRoom.Id.Value);
 
                             var adjName = otherRoom.get_Parameter(
                                 BuiltInParameter.ROOM_NAME)?.AsString();
@@ -628,11 +628,11 @@ namespace Revit2026.Modules.Rooms
                 var roomB = doc.GetRoomAtPoint(ptB, phase);
 
                 if (roomA != null &&
-                    roomA.Id.IntegerValue != currentRoom.Id.IntegerValue)
+                    roomA.Id.Value != currentRoom.Id.Value)
                     return roomA;
 
                 if (roomB != null &&
-                    roomB.Id.IntegerValue != currentRoom.Id.IntegerValue)
+                    roomB.Id.Value != currentRoom.Id.Value)
                     return roomB;
             }
             catch
@@ -647,10 +647,10 @@ namespace Revit2026.Modules.Rooms
         //  FIXTURES NO ROOM
         // ══════════════════════════════════════════════════════════
 
-        private static Dictionary<int, List<FamilyInstance>>
+        private static Dictionary<long, List<FamilyInstance>>
             PreCollectFixturesByRoom(Document doc)
         {
-            var map = new Dictionary<int, List<FamilyInstance>>();
+            var map = new Dictionary<long, List<FamilyInstance>>();
 
             var fixtures = new FilteredElementCollector(doc)
                 .OfCategory(BuiltInCategory.OST_PlumbingFixtures)
@@ -671,7 +671,7 @@ namespace Revit2026.Modules.Rooms
                         BuiltInParameter.ELEM_ROOM_ID);
                     if (roomParam != null)
                     {
-                        var roomId = roomParam.AsElementId().IntegerValue;
+                        var roomId = roomParam.AsElementId().Value;
                         if (roomId > 0)
                         {
                             if (!map.ContainsKey(roomId))
@@ -685,7 +685,7 @@ namespace Revit2026.Modules.Rooms
                     var room = fi.Room;
                     if (room != null)
                     {
-                        var rid = room.Id.IntegerValue;
+                        var rid = room.Id.Value;
                         if (!map.ContainsKey(rid))
                             map[rid] = new List<FamilyInstance>();
                         map[rid].Add(fi);
@@ -704,9 +704,9 @@ namespace Revit2026.Modules.Rooms
             Document doc,
             Room room,
             RoomMetadata meta,
-            Dictionary<int, List<FamilyInstance>> fixturesByRoom)
+            Dictionary<long, List<FamilyInstance>> fixturesByRoom)
         {
-            var roomId = room.Id.IntegerValue;
+            var roomId = room.Id.Value;
 
             if (!fixturesByRoom.TryGetValue(roomId, out var fixtures))
                 return;
@@ -717,7 +717,7 @@ namespace Revit2026.Modules.Rooms
             {
                 var fd = new FixtureData
                 {
-                    FixtureId = fi.Id.IntegerValue,
+                    FixtureId = fi.Id.Value,
                     FamilyName = fi.Symbol?.FamilyName ?? "",
                     TypeName = fi.Name ?? ""
                 };
@@ -776,7 +776,7 @@ namespace Revit2026.Modules.Rooms
                                     value = param.AsInteger().ToString();
                                     break;
                                 case StorageType.ElementId:
-                                    value = param.AsElementId().IntegerValue
+                                    value = param.AsElementId().Value
                                         .ToString();
                                     break;
                                 default:

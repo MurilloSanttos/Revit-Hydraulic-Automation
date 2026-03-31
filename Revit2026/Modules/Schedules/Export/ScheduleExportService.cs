@@ -120,7 +120,7 @@ namespace Revit2026.Modules.Schedules.Export
             worksheetPart.Worksheet = new Worksheet(sheetData);
 
             // Sheet
-            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+            var sheets = workbookPart.Workbook.AppendChild(new DocumentFormat.OpenXml.Spreadsheet.Sheets());
             var nomeAba = SanitizarNomeAba(dados.Nome);
 
             sheets.AppendChild(new Sheet
@@ -213,7 +213,7 @@ namespace Revit2026.Modules.Schedules.Export
             stylesPart.Stylesheet = CriarStylesheet();
             stylesPart.Stylesheet.Save();
 
-            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+            var sheets = workbookPart.Workbook.AppendChild(new DocumentFormat.OpenXml.Spreadsheet.Sheets());
             uint sheetId = 0;
 
             foreach (var schedule in schedules)

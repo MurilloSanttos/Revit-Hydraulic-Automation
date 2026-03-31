@@ -92,7 +92,7 @@ namespace Revit2026.Modules.UnMEP
     public class RouteValidationItem
     {
         [JsonPropertyName("elementId")]
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
 
         [JsonPropertyName("elementType")]
         public string ElementType { get; set; } = "";
@@ -162,10 +162,10 @@ namespace Revit2026.Modules.UnMEP
     public class ConflictItem
     {
         [JsonPropertyName("elementA")]
-        public int ElementA { get; set; }
+        public long ElementA { get; set; }
 
         [JsonPropertyName("elementB")]
-        public int ElementB { get; set; }
+        public long ElementB { get; set; }
 
         [JsonPropertyName("distanceMm")]
         public double DistanceMm { get; set; }
@@ -282,7 +282,7 @@ namespace Revit2026.Modules.UnMEP
             Document doc, RouteValidationConfig? config = null);
 
         RouteValidationResult ValidarRotasPorIds(
-            Document doc, List<int> pipeIds,
+            Document doc, List<long> pipeIds,
             RouteValidationConfig? config = null);
     }
 
@@ -438,7 +438,7 @@ namespace Revit2026.Modules.UnMEP
 
         public RouteValidationResult ValidarRotasPorIds(
             Document doc,
-            List<int> pipeIds,
+            List<long> pipeIds,
             RouteValidationConfig? config = null)
         {
             config ??= new RouteValidationConfig();
@@ -478,8 +478,8 @@ namespace Revit2026.Modules.UnMEP
                     result.Items.Add(ValidarPipe(doc, pipe, config));
                     result.TotalPipes++;
                 }
-                else if (elem.Category?.Id.IntegerValue ==
-                         (int)BuiltInCategory.OST_PipeFitting)
+                else if (elem.Category?.Id.Value ==
+                         (long)BuiltInCategory.OST_PipeFitting)
                 {
                     result.Items.Add(ValidarFitting(doc, elem, config));
                     result.TotalFittings++;
@@ -515,7 +515,7 @@ namespace Revit2026.Modules.UnMEP
         {
             var item = new RouteValidationItem
             {
-                ElementId = pipe.Id.IntegerValue,
+                ElementId = pipe.Id.Value,
                 ElementType = "Pipe"
             };
 
@@ -783,7 +783,7 @@ namespace Revit2026.Modules.UnMEP
         {
             var item = new RouteValidationItem
             {
-                ElementId = fitting.Id.IntegerValue,
+                ElementId = fitting.Id.Value,
                 ElementType = "PipeFitting"
             };
 
@@ -920,8 +920,8 @@ namespace Revit2026.Modules.UnMEP
 
                             conflicts.Add(new ConflictItem
                             {
-                                ElementA = levelPipes[i].Id.IntegerValue,
-                                ElementB = levelPipes[j].Id.IntegerValue,
+                                ElementA = levelPipes[i].Id.Value,
+                                ElementB = levelPipes[j].Id.Value,
                                 DistanceMm = Math.Round(dist * 304.8, 1),
                                 ConflictType = conflictType,
                                 Location = $"({mid1.X * 0.3048:F2}, " +

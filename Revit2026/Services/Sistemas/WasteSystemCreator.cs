@@ -103,8 +103,13 @@ namespace Revit2026.Services.Sistemas
             // ── 4. Criar PipingSystem ─────────────────────────
             try
             {
+                var pipeSystemType = systemType.SystemClassification switch
+                {
+                    MEPSystemClassification.Sanitary => PipeSystemType.Sanitary,
+                    _ => PipeSystemType.OtherPipe
+                };
                 var pipingSystem = doc.Create.NewPipingSystem(
-                    baseConnector, connectorSet, systemType);
+                    baseConnector, connectorSet, pipeSystemType);
 
                 if (pipingSystem == null)
                 {

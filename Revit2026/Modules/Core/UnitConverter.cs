@@ -284,7 +284,7 @@ namespace Revit2026.Modules.Core
         public string Field { get; set; } = "";
 
         [JsonPropertyName("elementId")]
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
 
         [JsonPropertyName("originalValueFt")]
         public double OriginalValueFt { get; set; }
@@ -324,7 +324,7 @@ namespace Revit2026.Modules.Core
     public interface IUnitConversionService
     {
         ConversionSummary ConverterERegistrar(
-            Document doc, List<int>? elementIds = null);
+            Document doc, List<long>? elementIds = null);
     }
 
     /// <summary>
@@ -348,7 +348,7 @@ namespace Revit2026.Modules.Core
         };
 
         public ConversionSummary ConverterERegistrar(
-            Document doc, List<int>? elementIds = null)
+            Document doc, List<long>? elementIds = null)
         {
             var summary = new ConversionSummary();
 
@@ -387,7 +387,7 @@ namespace Revit2026.Modules.Core
 
             foreach (var room in rooms)
             {
-                var id = room.Id.IntegerValue;
+                var id = room.Id.Value;
 
                 RegistrarConversao(summary, id, "Room.Area",
                     room.get_Parameter(BuiltInParameter.ROOM_AREA),
@@ -420,7 +420,7 @@ namespace Revit2026.Modules.Core
                 summary.Entries.Add(new ConversionLogEntry
                 {
                     Field = "Level.Elevation",
-                    ElementId = level.Id.IntegerValue,
+                    ElementId = level.Id.Value,
                     OriginalValueFt = level.Elevation,
                     ConvertedValueM = UnitConverter.FtToM(level.Elevation),
                     ConversionType = "FtToM"
@@ -431,7 +431,7 @@ namespace Revit2026.Modules.Core
 
         private void VerificarPipes(
             Document doc, ConversionSummary summary,
-            List<int>? filterIds)
+            List<long>? filterIds)
         {
             var collectors = new FilteredElementCollector(doc)
                 .OfClass(typeof(Autodesk.Revit.DB.Plumbing.Pipe))
@@ -440,10 +440,10 @@ namespace Revit2026.Modules.Core
             foreach (var elem in collectors)
             {
                 if (filterIds != null &&
-                    !filterIds.Contains(elem.Id.IntegerValue))
+                    !filterIds.Contains(elem.Id.Value))
                     continue;
 
-                var id = elem.Id.IntegerValue;
+                var id = elem.Id.Value;
 
                 RegistrarConversao(summary, id, "Pipe.Diameter",
                     elem.get_Parameter(
@@ -475,7 +475,7 @@ namespace Revit2026.Modules.Core
 
         private static void RegistrarConversao(
             ConversionSummary summary,
-            int elementId,
+            long elementId,
             string field,
             Parameter? param,
             string convType,

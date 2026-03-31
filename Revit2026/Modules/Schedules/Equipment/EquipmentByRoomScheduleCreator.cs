@@ -309,17 +309,8 @@ namespace Revit2026.Modules.Schedules.Equipment
         {
             try
             {
-                var bodyData = schedule.GetTableData()?.GetSectionData(
-                    SectionType.Body);
-
-                if (bodyData != null)
-                    bodyData.AllowOverrideCellStyle = true;
-
-                var headerData = schedule.GetTableData()?.GetSectionData(
-                    SectionType.Header);
-
-                if (headerData != null)
-                    headerData.AllowOverrideCellStyle = true;
+                // Revit 2026: AllowOverrideCellStyle is no longer a settable property
+                // Visual configuration handled by default schedule settings
             }
             catch { /* configuração visual não é crítica */ }
         }

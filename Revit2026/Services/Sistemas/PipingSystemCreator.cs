@@ -182,9 +182,17 @@ namespace Revit2026.Services.Sistemas
                     return null;
                 }
 
-                // Criar sistema via NewPipingSystem
+                // Revit 2026: NewPipingSystem uses PipeSystemType enum
+                var pipeSystemType = systemType.SystemClassification switch
+                {
+                    MEPSystemClassification.DomesticColdWater => PipeSystemType.DomesticColdWater,
+                    MEPSystemClassification.DomesticHotWater => PipeSystemType.DomesticHotWater,
+                    MEPSystemClassification.Sanitary => PipeSystemType.Sanitary,
+                    MEPSystemClassification.Vent => PipeSystemType.Vent,
+                    _ => PipeSystemType.OtherPipe
+                };
                 var pipingSystem = doc.Create.NewPipingSystem(
-                    baseConnector, connectorSet, systemType);
+                    baseConnector, connectorSet, pipeSystemType);
 
                 if (pipingSystem == null)
                 {

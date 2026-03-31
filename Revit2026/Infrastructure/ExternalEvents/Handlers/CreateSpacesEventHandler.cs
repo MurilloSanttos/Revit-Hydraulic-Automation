@@ -125,7 +125,7 @@ namespace Revit2026.Infrastructure.ExternalEvents.Handlers
                 // ── 5. Filtrar Rooms válidos para criação ─────
                 var roomsValidos = roomsSemSpace
                     .Where(r => r.PontoCentral != null)
-                    .Where(r => r.Area > 0)
+                    .Where(r => r.AreaM2 > 0)
                     .Where(r => !string.IsNullOrEmpty(r.Nivel))
                     .ToList();
 
@@ -224,10 +224,10 @@ namespace Revit2026.Infrastructure.ExternalEvents.Handlers
                             BuiltInParameter.ROOM_NAME)?.AsString() ?? room.Name,
                         Numero = room.Number ?? "",
                         Nivel = level?.Name ?? "",
-                        Area = UnitUtils.ConvertFromInternalUnits(
+                        AreaM2 = UnitUtils.ConvertFromInternalUnits(
                             room.Area, UnitTypeId.SquareMeters),
                         PontoCentral = ponto != null
-                            ? new PluginCore.Models.PontoCentral
+                            ? new PluginCore.Models.PontoXYZ
                             {
                                 X = UnitUtils.ConvertFromInternalUnits(
                                     ponto.X, UnitTypeId.Meters),

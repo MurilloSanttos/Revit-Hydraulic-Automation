@@ -29,7 +29,7 @@ namespace Revit2026.Services.Sistemas
                 { MEPSystemClassification.DomesticHotWater, ("AQ", "AguaQuente") },
                 { MEPSystemClassification.Sanitary, ("ES", "Esgoto") },
                 { MEPSystemClassification.Vent, ("VT", "Ventilacao") },
-                { MEPSystemClassification.RainWater, ("AP", "AguaPluvial") },
+                { MEPSystemClassification.Storm, ("AP", "AguaPluvial") },
                 { MEPSystemClassification.FireProtectWet, ("IC", "Incendio") },
             };
 

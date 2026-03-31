@@ -12,7 +12,7 @@ namespace Revit2026.Modules.Rooms
     public class ValidRoom
     {
         [JsonPropertyName("elementId")]
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = "";
@@ -21,7 +21,7 @@ namespace Revit2026.Modules.Rooms
         public string Number { get; set; } = "";
 
         [JsonPropertyName("levelId")]
-        public int LevelId { get; set; }
+        public long LevelId { get; set; }
 
         [JsonPropertyName("levelName")]
         public string LevelName { get; set; } = "";
@@ -48,7 +48,7 @@ namespace Revit2026.Modules.Rooms
         public string Phase { get; set; } = "";
 
         [JsonPropertyName("upperLimitId")]
-        public int UpperLimitId { get; set; }
+        public long UpperLimitId { get; set; }
 
         [JsonPropertyName("limitOffsetM")]
         public double LimitOffsetM { get; set; }
@@ -71,7 +71,7 @@ namespace Revit2026.Modules.Rooms
     public class DiscardedRoom
     {
         [JsonPropertyName("elementId")]
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = "";
@@ -199,7 +199,7 @@ namespace Revit2026.Modules.Rooms
                 {
                     result.DiscardedRooms.Add(new DiscardedRoom
                     {
-                        ElementId = room.Id.IntegerValue,
+                        ElementId = room.Id.Value,
                         Name = room.Name ?? "(sem nome)",
                         Reason = discardReason
                     });
@@ -301,7 +301,7 @@ namespace Revit2026.Modules.Rooms
         {
             var vr = new ValidRoom
             {
-                ElementId = room.Id.IntegerValue,
+                ElementId = room.Id.Value,
                 RevitRoom = room
             };
 
@@ -313,7 +313,7 @@ namespace Revit2026.Modules.Rooms
 
             // ── Level ──
             var level = doc.GetElement(room.LevelId) as Level;
-            vr.LevelId = room.LevelId.IntegerValue;
+            vr.LevelId = room.LevelId.Value;
             vr.LevelName = level?.Name ?? "";
             vr.LevelElevationM = Math.Round(
                 (level?.Elevation ?? 0) * FtToM, 4);
@@ -367,7 +367,7 @@ namespace Revit2026.Modules.Rooms
                 BuiltInParameter.ROOM_UPPER_LEVEL);
             if (upperParam != null)
             {
-                vr.UpperLimitId = upperParam.AsElementId().IntegerValue;
+                vr.UpperLimitId = upperParam.AsElementId().Value;
             }
 
             // ── Limit Offset ──

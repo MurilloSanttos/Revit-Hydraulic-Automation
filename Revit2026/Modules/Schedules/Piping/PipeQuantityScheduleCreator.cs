@@ -347,20 +347,11 @@ namespace Revit2026.Modules.Schedules.Piping
                 var bodyData = schedule.GetTableData()?.GetSectionData(
                     SectionType.Body);
 
-                if (bodyData != null)
-                {
-                    // Habilitar grade
-                    bodyData.AllowOverrideCellStyle = true;
-                }
+                // Revit 2026: AllowOverrideCellStyle is no longer a settable property
+                // Visual configuration handled by default schedule settings
 
-                // Cabeçalho
                 var headerData = schedule.GetTableData()?.GetSectionData(
                     SectionType.Header);
-
-                if (headerData != null)
-                {
-                    headerData.AllowOverrideCellStyle = true;
-                }
             }
             catch { /* configuração visual não é crítica */ }
         }

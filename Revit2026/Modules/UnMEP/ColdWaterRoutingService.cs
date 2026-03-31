@@ -102,10 +102,10 @@ namespace Revit2026.Modules.UnMEP
         public int FixturesFailed { get; set; }
 
         [JsonPropertyName("pipesCreated")]
-        public List<int> PipesCreated { get; set; } = new();
+        public List<long> PipesCreated { get; set; } = new();
 
         [JsonPropertyName("fittingsCreated")]
-        public List<int> FittingsCreated { get; set; } = new();
+        public List<long> FittingsCreated { get; set; } = new();
 
         [JsonPropertyName("trechosGerados")]
         public int TrechosGerados { get; set; }
@@ -132,7 +132,7 @@ namespace Revit2026.Modules.UnMEP
     public class TrechoCritico
     {
         [JsonPropertyName("pipeId")]
-        public int PipeId { get; set; }
+        public long PipeId { get; set; }
 
         [JsonPropertyName("tipo")]
         public string Tipo { get; set; } = "";
@@ -147,7 +147,7 @@ namespace Revit2026.Modules.UnMEP
     public class ManualReviewItem
     {
         [JsonPropertyName("fixtureId")]
-        public int FixtureId { get; set; }
+        public long FixtureId { get; set; }
 
         [JsonPropertyName("fixtureName")]
         public string FixtureName { get; set; } = "";
@@ -162,7 +162,7 @@ namespace Revit2026.Modules.UnMEP
     public class RoutingError
     {
         [JsonPropertyName("elementId")]
-        public int ElementId { get; set; }
+        public long ElementId { get; set; }
 
         [JsonPropertyName("stage")]
         public string Stage { get; set; } = "";
@@ -494,7 +494,7 @@ namespace Revit2026.Modules.UnMEP
                                     result.FixturesFailed++;
                                     result.ManualReview.Add(new ManualReviewItem
                                     {
-                                        FixtureId = fixture.Id.IntegerValue,
+                                        FixtureId = fixture.Id.Value,
                                         FixtureName =
                                             $"{fixture.FamilyName}: {fixture.TypeName}",
                                         Reason =
@@ -758,7 +758,7 @@ namespace Revit2026.Modules.UnMEP
                 if (paramDiam != null && !paramDiam.IsReadOnly)
                     paramDiam.Set(diamFt);
 
-                result.PipesCreated.Add(pipe.Id.IntegerValue);
+                result.PipesCreated.Add(pipe.Id.Value);
 
                 // Tentar conectar ao fixture
                 TryConnectPipeToFixture(
@@ -772,7 +772,7 @@ namespace Revit2026.Modules.UnMEP
             {
                 result.Errors.Add(new RoutingError
                 {
-                    ElementId = fixture.Id.IntegerValue,
+                    ElementId = fixture.Id.Value,
                     Stage = "RotearFixture",
                     Message = ex.Message
                 });
@@ -832,7 +832,7 @@ namespace Revit2026.Modules.UnMEP
                                 var pipeConn = c.PipeSystemType;
                                 if (pipeConn == PipeSystemType.DomesticColdWater ||
                                     pipeConn == PipeSystemType.DomesticHotWater ||
-                                    pipeConn == PipeSystemType.Undefined)
+                                    pipeConn == PipeSystemType.OtherPipe)
                                 {
                                     info.HasColdWaterConnector = true;
                                     info.ColdWaterConnector = c;
@@ -923,7 +923,7 @@ namespace Revit2026.Modules.UnMEP
 
         private static int ConectarTrechosAdjacentes(
             Document doc,
-            List<int> pipeIds,
+            List<long> pipeIds,
             double toleranceMm)
         {
             var toleranceFt = toleranceMm / 304.8;

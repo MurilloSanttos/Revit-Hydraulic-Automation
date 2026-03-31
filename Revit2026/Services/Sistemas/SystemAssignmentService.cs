@@ -113,7 +113,9 @@ namespace Revit2026.Services.Sistemas
                             // Adicionar conector ao sistema
                             if (!conn.IsConnected)
                             {
-                                sistema.Add(conn);
+                                var singleSet = new ConnectorSet();
+                                singleSet.Insert(conn);
+                                sistema.Add(singleSet);
                                 elementoAdicionado = true;
                                 conectoresDoSistema.Add(conn);
                             }

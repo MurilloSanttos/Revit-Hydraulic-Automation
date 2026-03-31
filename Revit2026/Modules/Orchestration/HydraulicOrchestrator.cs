@@ -230,17 +230,17 @@ namespace Revit2026.Modules.Orchestration
                 var configurator = new ScheduleConfiguratorService();
 
                 // Quantitativo de Tubulação
-                var pipeCreator = new PipeQuantityScheduleCreator(configurator);
+                var pipeCreator = new PipeQuantityScheduleCreator();
                 var pipeSchedule = pipeCreator.Criar(doc);
                 if (pipeSchedule != null) schedules.Add(pipeSchedule);
 
                 // Quantitativo de Conexões
-                var fittingCreator = new PipeFittingQuantityScheduleCreator(configurator);
+                var fittingCreator = new PipeFittingQuantityScheduleCreator();
                 var fittingSchedule = fittingCreator.Criar(doc);
                 if (fittingSchedule != null) schedules.Add(fittingSchedule);
 
                 // Equipamentos por Ambiente
-                var equipCreator = new EquipmentByRoomScheduleCreator(configurator);
+                var equipCreator = new EquipmentByRoomScheduleCreator();
                 var equipSchedule = equipCreator.Criar(doc);
                 if (equipSchedule != null) schedules.Add(equipSchedule);
 

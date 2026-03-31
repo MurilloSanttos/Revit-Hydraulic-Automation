@@ -53,7 +53,6 @@ namespace Revit2026.Modules.Views
             BuiltInCategory.OST_StructuralFraming,
             BuiltInCategory.OST_StructuralColumns,
             BuiltInCategory.OST_StructuralFoundation,
-            BuiltInCategory.OST_StructuralConnections,
             BuiltInCategory.OST_Rebar,
             BuiltInCategory.OST_ElectricalEquipment,
             BuiltInCategory.OST_ElectricalFixtures,
@@ -328,10 +327,8 @@ namespace Revit2026.Modules.Views
 
             try
             {
-                var paramUnderlay = view.get_Parameter(
-                    BuiltInParameter.VIEW_UNDERLAY_ID);
-                if (paramUnderlay != null && !paramUnderlay.IsReadOnly)
-                    paramUnderlay.Set(ElementId.InvalidElementId);
+                // Revit 2026: VIEW_UNDERLAY_ID removed; use ViewPlan properties
+                view.SetUnderlayBaseLevel(ElementId.InvalidElementId);
             }
             catch { /* underlay não configurável */ }
         }

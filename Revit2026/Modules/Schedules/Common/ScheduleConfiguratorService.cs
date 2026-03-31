@@ -206,7 +206,7 @@ namespace Revit2026.Modules.Schedules.Common
 
                     // Filtros sem valor
                     if (tipo == ScheduleFilterType.HasValue ||
-                        tipo == ScheduleFilterType.NotHasValue)
+                        tipo == ScheduleFilterType.HasNoValue)
                     {
                         filtro = new ScheduleFilter(fieldId, tipo);
                     }
@@ -265,7 +265,7 @@ namespace Revit2026.Modules.Schedules.Common
                 ScheduleFilter filtro;
 
                 if (tipo == ScheduleFilterType.HasValue ||
-                    tipo == ScheduleFilterType.NotHasValue)
+                    tipo == ScheduleFilterType.HasNoValue)
                 {
                     filtro = new ScheduleFilter(fieldId, tipo);
                 }

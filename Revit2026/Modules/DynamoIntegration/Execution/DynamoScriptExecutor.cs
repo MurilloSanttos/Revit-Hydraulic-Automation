@@ -164,10 +164,8 @@ namespace Revit2026.Modules.DynamoIntegration.Execution
                     {
                         try
                         {
-                            var currentWs = _dynamoModel.CurrentWorkspace as HomeWorkspaceModel;
-                            if (currentWs != null)
-                                _dynamoModel.ExecuteCommand(
-                                    new DynamoModel.CloseWorkspaceCommand());
+                            // Dynamo 3.x: CloseWorkspaceCommand removed
+                            // Use reflection or skip — workspace auto-closes
                         }
                         catch { /* silencioso */ }
                     }
@@ -288,9 +286,6 @@ namespace Revit2026.Modules.DynamoIntegration.Execution
         {
             if (!string.IsNullOrEmpty(node.Name))
                 return node.Name;
-
-            if (!string.IsNullOrEmpty(node.NickName))
-                return node.NickName;
 
             return node.GetType().Name;
         }
