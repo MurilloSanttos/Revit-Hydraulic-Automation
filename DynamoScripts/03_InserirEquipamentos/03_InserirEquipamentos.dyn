@@ -1,0 +1,310 @@
+{
+  "Uuid": "a3b4c5d6-e7f8-4a9b-0c1d-e2f3a4b5c6d7",
+  "IsCustomNode": false,
+  "Description": "Inserção paramétrica de equipamentos MEP em massa via JSON - FamilyInstance.ByPoint com rotação e parâmetros",
+  "Name": "03_InserirEquipamentos",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0100000-0001-4a00-9000-000000000001",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0100000-0001-4b00-9000-000000000001", "Name": "", "Description": "jsonPath", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonPath = \"C:/PluginRevit/Data/Config/equipamentos_input.json\";"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n0200000-0002-4a00-9000-000000000002",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p0200000-0002-4c00-9000-000000000001", "Name": "filePath", "Description": "Path to JSON file", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0200000-0002-4b00-9000-000000000001", "Name": "result", "Description": "Parsed JSON data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.Data.ParseJSON@string",
+      "Replication": "Auto",
+      "Description": "Parse a JSON string into a dictionary or list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0300000-0003-4a00-9000-000000000003",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0300000-0003-4c00-9000-000000000001", "Name": "jsonData", "Description": "jsonData", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0300000-0003-4b00-9000-000000000001", "Name": "", "Description": "familyName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-9000-000000000002", "Name": "", "Description": "typeName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-9000-000000000003", "Name": "", "Description": "points", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-9000-000000000004", "Name": "", "Description": "levelNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-9000-000000000005", "Name": "", "Description": "vectors", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-9000-000000000006", "Name": "", "Description": "params", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "familyName = jsonData[\"familyName\"];\ntypeName = jsonData[\"typeName\"];\nptData = jsonData[\"locationPoints\"];\npoints = List.Map(ptData, Function(p) { return Autodesk.DesignScript.Geometry.Point.ByCoordinates(p[\"x\"], p[\"y\"], p[\"z\"]); });\nlevelNames = jsonData[\"levels\"];\nvecData = jsonData[\"orientationVectors\"];\nvectors = List.Map(vecData, Function(v) { return Autodesk.DesignScript.Geometry.Vector.ByCoordinates(v[\"x\"], v[\"y\"], v[\"z\"]); });\nparams = jsonData[\"parameters\"];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0400000-0004-4a00-9000-000000000004",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0400000-0004-4c00-9000-000000000001", "Name": "familyName", "Description": "familyName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-9000-000000000002", "Name": "typeName", "Description": "typeName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0400000-0004-4b00-9000-000000000001", "Name": "", "Description": "familyType", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "allTypes = Revit.Elements.FamilyType.ByFamilyNameAndTypeName(familyName, typeName);\nfamilyType = allTypes;"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0500000-0005-4a00-9000-000000000005",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0500000-0005-4c00-9000-000000000001", "Name": "levelNames", "Description": "levelNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0500000-0005-4b00-9000-000000000001", "Name": "", "Description": "levels", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "levels = List.Map(levelNames, Function(n) { return Revit.Elements.Level.ByName(n); });"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0600000-0006-4a00-9000-000000000006",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0600000-0006-4c00-9000-000000000001", "Name": "familyType", "Description": "familyType", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4c00-9000-000000000002", "Name": "points", "Description": "points", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4c00-9000-000000000003", "Name": "levels", "Description": "levels", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0600000-0006-4b00-9000-000000000001", "Name": "", "Description": "instances", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "instances = Revit.Elements.FamilyInstance.ByPointAndLevel(familyType, points, levels);"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0700000-0007-4a00-9000-000000000007",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0700000-0007-4c00-9000-000000000001", "Name": "IN[0]", "Description": "instances", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-9000-000000000002", "Name": "IN[1]", "Description": "vectors", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0700000-0007-4b00-9000-000000000001", "Name": "OUT", "Description": "rotated instances", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import *\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\nimport math\n\ndoc = DocumentManager.Instance.CurrentDBDocument\ninstances = UnwrapElement(IN[0]) if isinstance(IN[0], list) else [UnwrapElement(IN[0])]\nvectors = IN[1] if isinstance(IN[1], list) else [IN[1]]\n\nresults = []\n\nTransactionManager.Instance.EnsureInTransaction(doc)\n\nfor i, inst in enumerate(instances):\n    try:\n        if i < len(vectors) and vectors[i] is not None:\n            vec = vectors[i]\n            vx = vec.X\n            vy = vec.Y\n            angle = math.atan2(vy, vx)\n            loc = inst.Location\n            if hasattr(loc, 'Point'):\n                pt = loc.Point\n                axis = Line.CreateBound(pt, XYZ(pt.X, pt.Y, pt.Z + 1))\n                ElementTransformUtils.RotateElement(doc, inst.Id, axis, angle)\n        results.append(inst)\n    except Exception as e:\n        results.append(str(e))\n\nTransactionManager.Instance.TransactionTaskDone()\n\nOUT = results",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0800000-0008-4a00-9000-000000000008",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0800000-0008-4c00-9000-000000000001", "Name": "instances", "Description": "instances", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0800000-0008-4c00-9000-000000000002", "Name": "params", "Description": "params", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0800000-0008-4b00-9000-000000000001", "Name": "", "Description": "setResults", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "keys = Dictionary.Keys(params);\nvals = Dictionary.Values(params);\nsetResults = [Imperative]\n{\n    results = {};\n    for (inst in instances)\n    {\n        for (k in 0..List.Count(keys)-1)\n        {\n            inst.SetParameterByName(keys[k], vals[k]);\n        }\n        results = List.AddItemToEnd(inst, results);\n    }\n    return results;\n};"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0900000-0009-4a00-9000-000000000009",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0900000-0009-4c00-9000-000000000001", "Name": "IN[0]", "Description": "instances", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0900000-0009-4c00-9000-000000000002", "Name": "IN[1]", "Description": "points", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0900000-0009-4b00-9000-000000000001", "Name": "OUT", "Description": "output JSON", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nimport json\nimport time\nfrom datetime import datetime\n\nstart = time.time()\ninstances = IN[0] if isinstance(IN[0], list) else [IN[0]]\npoints = IN[1] if isinstance(IN[1], list) else [IN[1]]\n\ncreated = []\nfailed = []\n\nfor i, inst in enumerate(instances):\n    try:\n        if isinstance(inst, str):\n            pt = points[i] if i < len(points) else None\n            failed.append({\n                \"index\": i,\n                \"point\": str(pt) if pt else \"unknown\",\n                \"error\": inst\n            })\n        else:\n            unwrapped = UnwrapElement(inst)\n            created.append({\n                \"index\": i,\n                \"elementId\": unwrapped.Id.IntegerValue\n            })\n    except Exception as e:\n        failed.append({\"index\": i, \"error\": str(e)})\n\nend = time.time()\n\nresult = {\n    \"success\": len(failed) == 0,\n    \"createdInstances\": [c[\"elementId\"] for c in created],\n    \"createdCount\": len(created),\n    \"failed\": failed,\n    \"failedCount\": len(failed),\n    \"timestamp\": datetime.utcnow().isoformat() + \"Z\",\n    \"executionTimeMs\": int((end - start) * 1000)\n}\n\nOUT = json.dumps(result, indent=2)",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n1000000-0010-4a00-9000-000000000010",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p1000000-0010-4c00-9000-000000000001", "Name": "instances", "Description": "instances", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1000000-0010-4b00-9000-000000000001", "Name": "", "Description": "ids", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1000000-0010-4b00-9000-000000000002", "Name": "", "Description": "names", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "ids = instances.Id;\nnames = instances.Name;"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "Id": "n1100000-0011-4a00-9000-000000000011",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1100000-0011-4c00-9000-000000000001", "Name": "item0", "Description": "IDs", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1100000-0011-4c00-9000-000000000002", "Name": "item1", "Description": "Names", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1100000-0011-4b00-9000-000000000001", "Name": "list", "Description": "A list", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Makes a new list from the given inputs"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n1150000-0115-4a00-9000-000000000115",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p1150000-0115-4c00-9000-000000000001", "Name": "lists", "Description": "List of lists to be transposed.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1150000-0115-4b00-9000-000000000001", "Name": "lists", "Description": "List of transposed lists.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.List.Transpose@var[]..[]",
+      "Replication": "Auto",
+      "Description": "Swaps rows and columns in a list of lists."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n1200000-0012-4a00-9000-000000000012",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1200000-0012-4c00-9000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1200000-0012-4b00-9000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 420.0,
+      "WatchHeight": 300.0,
+      "Id": "n1300000-0013-4a00-9000-000000000013",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1300000-0013-4c00-9000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1300000-0013-4b00-9000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 500.0,
+      "WatchHeight": 350.0,
+      "Id": "n1400000-0014-4a00-9000-000000000014",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1400000-0014-4c00-9000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1400000-0014-4b00-9000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "p0100000-0001-4b00-9000-000000000001", "End": "p0200000-0002-4c00-9000-000000000001", "Id": "x0010001-0001-4d00-9000-000000000001", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b00-9000-000000000001", "End": "p0300000-0003-4c00-9000-000000000001", "Id": "x0010002-0002-4d00-9000-000000000002", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-9000-000000000001", "End": "p0400000-0004-4c00-9000-000000000001", "Id": "x0010003-0003-4d00-9000-000000000003", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-9000-000000000002", "End": "p0400000-0004-4c00-9000-000000000002", "Id": "x0010004-0004-4d00-9000-000000000004", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-9000-000000000004", "End": "p0500000-0005-4c00-9000-000000000001", "Id": "x0010005-0005-4d00-9000-000000000005", "IsHidden": "False" },
+    { "Start": "p0400000-0004-4b00-9000-000000000001", "End": "p0600000-0006-4c00-9000-000000000001", "Id": "x0010006-0006-4d00-9000-000000000006", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-9000-000000000003", "End": "p0600000-0006-4c00-9000-000000000002", "Id": "x0010007-0007-4d00-9000-000000000007", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-9000-000000000001", "End": "p0600000-0006-4c00-9000-000000000003", "Id": "x0010008-0008-4d00-9000-000000000008", "IsHidden": "False" },
+    { "Start": "p0600000-0006-4b00-9000-000000000001", "End": "p0700000-0007-4c00-9000-000000000001", "Id": "x0010009-0009-4d00-9000-000000000009", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-9000-000000000005", "End": "p0700000-0007-4c00-9000-000000000002", "Id": "x0010010-0010-4d00-9000-000000000010", "IsHidden": "False" },
+    { "Start": "p0700000-0007-4b00-9000-000000000001", "End": "p0800000-0008-4c00-9000-000000000001", "Id": "x0010011-0011-4d00-9000-000000000011", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-9000-000000000006", "End": "p0800000-0008-4c00-9000-000000000002", "Id": "x0010012-0012-4d00-9000-000000000012", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-9000-000000000001", "End": "p0900000-0009-4c00-9000-000000000001", "Id": "x0010013-0013-4d00-9000-000000000013", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-9000-000000000003", "End": "p0900000-0009-4c00-9000-000000000002", "Id": "x0010014-0014-4d00-9000-000000000014", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-9000-000000000001", "End": "p1000000-0010-4c00-9000-000000000001", "Id": "x0010015-0015-4d00-9000-000000000015", "IsHidden": "False" },
+    { "Start": "p1000000-0010-4b00-9000-000000000001", "End": "p1100000-0011-4c00-9000-000000000001", "Id": "x0010016-0016-4d00-9000-000000000016", "IsHidden": "False" },
+    { "Start": "p1000000-0010-4b00-9000-000000000002", "End": "p1100000-0011-4c00-9000-000000000002", "Id": "x0010017-0017-4d00-9000-000000000017", "IsHidden": "False" },
+    { "Start": "p1100000-0011-4b00-9000-000000000001", "End": "p1150000-0115-4c00-9000-000000000001", "Id": "x0010018-0018-4d00-9000-000000000018", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-9000-000000000001", "End": "p1200000-0012-4c00-9000-000000000001", "Id": "x0010019-0019-4d00-9000-000000000019", "IsHidden": "False" },
+    { "Start": "p1150000-0115-4b00-9000-000000000001", "End": "p1300000-0013-4c00-9000-000000000001", "Id": "x0010020-0020-4d00-9000-000000000020", "IsHidden": "False" },
+    { "Start": "p0900000-0009-4b00-9000-000000000001", "End": "p1400000-0014-4c00-9000-000000000001", "Id": "x0010021-0021-4d00-9000-000000000021", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DynamoCore", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n1100000-0011-4a00-9000-000000000011"] },
+    { "Name": "RevitNodes", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] },
+    { "Name": "PythonNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0700000-0007-4a00-9000-000000000007", "n0900000-0009-4a00-9000-000000000009"] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "n0100000-0001-4a00-9000-000000000001", "Name": "JSON Path", "IsSetAsInput": true, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 120.0 },
+      { "Id": "n0200000-0002-4a00-9000-000000000002", "Name": "Data.ParseJSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 350.0, "Y": 120.0 },
+      { "Id": "n0300000-0003-4a00-9000-000000000003", "Name": "Extrair Campos JSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 50.0 },
+      { "Id": "n0400000-0004-4a00-9000-000000000004", "Name": "Resolver FamilyType", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1100.0, "Y": 50.0 },
+      { "Id": "n0500000-0005-4a00-9000-000000000005", "Name": "Resolver Levels", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1100.0, "Y": 200.0 },
+      { "Id": "n0600000-0006-4a00-9000-000000000006", "Name": "FamilyInstance.ByPointAndLevel", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1500.0, "Y": 100.0 },
+      { "Id": "n0700000-0007-4a00-9000-000000000007", "Name": "Python - Rotação por Vetor", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1900.0, "Y": 100.0 },
+      { "Id": "n0800000-0008-4a00-9000-000000000008", "Name": "Aplicar Parâmetros", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2300.0, "Y": 100.0 },
+      { "Id": "n0900000-0009-4a00-9000-000000000009", "Name": "Python - Gerar JSON Saída", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2300.0, "Y": 350.0 },
+      { "Id": "n1000000-0010-4a00-9000-000000000010", "Name": "Extrair IDs e Names", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2700.0, "Y": 50.0 },
+      { "Id": "n1100000-0011-4a00-9000-000000000011", "Name": "Mapa ID↔Nome", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2700.0, "Y": 220.0 },
+      { "Id": "n1150000-0115-4a00-9000-000000000115", "Name": "List.Transpose", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2950.0, "Y": 220.0 },
+      { "Id": "n1200000-0012-4a00-9000-000000000012", "Name": "Watch - Instâncias", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 3200.0, "Y": 50.0 },
+      { "Id": "n1300000-0013-4a00-9000-000000000013", "Name": "Watch - Mapa ID↔Params", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 3200.0, "Y": 220.0 },
+      { "Id": "n1400000-0014-4a00-9000-000000000014", "Name": "Watch - OUT_JSON", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 3200.0, "Y": 450.0 }
+    ],
+    "Annotations": [
+      { "Id": "g0010001-0001-4e00-9000-000000000001", "Title": "1. LEITURA JSON", "DescriptionText": "Lê o arquivo JSON de entrada e extrai familyName, typeName, points, levels, vectors e parameters", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0100000-0001-4a00-9000-000000000001", "n0200000-0002-4a00-9000-000000000002", "n0300000-0003-4a00-9000-000000000003"], "HasNestedGroups": false, "Left": 30.0, "Top": 0.0, "Width": 900.0, "Height": 320.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 280.0, "TextblockHeight": 30.0, "Background": "#FF48B9C7" },
+      { "Id": "g0010002-0002-4e00-9000-000000000002", "Title": "2. RESOLUÇÃO DE TIPOS", "DescriptionText": "Resolve FamilyType e Levels por nome", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0400000-0004-4a00-9000-000000000004", "n0500000-0005-4a00-9000-000000000005"], "HasNestedGroups": false, "Left": 1080.0, "Top": 0.0, "Width": 350.0, "Height": 330.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 290.0, "TextblockHeight": 30.0, "Background": "#FF71C6A1" },
+      { "Id": "g0010003-0003-4e00-9000-000000000003", "Title": "3. INSERÇÃO + ROTAÇÃO + PARAMS", "DescriptionText": "Cria FamilyInstance, aplica rotação por vetor e define parâmetros", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0600000-0006-4a00-9000-000000000006", "n0700000-0007-4a00-9000-000000000007", "n0800000-0008-4a00-9000-000000000008"], "HasNestedGroups": false, "Left": 1480.0, "Top": 40.0, "Width": 1080.0, "Height": 250.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 70.0, "InitialHeight": 210.0, "TextblockHeight": 30.0, "Background": "#FFFFB347" },
+      { "Id": "g0010004-0004-4e00-9000-000000000004", "Title": "4. SAÍDAS", "DescriptionText": "Instâncias criadas, mapa ID↔Params e JSON de retorno", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0900000-0009-4a00-9000-000000000009", "n1000000-0010-4a00-9000-000000000010", "n1100000-0011-4a00-9000-000000000011", "n1150000-0115-4a00-9000-000000000115", "n1200000-0012-4a00-9000-000000000012", "n1300000-0013-4a00-9000-000000000013", "n1400000-0014-4a00-9000-000000000014"], "HasNestedGroups": false, "Left": 2280.0, "Top": 0.0, "Width": 1200.0, "Height": 700.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 660.0, "TextblockHeight": 30.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.5
+  }
+}

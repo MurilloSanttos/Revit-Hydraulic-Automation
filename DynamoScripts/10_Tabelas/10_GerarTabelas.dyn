@@ -1,0 +1,239 @@
+{
+  "Uuid": "d0e1f2a3-b4c5-4d6e-7f8a-9b0c1d2e3f4a",
+  "IsCustomNode": false,
+  "Description": "Criação automática de Schedules MEP - Tubulação, Conexões e Equipamentos com campos, filtros e formatação",
+  "Name": "10_GerarTabelas",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0100000-0001-4a01-a000-000000000001",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0100000-0001-4b01-a000-000000000001", "Name": "", "Description": "jsonPath", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonPath = \"C:/PluginRevit/Data/Config/tabelas_input.json\";"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n0200000-0002-4a01-a000-000000000002",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p0200000-0002-4c01-a000-000000000001", "Name": "filePath", "Description": "Path to JSON file", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0200000-0002-4b01-a000-000000000001", "Name": "result", "Description": "Parsed JSON data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.Data.ParseJSON@string",
+      "Replication": "Auto",
+      "Description": "Parse a JSON string into a dictionary or list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0300000-0003-4a01-a000-000000000003",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0300000-0003-4c01-a000-000000000001", "Name": "data", "Description": "data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0300000-0003-4b01-a000-000000000001", "Name": "", "Description": "projectName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000002", "Name": "", "Description": "createPipes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000003", "Name": "", "Description": "createFittings", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000004", "Name": "", "Description": "createFixtures", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000005", "Name": "", "Description": "fieldsPipes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000006", "Name": "", "Description": "fieldsFittings", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000007", "Name": "", "Description": "fieldsFixtures", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000008", "Name": "", "Description": "applyFormatting", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000009", "Name": "", "Description": "applyFilters", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b01-a000-000000000010", "Name": "", "Description": "applySorting", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "projectName = data[\"projectName\"];\ncreatePipes = data[\"createPipesSchedule\"];\ncreateFittings = data[\"createFittingsSchedule\"];\ncreateFixtures = data[\"createFixturesSchedule\"];\nfieldsPipes = data[\"fieldsPipes\"];\nfieldsFittings = data[\"fieldsFittings\"];\nfieldsFixtures = data[\"fieldsFixtures\"];\napplyFormatting = data[\"applyFormatting\"];\napplyFilters = data[\"applyFilters\"];\napplySorting = data[\"applySorting\"];"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0400000-0004-4a01-a000-000000000004",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0400000-0004-4c01-a000-000000000001", "Name": "IN[0]", "Description": "projectName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000002", "Name": "IN[1]", "Description": "createPipes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000003", "Name": "IN[2]", "Description": "createFittings", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000004", "Name": "IN[3]", "Description": "createFixtures", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000005", "Name": "IN[4]", "Description": "fieldsPipes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000006", "Name": "IN[5]", "Description": "fieldsFittings", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000007", "Name": "IN[6]", "Description": "fieldsFixtures", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000008", "Name": "IN[7]", "Description": "applyFormatting", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000009", "Name": "IN[8]", "Description": "applyFilters", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c01-a000-000000000010", "Name": "IN[9]", "Description": "applySorting", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0400000-0004-4b01-a000-000000000001", "Name": "OUT", "Description": "schedule results", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import *\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\nimport json\nimport time\nfrom datetime import datetime\n\nstart_time = time.time()\ndoc = DocumentManager.Instance.CurrentDBDocument\n\nproject_name = str(IN[0]) if IN[0] else \"Projeto\"\ncreate_pipes = bool(IN[1]) if IN[1] is not None else True\ncreate_fittings = bool(IN[2]) if IN[2] is not None else True\ncreate_fixtures = bool(IN[3]) if IN[3] is not None else True\nfields_pipes = IN[4] if isinstance(IN[4], list) else []\nfields_fittings = IN[5] if isinstance(IN[5], list) else []\nfields_fixtures = IN[6] if isinstance(IN[6], list) else []\napply_formatting = bool(IN[7]) if IN[7] is not None else True\napply_filters = bool(IN[8]) if IN[8] is not None else True\napply_sorting = bool(IN[9]) if IN[9] is not None else True\n\nexisting_schedules = {}\nfec = FilteredElementCollector(doc).OfClass(ViewSchedule)\nfor vs in fec:\n    existing_schedules[vs.Name] = vs\n\ncategory_map = {\n    \"Pipes\": BuiltInCategory.OST_PipeCurves,\n    \"PipeFittings\": BuiltInCategory.OST_PipeFitting,\n    \"PlumbingFixtures\": BuiltInCategory.OST_PlumbingFixtures\n}\n\ndef find_schedulable_field(definition, field_name):\n    schedulable = definition.GetSchedulableFields()\n    for sf in schedulable:\n        try:\n            if sf.GetName(doc) == field_name:\n                return sf\n        except:\n            pass\n    for sf in schedulable:\n        try:\n            name = sf.GetName(doc)\n            if name and name.lower() == field_name.lower():\n                return sf\n        except:\n            pass\n    return None\n\ndef add_fields_to_schedule(schedule, field_names):\n    definition = schedule.Definition\n    added = []\n    skipped = []\n    \n    existing_field_ids = definition.GetFieldOrder()\n    existing_names = []\n    for fid in existing_field_ids:\n        try:\n            f = definition.GetField(fid)\n            existing_names.append(f.GetName())\n        except:\n            pass\n    \n    for fn in field_names:\n        if fn in existing_names:\n            skipped.append(fn)\n            continue\n        sf = find_schedulable_field(definition, fn)\n        if sf is not None:\n            try:\n                definition.AddField(sf)\n                added.append(fn)\n            except:\n                skipped.append(fn)\n        else:\n            skipped.append(fn)\n    return added, skipped\n\ndef apply_schedule_filters(schedule, cat_key):\n    definition = schedule.Definition\n    field_order = definition.GetFieldOrder()\n    \n    if cat_key == \"Pipes\":\n        for fid in field_order:\n            try:\n                field = definition.GetField(fid)\n                if field.GetName().lower() in [\"length\", \"comprimento\"]:\n                    sf = ScheduleFilter(fid, ScheduleFilterType.GreaterThan, 0.0)\n                    definition.AddFilter(sf)\n                    break\n            except:\n                pass\n\ndef apply_schedule_sorting(schedule, cat_key):\n    definition = schedule.Definition\n    field_order = definition.GetFieldOrder()\n    \n    sort_field_names = {\n        \"Pipes\": [\"System Type\", \"Size\", \"Length\"],\n        \"PipeFittings\": [\"System Type\", \"Family and Type\"],\n        \"PlumbingFixtures\": [\"Family and Type\", \"Level\"]\n    }\n    \n    targets = sort_field_names.get(cat_key, [])\n    for target in targets:\n        for fid in field_order:\n            try:\n                field = definition.GetField(fid)\n                if field.GetName().lower() == target.lower():\n                    sgf = ScheduleSortGroupField(fid)\n                    sgf.ShowHeader = True\n                    sgf.ShowFooter = False\n                    definition.AddSortGroupField(sgf)\n                    break\n            except:\n                pass\n\ndef apply_schedule_formatting(schedule, cat_key):\n    definition = schedule.Definition\n    \n    definition.IsItemized = True\n    definition.ShowHeaders = True\n    \n    if cat_key == \"PlumbingFixtures\":\n        definition.ShowGrandTotal = True\n        definition.ShowGrandTotalTitle = True\n        definition.ShowGrandTotalCount = True\n    else:\n        definition.ShowGrandTotal = False\n    \n    field_order = definition.GetFieldOrder()\n    for fid in field_order:\n        try:\n            field = definition.GetField(fid)\n            opts = field.GetFormatOptions()\n            if field.GetStyle() is not None:\n                pass\n            field.GridColumnWidth = max(field.GridColumnWidth, 10)\n        except:\n            pass\n\ncreated_schedules = []\nupdated_schedules = []\nerrors = []\nschedule_ids = []\n\ntasks = []\nif create_pipes:\n    tasks.append((\"Pipes\", \"QT \\u2013 Tubula\\u00e7\\u00e3o \\u2013 \" + project_name, fields_pipes))\nif create_fittings:\n    tasks.append((\"PipeFittings\", \"QT \\u2013 Conex\\u00f5es \\u2013 \" + project_name, fields_fittings))\nif create_fixtures:\n    tasks.append((\"PlumbingFixtures\", \"QT \\u2013 Equipamentos \\u2013 \" + project_name, fields_fixtures))\n\nTransactionManager.Instance.EnsureInTransaction(doc)\n\nfor cat_key, sched_name, field_list in tasks:\n    try:\n        bic = category_map[cat_key]\n        cat_id = ElementId(bic)\n        \n        is_new = False\n        if sched_name in existing_schedules:\n            schedule = existing_schedules[sched_name]\n        else:\n            schedule = ViewSchedule.CreateSchedule(doc, cat_id)\n            schedule.Name = sched_name\n            is_new = True\n        \n        added, skipped = add_fields_to_schedule(schedule, field_list)\n        \n        if apply_filters:\n            try:\n                apply_schedule_filters(schedule, cat_key)\n            except:\n                pass\n        \n        if apply_sorting:\n            try:\n                apply_schedule_sorting(schedule, cat_key)\n            except:\n                pass\n        \n        if apply_formatting:\n            try:\n                apply_schedule_formatting(schedule, cat_key)\n            except:\n                pass\n        \n        entry = {\n            \"name\": sched_name,\n            \"scheduleId\": schedule.Id.IntegerValue,\n            \"category\": cat_key,\n            \"fieldsAdded\": added,\n            \"fieldsSkipped\": skipped\n        }\n        \n        if is_new:\n            created_schedules.append(entry)\n        else:\n            updated_schedules.append(entry)\n        \n        schedule_ids.append(schedule.Id.IntegerValue)\n    except Exception as e:\n        errors.append({\n            \"category\": cat_key,\n            \"scheduleName\": sched_name,\n            \"error\": str(e)\n        })\n\nTransactionManager.Instance.TransactionTaskDone()\n\nend_time = time.time()\n\nif len(created_schedules) + len(updated_schedules) == 0:\n    status = \"EMPTY\"\nelif len(errors) > 0:\n    status = \"PARCIAL\"\nelse:\n    status = \"OK\"\n\nresult = {\n    \"success\": status == \"OK\",\n    \"schedulesCreated\": created_schedules,\n    \"createdCount\": len(created_schedules),\n    \"schedulesUpdated\": updated_schedules,\n    \"updatedCount\": len(updated_schedules),\n    \"scheduleIds\": schedule_ids,\n    \"errors\": errors,\n    \"errorCount\": len(errors),\n    \"status\": status,\n    \"executionTimeMs\": int((end_time - start_time) * 1000),\n    \"timestamp\": datetime.utcnow().isoformat() + \"Z\"\n}\n\nOUT = [json.dumps(result, indent=2), schedule_ids, status, created_schedules, updated_schedules, errors]",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0500000-0005-4a01-a000-000000000005",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0500000-0005-4c01-a000-000000000001", "Name": "pyOut", "Description": "pyOut", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0500000-0005-4b01-a000-000000000001", "Name": "", "Description": "jsonResult", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b01-a000-000000000002", "Name": "", "Description": "scheduleIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b01-a000-000000000003", "Name": "", "Description": "status", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b01-a000-000000000004", "Name": "", "Description": "created", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b01-a000-000000000005", "Name": "", "Description": "updated", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b01-a000-000000000006", "Name": "", "Description": "errors", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonResult = pyOut[0];\nscheduleIds = pyOut[1];\nstatus = pyOut[2];\ncreated = pyOut[3];\nupdated = pyOut[4];\nerrors = pyOut[5];"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n0600000-0006-4a01-a000-000000000006",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0600000-0006-4c01-a000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0600000-0006-4b01-a000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 250.0,
+      "WatchHeight": 150.0,
+      "Id": "n0700000-0007-4a01-a000-000000000007",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0700000-0007-4c01-a000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0700000-0007-4b01-a000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 400.0,
+      "WatchHeight": 250.0,
+      "Id": "n0800000-0008-4a01-a000-000000000008",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0800000-0008-4c01-a000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0800000-0008-4b01-a000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 400.0,
+      "WatchHeight": 250.0,
+      "Id": "n0850000-0085-4a01-a000-000000000085",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0850000-0085-4c01-a000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0850000-0085-4b01-a000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 600.0,
+      "WatchHeight": 400.0,
+      "Id": "n0900000-0009-4a01-a000-000000000009",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0900000-0009-4c01-a000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0900000-0009-4b01-a000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "p0100000-0001-4b01-a000-000000000001", "End": "p0200000-0002-4c01-a000-000000000001", "Id": "x0080001-0001-4d01-a000-000000000001", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b01-a000-000000000001", "End": "p0300000-0003-4c01-a000-000000000001", "Id": "x0080002-0002-4d01-a000-000000000002", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000001", "End": "p0400000-0004-4c01-a000-000000000001", "Id": "x0080003-0003-4d01-a000-000000000003", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000002", "End": "p0400000-0004-4c01-a000-000000000002", "Id": "x0080004-0004-4d01-a000-000000000004", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000003", "End": "p0400000-0004-4c01-a000-000000000003", "Id": "x0080005-0005-4d01-a000-000000000005", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000004", "End": "p0400000-0004-4c01-a000-000000000004", "Id": "x0080006-0006-4d01-a000-000000000006", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000005", "End": "p0400000-0004-4c01-a000-000000000005", "Id": "x0080007-0007-4d01-a000-000000000007", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000006", "End": "p0400000-0004-4c01-a000-000000000006", "Id": "x0080008-0008-4d01-a000-000000000008", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000007", "End": "p0400000-0004-4c01-a000-000000000007", "Id": "x0080009-0009-4d01-a000-000000000009", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000008", "End": "p0400000-0004-4c01-a000-000000000008", "Id": "x0080010-0010-4d01-a000-000000000010", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000009", "End": "p0400000-0004-4c01-a000-000000000009", "Id": "x0080011-0011-4d01-a000-000000000011", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b01-a000-000000000010", "End": "p0400000-0004-4c01-a000-000000000010", "Id": "x0080012-0012-4d01-a000-000000000012", "IsHidden": "False" },
+    { "Start": "p0400000-0004-4b01-a000-000000000001", "End": "p0500000-0005-4c01-a000-000000000001", "Id": "x0080013-0013-4d01-a000-000000000013", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b01-a000-000000000002", "End": "p0600000-0006-4c01-a000-000000000001", "Id": "x0080014-0014-4d01-a000-000000000014", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b01-a000-000000000003", "End": "p0700000-0007-4c01-a000-000000000001", "Id": "x0080015-0015-4d01-a000-000000000015", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b01-a000-000000000004", "End": "p0800000-0008-4c01-a000-000000000001", "Id": "x0080016-0016-4d01-a000-000000000016", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b01-a000-000000000005", "End": "p0850000-0085-4c01-a000-000000000001", "Id": "x0080017-0017-4d01-a000-000000000017", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b01-a000-000000000001", "End": "p0900000-0009-4c01-a000-000000000001", "Id": "x0080018-0018-4d01-a000-000000000018", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DynamoCore", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0600000-0006-4a01-a000-000000000006", "n0700000-0007-4a01-a000-000000000007", "n0800000-0008-4a01-a000-000000000008", "n0850000-0085-4a01-a000-000000000085", "n0900000-0009-4a01-a000-000000000009"] },
+    { "Name": "PythonNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0400000-0004-4a01-a000-000000000004"] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "n0100000-0001-4a01-a000-000000000001", "Name": "JSON Path", "IsSetAsInput": true, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 120.0 },
+      { "Id": "n0200000-0002-4a01-a000-000000000002", "Name": "Data.ParseJSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 350.0, "Y": 120.0 },
+      { "Id": "n0300000-0003-4a01-a000-000000000003", "Name": "Extrair Configurações", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 20.0 },
+      { "Id": "n0400000-0004-4a01-a000-000000000004", "Name": "Python - Criar/Atualizar Schedules", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1200.0, "Y": 50.0 },
+      { "Id": "n0500000-0005-4a01-a000-000000000005", "Name": "Separar Resultados", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1750.0, "Y": 50.0 },
+      { "Id": "n0600000-0006-4a01-a000-000000000006", "Name": "Watch - Schedule IDs", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 30.0 },
+      { "Id": "n0700000-0007-4a01-a000-000000000007", "Name": "Watch - Status", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 240.0 },
+      { "Id": "n0800000-0008-4a01-a000-000000000008", "Name": "Watch - Criados", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 390.0 },
+      { "Id": "n0850000-0085-4a01-a000-000000000085", "Name": "Watch - Atualizados", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 590.0 },
+      { "Id": "n0900000-0009-4a01-a000-000000000009", "Name": "Watch - OUT_JSON", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 800.0 }
+    ],
+    "Annotations": [
+      { "Id": "g0080001-0001-4e01-a000-000000000001", "Title": "1. CONFIGURAÇÃO", "DescriptionText": "Lê projectName, flags de criação, listas de campos, opções de formatação/filtro/sorting", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0100000-0001-4a01-a000-000000000001", "n0200000-0002-4a01-a000-000000000002", "n0300000-0003-4a01-a000-000000000003"], "HasNestedGroups": false, "Left": 30.0, "Top": -30.0, "Width": 900.0, "Height": 380.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 0.0, "InitialHeight": 340.0, "TextblockHeight": 30.0, "Background": "#FF48B9C7" },
+      { "Id": "g0080002-0002-4e01-a000-000000000002", "Title": "2. CRIAÇÃO DE SCHEDULES", "DescriptionText": "ViewSchedule.CreateSchedule → AddField → Filtros → SortGroup → Formatação (IsItemized, ShowHeaders, GridColumnWidth)", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0400000-0004-4a01-a000-000000000004", "n0500000-0005-4a01-a000-000000000005"], "HasNestedGroups": false, "Left": 1180.0, "Top": -10.0, "Width": 850.0, "Height": 300.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 20.0, "InitialHeight": 260.0, "TextblockHeight": 30.0, "Background": "#FF71C6A1" },
+      { "Id": "g0080003-0003-4e01-a000-000000000003", "Title": "3. SAÍDAS", "DescriptionText": "Schedule IDs, Status, Criados, Atualizados e JSON completo", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0600000-0006-4a01-a000-000000000006", "n0700000-0007-4a01-a000-000000000007", "n0800000-0008-4a01-a000-000000000008", "n0850000-0085-4a01-a000-000000000085", "n0900000-0009-4a01-a000-000000000009"], "HasNestedGroups": false, "Left": 2180.0, "Top": -20.0, "Width": 650.0, "Height": 1090.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 10.0, "InitialHeight": 1050.0, "TextblockHeight": 30.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.45
+  }
+}

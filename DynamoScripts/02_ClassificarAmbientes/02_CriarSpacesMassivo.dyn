@@ -1,0 +1,307 @@
+{
+  "Uuid": "f2a3b4c5-d6e7-4f8a-9b0c-d1e2f3a4b5c6",
+  "IsCustomNode": false,
+  "Description": "Criação massiva de Spaces a partir de Rooms existentes - copia nome, número e localização",
+  "Name": "02_CriarSpacesMassivo",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "DSRevitNodesUI.Categories, DSRevitNodesUI",
+      "SelectedIndex": 417,
+      "SelectedString": "OST_Rooms",
+      "Id": "n0100000-0001-4a00-8000-000000000001",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0100000-0001-4b00-8000-000000000001", "Name": "Category", "Description": "The selected Category.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "All built-in categories."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.ElementsOfCategory, DSRevitNodesUI",
+      "Id": "n0200000-0002-4a00-8000-000000000002",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0200000-0002-4c00-8000-000000000001", "Name": "Category", "Description": "The Category", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0200000-0002-4b00-8000-000000000002", "Name": "Elements", "Description": "An element type.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Get all elements of the specified category from the model."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Categories, DSRevitNodesUI",
+      "SelectedIndex": 420,
+      "SelectedString": "OST_MEPSpaces",
+      "Id": "n0300000-0003-4a00-8000-000000000003",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0300000-0003-4b00-8000-000000000003", "Name": "Category", "Description": "The selected Category.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "All built-in categories."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.ElementsOfCategory, DSRevitNodesUI",
+      "Id": "n0400000-0004-4a00-8000-000000000004",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0400000-0004-4c00-8000-000000000004", "Name": "Category", "Description": "The Category", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0400000-0004-4b00-8000-000000000005", "Name": "Elements", "Description": "An element type.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Get all elements of the specified category from the model."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0500000-0005-4a00-8000-000000000005",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0500000-0005-4c00-8000-000000000001", "Name": "rooms", "Description": "rooms", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0500000-0005-4b00-8000-000000000001", "Name": "", "Description": "names", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-8000-000000000002", "Name": "", "Description": "ids", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-8000-000000000003", "Name": "", "Description": "numbers", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-8000-000000000004", "Name": "", "Description": "levels", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-8000-000000000005", "Name": "", "Description": "locations", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-8000-000000000006", "Name": "", "Description": "areas", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "names = rooms.Name;\nids = rooms.Id;\nnumbers = rooms.GetParameterValueByName(\"Number\");\nlevels = rooms.GetParameterValueByName(\"Level\");\nlocations = rooms.GetLocation();\nareas = rooms.GetParameterValueByName(\"Area\");"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0600000-0006-4a00-8000-000000000006",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0600000-0006-4c00-8000-000000000001", "Name": "rooms", "Description": "rooms", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4c00-8000-000000000002", "Name": "areas", "Description": "areas", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0600000-0006-4b00-8000-000000000001", "Name": "", "Description": "isPlaced", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "isPlaced = areas != null && areas > 0;"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n0700000-0007-4a00-8000-000000000007",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p0700000-0007-4c00-8000-000000000001", "Name": "list", "Description": "List to filter.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-8000-000000000002", "Name": "mask", "Description": "List of booleans representing a mask.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0700000-0007-4b00-8000-000000000001", "Name": "in", "Description": "Items whose mask index is true.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4b00-8000-000000000002", "Name": "out", "Description": "Items whose mask index is false.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Replication": "Auto",
+      "Description": "Filters a sequence by looking up corresponding indices in a separate list of booleans."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0800000-0008-4a00-8000-000000000008",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0800000-0008-4c00-8000-000000000001", "Name": "placedRooms", "Description": "placedRooms", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0800000-0008-4c00-8000-000000000002", "Name": "existSpaces", "Description": "existSpaces", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0800000-0008-4b00-8000-000000000001", "Name": "", "Description": "needsSpace", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0800000-0008-4b00-8000-000000000002", "Name": "", "Description": "roomsNeedingSpace", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "spNames = existSpaces.Name;\nrNames = placedRooms.Name;\nneedsSpace = List.Map(rNames, Function(n : var) { return !List.Contains(spNames, n); });\nroomFilter = DSCore.List.FilterByBoolMask(placedRooms, needsSpace);\nroomsNeedingSpace = roomFilter[\"in\"];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0900000-0009-4a00-8000-000000000009",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0900000-0009-4c00-8000-000000000001", "Name": "roomsSemSpace", "Description": "roomsSemSpace", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0900000-0009-4b00-8000-000000000001", "Name": "", "Description": "rLevels", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0900000-0009-4b00-8000-000000000002", "Name": "", "Description": "rPoints", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0900000-0009-4b00-8000-000000000003", "Name": "", "Description": "rNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0900000-0009-4b00-8000-000000000004", "Name": "", "Description": "rNumbers", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "rLevels = roomsSemSpace.Level;\nrPoints = roomsSemSpace.GetLocation();\nrNames = roomsSemSpace.Name;\nrNumbers = roomsSemSpace.GetParameterValueByName(\"Number\");"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n1000000-0010-4a00-8000-000000000010",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p1000000-0010-4c00-8000-000000000001", "Name": "lvl", "Description": "lvl", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1000000-0010-4c00-8000-000000000002", "Name": "pt", "Description": "pt", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1000000-0010-4b00-8000-000000000001", "Name": "", "Description": "newSpaces", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "newSpaces = Revit.Elements.Space.ByLevelAndPoint(lvl, pt);"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n1100000-0011-4a00-8000-000000000011",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p1100000-0011-4c00-8000-000000000001", "Name": "spaces", "Description": "spaces", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1100000-0011-4c00-8000-000000000002", "Name": "nomes", "Description": "nomes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1100000-0011-4c00-8000-000000000003", "Name": "numeros", "Description": "numeros", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1100000-0011-4b00-8000-000000000001", "Name": "", "Description": "setName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1100000-0011-4b00-8000-000000000002", "Name": "", "Description": "setNumber", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "setName = spaces.SetParameterByName(\"Name\", nomes);\nsetNumber = spaces.SetParameterByName(\"Number\", numeros);"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "Id": "n1200000-0012-4a00-8000-000000000012",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1200000-0012-4c00-8000-000000000001", "Name": "item0", "Description": "Item Index #0", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1200000-0012-4c00-8000-000000000002", "Name": "item1", "Description": "Item Index #1", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1200000-0012-4c00-8000-000000000003", "Name": "item2", "Description": "Item Index #2", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1200000-0012-4b00-8000-000000000001", "Name": "list", "Description": "A list (type: var[]..[])", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Makes a new list from the given inputs"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n1300000-0013-4a00-8000-000000000013",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1300000-0013-4c00-8000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1300000-0013-4b00-8000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n1400000-0014-4a00-8000-000000000014",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1400000-0014-4c00-8000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1400000-0014-4b00-8000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 420.0,
+      "WatchHeight": 300.0,
+      "Id": "n1500000-0015-4a00-8000-000000000015",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1500000-0015-4c00-8000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1500000-0015-4b00-8000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "p0100000-0001-4b00-8000-000000000001", "End": "p0200000-0002-4c00-8000-000000000001", "Id": "x0000001-0001-4d00-8000-000000000001", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-8000-000000000003", "End": "p0400000-0004-4c00-8000-000000000004", "Id": "x0000002-0002-4d00-8000-000000000002", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b00-8000-000000000002", "End": "p0500000-0005-4c00-8000-000000000001", "Id": "x0000003-0003-4d00-8000-000000000003", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b00-8000-000000000002", "End": "p0600000-0006-4c00-8000-000000000001", "Id": "x0000004-0004-4d00-8000-000000000004", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-8000-000000000006", "End": "p0600000-0006-4c00-8000-000000000002", "Id": "x0000005-0005-4d00-8000-000000000005", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b00-8000-000000000002", "End": "p0700000-0007-4c00-8000-000000000001", "Id": "x0000006-0006-4d00-8000-000000000006", "IsHidden": "False" },
+    { "Start": "p0600000-0006-4b00-8000-000000000001", "End": "p0700000-0007-4c00-8000-000000000002", "Id": "x0000007-0007-4d00-8000-000000000007", "IsHidden": "False" },
+    { "Start": "p0700000-0007-4b00-8000-000000000001", "End": "p0800000-0008-4c00-8000-000000000001", "Id": "x0000008-0008-4d00-8000-000000000008", "IsHidden": "False" },
+    { "Start": "p0400000-0004-4b00-8000-000000000005", "End": "p0800000-0008-4c00-8000-000000000002", "Id": "x0000009-0009-4d00-8000-000000000009", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-8000-000000000002", "End": "p0900000-0009-4c00-8000-000000000001", "Id": "x0000010-0010-4d00-8000-000000000010", "IsHidden": "False" },
+    { "Start": "p0900000-0009-4b00-8000-000000000001", "End": "p1000000-0010-4c00-8000-000000000001", "Id": "x0000011-0011-4d00-8000-000000000011", "IsHidden": "False" },
+    { "Start": "p0900000-0009-4b00-8000-000000000002", "End": "p1000000-0010-4c00-8000-000000000002", "Id": "x0000012-0012-4d00-8000-000000000012", "IsHidden": "False" },
+    { "Start": "p1000000-0010-4b00-8000-000000000001", "End": "p1100000-0011-4c00-8000-000000000001", "Id": "x0000013-0013-4d00-8000-000000000013", "IsHidden": "False" },
+    { "Start": "p0900000-0009-4b00-8000-000000000003", "End": "p1100000-0011-4c00-8000-000000000002", "Id": "x0000014-0014-4d00-8000-000000000014", "IsHidden": "False" },
+    { "Start": "p0900000-0009-4b00-8000-000000000004", "End": "p1100000-0011-4c00-8000-000000000003", "Id": "x0000015-0015-4d00-8000-000000000015", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-8000-000000000002", "End": "p1200000-0012-4c00-8000-000000000001", "Id": "x0000016-0016-4d00-8000-000000000016", "IsHidden": "False" },
+    { "Start": "p1000000-0010-4b00-8000-000000000001", "End": "p1200000-0012-4c00-8000-000000000002", "Id": "x0000017-0017-4d00-8000-000000000017", "IsHidden": "False" },
+    { "Start": "p1100000-0011-4b00-8000-000000000001", "End": "p1200000-0012-4c00-8000-000000000003", "Id": "x0000018-0018-4d00-8000-000000000018", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-8000-000000000002", "End": "p1300000-0013-4c00-8000-000000000001", "Id": "x0000019-0019-4d00-8000-000000000019", "IsHidden": "False" },
+    { "Start": "p1000000-0010-4b00-8000-000000000001", "End": "p1400000-0014-4c00-8000-000000000001", "Id": "x0000020-0020-4d00-8000-000000000020", "IsHidden": "False" },
+    { "Start": "p1200000-0012-4b00-8000-000000000001", "End": "p1500000-0015-4c00-8000-000000000001", "Id": "x0000021-0021-4d00-8000-000000000021", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DSRevitNodesUI", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0100000-0001-4a00-8000-000000000001", "n0200000-0002-4a00-8000-000000000002", "n0300000-0003-4a00-8000-000000000003", "n0400000-0004-4a00-8000-000000000004"] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n1200000-0012-4a00-8000-000000000012", "n1300000-0013-4a00-8000-000000000013", "n1400000-0014-4a00-8000-000000000014", "n1500000-0015-4a00-8000-000000000015"] },
+    { "Name": "RevitNodes", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "n0100000-0001-4a00-8000-000000000001", "Name": "Categories (Rooms)", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 100.0 },
+      { "Id": "n0200000-0002-4a00-8000-000000000002", "Name": "All Rooms", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 300.0, "Y": 100.0 },
+      { "Id": "n0300000-0003-4a00-8000-000000000003", "Name": "Categories (Spaces)", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 300.0 },
+      { "Id": "n0400000-0004-4a00-8000-000000000004", "Name": "All Spaces Existentes", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 300.0, "Y": 300.0 },
+      { "Id": "n0500000-0005-4a00-8000-000000000005", "Name": "Extrair Propriedades Room", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 600.0, "Y": 50.0 },
+      { "Id": "n0600000-0006-4a00-8000-000000000006", "Name": "Room.IsPlaced", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 600.0, "Y": 280.0 },
+      { "Id": "n0700000-0007-4a00-8000-000000000007", "Name": "Filtrar Rooms Colocados", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 950.0, "Y": 100.0 },
+      { "Id": "n0800000-0008-4a00-8000-000000000008", "Name": "Verificar Rooms sem Space", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1300.0, "Y": 100.0 },
+      { "Id": "n0900000-0009-4a00-8000-000000000009", "Name": "Dados dos Rooms Faltantes", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1700.0, "Y": 80.0 },
+      { "Id": "n1000000-0010-4a00-8000-000000000010", "Name": "Space.ByLevelAndPoint", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2100.0, "Y": 80.0 },
+      { "Id": "n1100000-0011-4a00-8000-000000000011", "Name": "Copiar Name e Number", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2100.0, "Y": 300.0 },
+      { "Id": "n1200000-0012-4a00-8000-000000000012", "Name": "Tabela Room↔Space", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2500.0, "Y": 300.0 },
+      { "Id": "n1300000-0013-4a00-8000-000000000013", "Name": "Watch - Rooms sem Space", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2500.0, "Y": 50.0 },
+      { "Id": "n1400000-0014-4a00-8000-000000000014", "Name": "Watch - Spaces Criados", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2500.0, "Y": 550.0 },
+      { "Id": "n1500000-0015-4a00-8000-000000000015", "Name": "Watch - Tabela Consolidada", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2900.0, "Y": 300.0 }
+    ],
+    "Annotations": [
+      { "Id": "g0000001-0001-4e00-8000-000000000001", "Title": "1. COLETA", "DescriptionText": "Obtém todos os Rooms e Spaces existentes", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0100000-0001-4a00-8000-000000000001", "n0200000-0002-4a00-8000-000000000002", "n0300000-0003-4a00-8000-000000000003", "n0400000-0004-4a00-8000-000000000004"], "HasNestedGroups": false, "Left": 30.0, "Top": 40.0, "Width": 530.0, "Height": 370.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 70.0, "InitialHeight": 330.0, "TextblockHeight": 30.0, "Background": "#FF48B9C7" },
+      { "Id": "g0000002-0002-4e00-8000-000000000002", "Title": "2. FILTRO E VERIFICAÇÃO", "DescriptionText": "Filtra colocados e identifica Rooms sem Space correspondente", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0500000-0005-4a00-8000-000000000005", "n0600000-0006-4a00-8000-000000000006", "n0700000-0007-4a00-8000-000000000007", "n0800000-0008-4a00-8000-000000000008"], "HasNestedGroups": false, "Left": 580.0, "Top": 0.0, "Width": 980.0, "Height": 400.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 360.0, "TextblockHeight": 30.0, "Background": "#FF71C6A1" },
+      { "Id": "g0000003-0003-4e00-8000-000000000003", "Title": "3. CRIAÇÃO DE SPACES", "DescriptionText": "Cria Space para cada Room faltante e copia Name/Number", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0900000-0009-4a00-8000-000000000009", "n1000000-0010-4a00-8000-000000000010", "n1100000-0011-4a00-8000-000000000011"], "HasNestedGroups": false, "Left": 1680.0, "Top": 20.0, "Width": 700.0, "Height": 420.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 50.0, "InitialHeight": 380.0, "TextblockHeight": 30.0, "Background": "#FFFFB347" },
+      { "Id": "g0000004-0004-4e00-8000-000000000004", "Title": "4. SAÍDAS", "DescriptionText": "Rooms sem Space, Spaces criados e tabela Room↔Space", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n1200000-0012-4a00-8000-000000000012", "n1300000-0013-4a00-8000-000000000013", "n1400000-0014-4a00-8000-000000000014", "n1500000-0015-4a00-8000-000000000015"], "HasNestedGroups": false, "Left": 2480.0, "Top": 0.0, "Width": 700.0, "Height": 700.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 660.0, "TextblockHeight": 30.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.6
+  }
+}

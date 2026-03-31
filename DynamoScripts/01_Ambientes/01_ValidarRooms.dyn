@@ -1,0 +1,251 @@
+{
+  "Uuid": "e8f1a2b3-c4d5-4e6f-a7b8-c9d0e1f2a3b4",
+  "IsCustomNode": false,
+  "Description": "Validação visual de Rooms - verifica nome, número, área e status",
+  "Name": "01_ValidarRooms",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "DSRevitNodesUI.Categories, DSRevitNodesUI",
+      "SelectedIndex": 417,
+      "SelectedString": "OST_Rooms",
+      "Id": "a0000001-1111-4aaa-8000-000000000001",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "b0000001-1111-4aaa-8000-000000000001", "Name": "Category", "Description": "The selected Category.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "All built-in categories."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.ElementsOfCategory, DSRevitNodesUI",
+      "Id": "a0000002-2222-4aaa-8000-000000000002",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "c0000002-2222-4aaa-8000-000000000001", "Name": "Category", "Description": "The Category", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000002-2222-4aaa-8000-000000000002", "Name": "Elements", "Description": "An element type.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Get all elements of the specified category from the model."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "a0000003-3333-4aaa-8000-000000000003",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "c0000003-3333-4aaa-8000-000000000001", "Name": "rooms", "Description": "rooms", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000003-3333-4aaa-8000-000000000001", "Name": "", "Description": "names", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "b0000003-3333-4aaa-8000-000000000002", "Name": "", "Description": "ids", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "b0000003-3333-4aaa-8000-000000000003", "Name": "", "Description": "numbers", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "b0000003-3333-4aaa-8000-000000000004", "Name": "", "Description": "areas", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "names = rooms.Name;\nids = rooms.Id;\nnumbers = rooms.GetParameterValueByName(\"Number\");\nareas = rooms.GetParameterValueByName(\"Area\");"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "a0000004-4444-4aaa-8000-000000000004",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "c0000004-4444-4aaa-8000-000000000001", "Name": "name", "Description": "name", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000004-4444-4aaa-8000-000000000002", "Name": "number", "Description": "number", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000004-4444-4aaa-8000-000000000003", "Name": "area", "Description": "area", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000004-4444-4aaa-8000-000000000001", "Name": "", "Description": "isValid", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "b0000004-4444-4aaa-8000-000000000002", "Name": "", "Description": "status", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "hasName = name != \"\" && name != null;\nhasNumber = number != \"\" && number != null;\nhasArea = area != null && area > 0;\nisValid = hasName && hasNumber && hasArea;\nstatus = isValid ? \"VÁLIDO\" : \"INVÁLIDO\";"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "a0000005-5555-4aaa-8000-000000000005",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "b0000005-5555-4aaa-8000-000000000001", "Name": "", "Description": "green", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "Color.ByARGB(255,0,255,0);"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "a0000006-6666-4aaa-8000-000000000006",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "b0000006-6666-4aaa-8000-000000000001", "Name": "", "Description": "red", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "Color.ByARGB(255,255,0,0);"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "a0000007-7777-4aaa-8000-000000000007",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "c0000007-7777-4aaa-8000-000000000001", "Name": "isValid", "Description": "isValid", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000007-7777-4aaa-8000-000000000002", "Name": "green", "Description": "green", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000007-7777-4aaa-8000-000000000003", "Name": "red", "Description": "red", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000007-7777-4aaa-8000-000000000001", "Name": "", "Description": "colors", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "colors = isValid ? green : red;"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "a0000008-8888-4aaa-8000-000000000008",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "c0000008-8888-4aaa-8000-000000000001", "Name": "rooms", "Description": "rooms", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000008-8888-4aaa-8000-000000000002", "Name": "isValid", "Description": "isValid", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000008-8888-4aaa-8000-000000000001", "Name": "", "Description": "invalidRooms", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "mask = DSCore.List.FilterByBoolMask(rooms, isValid);\ninvalidRooms = mask[\"out\"];"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "Id": "a0000009-9999-4aaa-8000-000000000009",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "c0000009-9999-4aaa-8000-000000000001", "Name": "item0", "Description": "Item Index #0", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000009-9999-4aaa-8000-000000000002", "Name": "item1", "Description": "Item Index #1", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000009-9999-4aaa-8000-000000000003", "Name": "item2", "Description": "Item Index #2", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000009-9999-4aaa-8000-000000000004", "Name": "item3", "Description": "Item Index #3", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "c0000009-9999-4aaa-8000-000000000005", "Name": "item4", "Description": "Item Index #4", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000009-9999-4aaa-8000-000000000001", "Name": "list", "Description": "A list (type: var[]..[])", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Makes a new list from the given inputs"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 420.0,
+      "WatchHeight": 300.0,
+      "Id": "a0000010-aaaa-4aaa-8000-000000000010",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "c0000010-aaaa-4aaa-8000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000010-aaaa-4aaa-8000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 300.0,
+      "WatchHeight": 200.0,
+      "Id": "a0000011-bbbb-4aaa-8000-000000000011",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "c0000011-bbbb-4aaa-8000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000011-bbbb-4aaa-8000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 300.0,
+      "WatchHeight": 200.0,
+      "Id": "a0000012-cccc-4aaa-8000-000000000012",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "c0000012-cccc-4aaa-8000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "b0000012-cccc-4aaa-8000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "b0000001-1111-4aaa-8000-000000000001", "End": "c0000002-2222-4aaa-8000-000000000001", "Id": "d0000001-0001-4ddd-8000-000000000001", "IsHidden": "False" },
+    { "Start": "b0000002-2222-4aaa-8000-000000000002", "End": "c0000003-3333-4aaa-8000-000000000001", "Id": "d0000002-0002-4ddd-8000-000000000002", "IsHidden": "False" },
+    { "Start": "b0000003-3333-4aaa-8000-000000000001", "End": "c0000004-4444-4aaa-8000-000000000001", "Id": "d0000003-0003-4ddd-8000-000000000003", "IsHidden": "False" },
+    { "Start": "b0000003-3333-4aaa-8000-000000000003", "End": "c0000004-4444-4aaa-8000-000000000002", "Id": "d0000004-0004-4ddd-8000-000000000004", "IsHidden": "False" },
+    { "Start": "b0000003-3333-4aaa-8000-000000000004", "End": "c0000004-4444-4aaa-8000-000000000003", "Id": "d0000005-0005-4ddd-8000-000000000005", "IsHidden": "False" },
+    { "Start": "b0000004-4444-4aaa-8000-000000000001", "End": "c0000007-7777-4aaa-8000-000000000001", "Id": "d0000006-0006-4ddd-8000-000000000006", "IsHidden": "False" },
+    { "Start": "b0000005-5555-4aaa-8000-000000000001", "End": "c0000007-7777-4aaa-8000-000000000002", "Id": "d0000007-0007-4ddd-8000-000000000007", "IsHidden": "False" },
+    { "Start": "b0000006-6666-4aaa-8000-000000000001", "End": "c0000007-7777-4aaa-8000-000000000003", "Id": "d0000008-0008-4ddd-8000-000000000008", "IsHidden": "False" },
+    { "Start": "b0000002-2222-4aaa-8000-000000000002", "End": "c0000008-8888-4aaa-8000-000000000001", "Id": "d0000009-0009-4ddd-8000-000000000009", "IsHidden": "False" },
+    { "Start": "b0000004-4444-4aaa-8000-000000000001", "End": "c0000008-8888-4aaa-8000-000000000002", "Id": "d0000010-0010-4ddd-8000-000000000010", "IsHidden": "False" },
+    { "Start": "b0000003-3333-4aaa-8000-000000000002", "End": "c0000009-9999-4aaa-8000-000000000001", "Id": "d0000011-0011-4ddd-8000-000000000011", "IsHidden": "False" },
+    { "Start": "b0000003-3333-4aaa-8000-000000000001", "End": "c0000009-9999-4aaa-8000-000000000002", "Id": "d0000012-0012-4ddd-8000-000000000012", "IsHidden": "False" },
+    { "Start": "b0000003-3333-4aaa-8000-000000000003", "End": "c0000009-9999-4aaa-8000-000000000003", "Id": "d0000013-0013-4ddd-8000-000000000013", "IsHidden": "False" },
+    { "Start": "b0000003-3333-4aaa-8000-000000000004", "End": "c0000009-9999-4aaa-8000-000000000004", "Id": "d0000014-0014-4ddd-8000-000000000014", "IsHidden": "False" },
+    { "Start": "b0000004-4444-4aaa-8000-000000000002", "End": "c0000009-9999-4aaa-8000-000000000005", "Id": "d0000015-0015-4ddd-8000-000000000015", "IsHidden": "False" },
+    { "Start": "b0000009-9999-4aaa-8000-000000000001", "End": "c0000010-aaaa-4aaa-8000-000000000001", "Id": "d0000016-0016-4ddd-8000-000000000016", "IsHidden": "False" },
+    { "Start": "b0000008-8888-4aaa-8000-000000000001", "End": "c0000011-bbbb-4aaa-8000-000000000001", "Id": "d0000017-0017-4ddd-8000-000000000017", "IsHidden": "False" },
+    { "Start": "b0000007-7777-4aaa-8000-000000000001", "End": "c0000012-cccc-4aaa-8000-000000000001", "Id": "d0000018-0018-4ddd-8000-000000000018", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DSRevitNodesUI", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["a0000001-1111-4aaa-8000-000000000001", "a0000002-2222-4aaa-8000-000000000002"] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["a0000009-9999-4aaa-8000-000000000009", "a0000010-aaaa-4aaa-8000-000000000010", "a0000011-bbbb-4aaa-8000-000000000011", "a0000012-cccc-4aaa-8000-000000000012"] },
+    { "Name": "DSCoreNodesUI", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "a0000001-1111-4aaa-8000-000000000001", "Name": "Categories", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 150.0 },
+      { "Id": "a0000002-2222-4aaa-8000-000000000002", "Name": "All Elements of Category", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 320.0, "Y": 150.0 },
+      { "Id": "a0000003-3333-4aaa-8000-000000000003", "Name": "Extrair Propriedades", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 100.0 },
+      { "Id": "a0000004-4444-4aaa-8000-000000000004", "Name": "Validação", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1100.0, "Y": 80.0 },
+      { "Id": "a0000005-5555-4aaa-8000-000000000005", "Name": "Cor Verde (Válido)", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1100.0, "Y": 350.0 },
+      { "Id": "a0000006-6666-4aaa-8000-000000000006", "Name": "Cor Vermelha (Inválido)", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1100.0, "Y": 430.0 },
+      { "Id": "a0000007-7777-4aaa-8000-000000000007", "Name": "Selecionar Cor", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1450.0, "Y": 350.0 },
+      { "Id": "a0000008-8888-4aaa-8000-000000000008", "Name": "Filtrar Inválidos", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1450.0, "Y": 150.0 },
+      { "Id": "a0000009-9999-4aaa-8000-000000000009", "Name": "Tabela de Validação", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1450.0, "Y": 530.0 },
+      { "Id": "a0000010-aaaa-4aaa-8000-000000000010", "Name": "Watch - Tabela", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 1800.0, "Y": 530.0 },
+      { "Id": "a0000011-bbbb-4aaa-8000-000000000011", "Name": "Watch - Rooms Inválidos", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 1800.0, "Y": 150.0 },
+      { "Id": "a0000012-cccc-4aaa-8000-000000000012", "Name": "Watch - Cores", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 1800.0, "Y": 350.0 }
+    ],
+    "Annotations": [
+      { "Id": "e0000001-0001-4eee-8000-000000000001", "Title": "1. COLETA DE ROOMS", "DescriptionText": "Seleciona categoria Rooms e coleta todos os elementos", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["a0000001-1111-4aaa-8000-000000000001", "a0000002-2222-4aaa-8000-000000000002"], "HasNestedGroups": false, "Left": 30.0, "Top": 80.0, "Width": 550.0, "Height": 200.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 120.0, "InitialHeight": 140.0, "TextblockHeight": 40.0, "Background": "#FF48B9C7" },
+      { "Id": "e0000002-0002-4eee-8000-000000000002", "Title": "2. EXTRAÇÃO DE PROPRIEDADES", "DescriptionText": "Extrai Name, Id, Number e Area de cada Room", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["a0000003-3333-4aaa-8000-000000000003"], "HasNestedGroups": false, "Left": 630.0, "Top": 30.0, "Width": 400.0, "Height": 250.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 70.0, "InitialHeight": 190.0, "TextblockHeight": 40.0, "Background": "#FF71C6A1" },
+      { "Id": "e0000003-0003-4eee-8000-000000000003", "Title": "3. VALIDAÇÃO E CORES", "DescriptionText": "Valida cada Room e atribui cor verde (ok) ou vermelha (erro)", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["a0000004-4444-4aaa-8000-000000000004", "a0000005-5555-4aaa-8000-000000000005", "a0000006-6666-4aaa-8000-000000000006", "a0000007-7777-4aaa-8000-000000000007", "a0000008-8888-4aaa-8000-000000000008"], "HasNestedGroups": false, "Left": 1080.0, "Top": 10.0, "Width": 650.0, "Height": 520.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 50.0, "InitialHeight": 460.0, "TextblockHeight": 40.0, "Background": "#FFFF7BAC" },
+      { "Id": "e0000004-0004-4eee-8000-000000000004", "Title": "4. SAÍDAS", "DescriptionText": "Tabela de validação, rooms inválidos e cores", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["a0000009-9999-4aaa-8000-000000000009", "a0000010-aaaa-4aaa-8000-000000000010", "a0000011-bbbb-4aaa-8000-000000000011", "a0000012-cccc-4aaa-8000-000000000012"], "HasNestedGroups": false, "Left": 1430.0, "Top": 460.0, "Width": 650.0, "Height": 280.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 500.0, "InitialHeight": 220.0, "TextblockHeight": 40.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.75
+  }
+}

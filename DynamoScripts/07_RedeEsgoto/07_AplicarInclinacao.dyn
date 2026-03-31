@@ -1,0 +1,227 @@
+{
+  "Uuid": "a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c1d",
+  "IsCustomNode": false,
+  "Description": "Ajuste automático de declividade em tubulações de esgoto - recalcula Z com slope% e valida inclinação mínima",
+  "Name": "07_AplicarInclinacao",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0100000-0001-4a00-d000-000000000001",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0100000-0001-4b00-d000-000000000001", "Name": "", "Description": "jsonPath", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonPath = \"C:/PluginRevit/Data/Config/inclinacao_input.json\";"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n0200000-0002-4a00-d000-000000000002",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p0200000-0002-4c00-d000-000000000001", "Name": "filePath", "Description": "Path to JSON file", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0200000-0002-4b00-d000-000000000001", "Name": "result", "Description": "Parsed JSON data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.Data.ParseJSON@string",
+      "Replication": "Auto",
+      "Description": "Parse a JSON string into a dictionary or list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0300000-0003-4a00-d000-000000000003",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0300000-0003-4c00-d000-000000000001", "Name": "data", "Description": "data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0300000-0003-4b00-d000-000000000001", "Name": "", "Description": "pipeIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-d000-000000000002", "Name": "", "Description": "slopePercent", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-d000-000000000003", "Name": "", "Description": "baseZMode", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-d000-000000000004", "Name": "", "Description": "tolerance", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-d000-000000000005", "Name": "", "Description": "systemTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "pipeIds = data[\"pipes\"];\nslopePercent = data[\"slopePercent\"];\nbaseZMode = data[\"baseZMode\"];\ntolerance = data[\"tolerance\"];\nsystemTypeId = data[\"systemTypeId\"];"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0400000-0004-4a00-d000-000000000004",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0400000-0004-4c00-d000-000000000001", "Name": "IN[0]", "Description": "pipeIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-d000-000000000002", "Name": "IN[1]", "Description": "slopePercent", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-d000-000000000003", "Name": "IN[2]", "Description": "baseZMode", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-d000-000000000004", "Name": "IN[3]", "Description": "tolerance", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-d000-000000000005", "Name": "IN[4]", "Description": "systemTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0400000-0004-4b00-d000-000000000001", "Name": "OUT", "Description": "results", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import *\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\nimport json\nimport math\nimport time\nfrom datetime import datetime\n\nstart_time = time.time()\ndoc = DocumentManager.Instance.CurrentDBDocument\n\npipe_ids = IN[0] if isinstance(IN[0], list) else [IN[0]]\nslope_pct = float(IN[1])\nbase_z_mode = str(IN[2]).lower() if IN[2] else \"auto\"\ntol = float(IN[3]) if IN[3] else 0.005\nsys_type_id = int(IN[4]) if IN[4] else -1\n\nupdated_pipes = []\nslopes_applied = []\nfailed = []\nbefore_after = []\n\nTransactionManager.Instance.EnsureInTransaction(doc)\n\nfor pid in pipe_ids:\n    try:\n        eid = ElementId(int(pid))\n        pipe = doc.GetElement(eid)\n        if pipe is None:\n            failed.append({\"pipeId\": int(pid), \"error\": \"Element not found\"})\n            continue\n        \n        loc = pipe.Location\n        if not isinstance(loc, LocationCurve):\n            failed.append({\"pipeId\": int(pid), \"error\": \"No LocationCurve\"})\n            continue\n        \n        curve = loc.Curve\n        p1 = curve.GetEndPoint(0)\n        p2 = curve.GetEndPoint(1)\n        \n        dx = p2.X - p1.X\n        dy = p2.Y - p1.Y\n        horiz_dist = math.sqrt(dx*dx + dy*dy)\n        \n        if horiz_dist < 0.001:\n            failed.append({\"pipeId\": int(pid), \"error\": \"Vertical pipe, skip\"})\n            continue\n        \n        drop = horiz_dist * (slope_pct / 100.0)\n        \n        old_slope = abs(p1.Z - p2.Z) / horiz_dist * 100.0 if horiz_dist > 0 else 0\n        \n        if base_z_mode == \"start\":\n            new_z1 = p1.Z\n            new_z2 = p1.Z - drop\n        elif base_z_mode == \"end\":\n            new_z1 = p2.Z + drop\n            new_z2 = p2.Z\n        else:\n            if p1.Z >= p2.Z:\n                new_z1 = p1.Z\n                new_z2 = p1.Z - drop\n            else:\n                new_z1 = p2.Z + drop\n                new_z2 = p2.Z\n        \n        new_p1 = XYZ(p1.X, p1.Y, new_z1)\n        new_p2 = XYZ(p2.X, p2.Y, new_z2)\n        \n        new_line = Line.CreateBound(new_p1, new_p2)\n        loc.Curve = new_line\n        \n        slope_param = pipe.get_Parameter(BuiltInParameter.RBS_PIPE_SLOPE)\n        if slope_param and not slope_param.IsReadOnly:\n            slope_param.Set(slope_pct / 100.0)\n        \n        actual_dz = abs(new_z1 - new_z2)\n        actual_slope = (actual_dz / horiz_dist) * 100.0 if horiz_dist > 0 else 0\n        \n        updated_pipes.append(int(pid))\n        slopes_applied.append(round(actual_slope, 4))\n        \n        before_after.append({\n            \"pipeId\": int(pid),\n            \"oldSlope\": round(old_slope, 4),\n            \"newSlope\": round(actual_slope, 4),\n            \"drop_ft\": round(float(drop), 4),\n            \"horizDist_ft\": round(float(horiz_dist), 4),\n            \"startZ\": round(float(new_z1), 4),\n            \"endZ\": round(float(new_z2), 4)\n        })\n        \n    except Exception as e:\n        failed.append({\"pipeId\": int(pid) if pid else -1, \"error\": str(e)})\n\nall_ok = True\nslope_errors = []\nmin_slope = slope_pct * (1.0 - tol)\nfor i, sl in enumerate(slopes_applied):\n    if sl < min_slope:\n        all_ok = False\n        slope_errors.append({\n            \"pipeId\": updated_pipes[i],\n            \"appliedSlope\": sl,\n            \"minRequired\": round(min_slope, 4)\n        })\n\nTransactionManager.Instance.TransactionTaskDone()\n\nend_time = time.time()\navg_slope = sum(slopes_applied) / len(slopes_applied) if slopes_applied else 0\n\nif not all_ok:\n    status = \"ERRO_INCLINACAO\"\nelif len(failed) > 0 and len(updated_pipes) > 0:\n    status = \"PARCIAL\"\nelif len(failed) > 0 and len(updated_pipes) == 0:\n    status = \"FALHA_TOTAL\"\nelse:\n    status = \"OK\"\n\nresult = {\n    \"success\": status == \"OK\",\n    \"updatedPipes\": updated_pipes,\n    \"slopesApplied\": slopes_applied,\n    \"avgSlope\": round(avg_slope, 4),\n    \"targetSlope\": slope_pct,\n    \"baseZMode\": base_z_mode,\n    \"count\": len(updated_pipes),\n    \"failed\": failed,\n    \"failedCount\": len(failed),\n    \"slopeErrors\": slope_errors,\n    \"details\": before_after,\n    \"status\": status,\n    \"executionTimeMs\": int((end_time - start_time) * 1000),\n    \"timestamp\": datetime.utcnow().isoformat() + \"Z\"\n}\n\njson_str = json.dumps(result, indent=2)\nstatuses_list = []\nfor ba in before_after:\n    old = ba[\"oldSlope\"]\n    new = ba[\"newSlope\"]\n    if new >= min_slope:\n        statuses_list.append(\"OK\")\n    else:\n        statuses_list.append(\"ERRO\")\n\nOUT = [json_str, updated_pipes, slopes_applied, statuses_list, status, before_after]",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0500000-0005-4a00-d000-000000000005",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0500000-0005-4c00-d000-000000000001", "Name": "pyOut", "Description": "pyOut", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0500000-0005-4b00-d000-000000000001", "Name": "", "Description": "jsonResult", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-d000-000000000002", "Name": "", "Description": "pipeIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-d000-000000000003", "Name": "", "Description": "slopesApplied", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-d000-000000000004", "Name": "", "Description": "statuses", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-d000-000000000005", "Name": "", "Description": "overallStatus", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-d000-000000000006", "Name": "", "Description": "details", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonResult = pyOut[0];\npipeIds = pyOut[1];\nslopesApplied = pyOut[2];\nstatuses = pyOut[3];\noverallStatus = pyOut[4];\ndetails = pyOut[5];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0600000-0006-4a00-d000-000000000006",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0600000-0006-4c00-d000-000000000001", "Name": "pipeIds", "Description": "pipeIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4c00-d000-000000000002", "Name": "slopes", "Description": "slopes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4c00-d000-000000000003", "Name": "statuses", "Description": "statuses", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0600000-0006-4b00-d000-000000000001", "Name": "", "Description": "table", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "headers = {\"PipeId\", \"Slope %\", \"Status\"};\nrows = List.Transpose({pipeIds, slopes, statuses});\ntable = List.AddItemToFront(headers, rows);"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n0700000-0007-4a00-d000-000000000007",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0700000-0007-4c00-d000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0700000-0007-4b00-d000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 250.0,
+      "WatchHeight": 150.0,
+      "Id": "n0800000-0008-4a00-d000-000000000008",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0800000-0008-4c00-d000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0800000-0008-4b00-d000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 450.0,
+      "WatchHeight": 300.0,
+      "Id": "n0900000-0009-4a00-d000-000000000009",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0900000-0009-4c00-d000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0900000-0009-4b00-d000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 600.0,
+      "WatchHeight": 400.0,
+      "Id": "n1000000-0010-4a00-d000-000000000010",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1000000-0010-4c00-d000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1000000-0010-4b00-d000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "p0100000-0001-4b00-d000-000000000001", "End": "p0200000-0002-4c00-d000-000000000001", "Id": "x0050001-0001-4d00-d000-000000000001", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b00-d000-000000000001", "End": "p0300000-0003-4c00-d000-000000000001", "Id": "x0050002-0002-4d00-d000-000000000002", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-d000-000000000001", "End": "p0400000-0004-4c00-d000-000000000001", "Id": "x0050003-0003-4d00-d000-000000000003", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-d000-000000000002", "End": "p0400000-0004-4c00-d000-000000000002", "Id": "x0050004-0004-4d00-d000-000000000004", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-d000-000000000003", "End": "p0400000-0004-4c00-d000-000000000003", "Id": "x0050005-0005-4d00-d000-000000000005", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-d000-000000000004", "End": "p0400000-0004-4c00-d000-000000000004", "Id": "x0050006-0006-4d00-d000-000000000006", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-d000-000000000005", "End": "p0400000-0004-4c00-d000-000000000005", "Id": "x0050007-0007-4d00-d000-000000000007", "IsHidden": "False" },
+    { "Start": "p0400000-0004-4b00-d000-000000000001", "End": "p0500000-0005-4c00-d000-000000000001", "Id": "x0050008-0008-4d00-d000-000000000008", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-d000-000000000002", "End": "p0600000-0006-4c00-d000-000000000001", "Id": "x0050009-0009-4d00-d000-000000000009", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-d000-000000000003", "End": "p0600000-0006-4c00-d000-000000000002", "Id": "x0050010-0010-4d00-d000-000000000010", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-d000-000000000004", "End": "p0600000-0006-4c00-d000-000000000003", "Id": "x0050011-0011-4d00-d000-000000000011", "IsHidden": "False" },
+    { "Start": "p0600000-0006-4b00-d000-000000000001", "End": "p0700000-0007-4c00-d000-000000000001", "Id": "x0050012-0012-4d00-d000-000000000012", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-d000-000000000005", "End": "p0800000-0008-4c00-d000-000000000001", "Id": "x0050013-0013-4d00-d000-000000000013", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-d000-000000000006", "End": "p0900000-0009-4c00-d000-000000000001", "Id": "x0050014-0014-4d00-d000-000000000014", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-d000-000000000001", "End": "p1000000-0010-4c00-d000-000000000001", "Id": "x0050015-0015-4d00-d000-000000000015", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DynamoCore", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0700000-0007-4a00-d000-000000000007", "n0800000-0008-4a00-d000-000000000008", "n0900000-0009-4a00-d000-000000000009", "n1000000-0010-4a00-d000-000000000010"] },
+    { "Name": "PythonNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0400000-0004-4a00-d000-000000000004"] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "n0100000-0001-4a00-d000-000000000001", "Name": "JSON Path", "IsSetAsInput": true, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 120.0 },
+      { "Id": "n0200000-0002-4a00-d000-000000000002", "Name": "Data.ParseJSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 350.0, "Y": 120.0 },
+      { "Id": "n0300000-0003-4a00-d000-000000000003", "Name": "Extrair Campos", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 60.0 },
+      { "Id": "n0400000-0004-4a00-d000-000000000004", "Name": "Python - Aplicar Inclinação", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1100.0, "Y": 80.0 },
+      { "Id": "n0500000-0005-4a00-d000-000000000005", "Name": "Separar Resultados", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1600.0, "Y": 80.0 },
+      { "Id": "n0600000-0006-4a00-d000-000000000006", "Name": "Montar Tabela", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2050.0, "Y": 50.0 },
+      { "Id": "n0700000-0007-4a00-d000-000000000007", "Name": "Watch - Tabela Resumo", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2450.0, "Y": 50.0 },
+      { "Id": "n0800000-0008-4a00-d000-000000000008", "Name": "Watch - Status Geral", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2450.0, "Y": 280.0 },
+      { "Id": "n0900000-0009-4a00-d000-000000000009", "Name": "Watch - Detalhes", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2450.0, "Y": 430.0 },
+      { "Id": "n1000000-0010-4a00-d000-000000000010", "Name": "Watch - OUT_JSON", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2450.0, "Y": 680.0 }
+    ],
+    "Annotations": [
+      { "Id": "g0050001-0001-4e00-d000-000000000001", "Title": "1. ENTRADA JSON", "DescriptionText": "Lê pipes[], slopePercent, baseZMode (start/end/auto), tolerance, systemTypeId", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0100000-0001-4a00-d000-000000000001", "n0200000-0002-4a00-d000-000000000002", "n0300000-0003-4a00-d000-000000000003"], "HasNestedGroups": false, "Left": 30.0, "Top": 10.0, "Width": 900.0, "Height": 280.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 40.0, "InitialHeight": 240.0, "TextblockHeight": 30.0, "Background": "#FF48B9C7" },
+      { "Id": "g0050002-0002-4e00-d000-000000000002", "Title": "2. APLICAÇÃO DE INCLINAÇÃO", "DescriptionText": "Python: LocationCurve → calcula drop → Line.CreateBound → loc.Curve = new_line → RBS_PIPE_SLOPE", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0400000-0004-4a00-d000-000000000004", "n0500000-0005-4a00-d000-000000000005"], "HasNestedGroups": false, "Left": 1080.0, "Top": 20.0, "Width": 800.0, "Height": 280.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 50.0, "InitialHeight": 240.0, "TextblockHeight": 30.0, "Background": "#FF71C6A1" },
+      { "Id": "g0050003-0003-4e00-d000-000000000003", "Title": "3. SAÍDAS", "DescriptionText": "Tabela resumo, status geral, detalhes before/after e JSON completo", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0600000-0006-4a00-d000-000000000006", "n0700000-0007-4a00-d000-000000000007", "n0800000-0008-4a00-d000-000000000008", "n0900000-0009-4a00-d000-000000000009", "n1000000-0010-4a00-d000-000000000010"], "HasNestedGroups": false, "Left": 2030.0, "Top": 0.0, "Width": 850.0, "Height": 950.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 910.0, "TextblockHeight": 30.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.5
+  }
+}

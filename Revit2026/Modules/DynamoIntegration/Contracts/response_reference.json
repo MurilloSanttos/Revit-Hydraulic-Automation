@@ -1,0 +1,35 @@
+{
+  "protocolVersion": "1.0.0",
+  "requestId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "timestamp": "2026-03-31T14:30:05.123Z",
+  "command": "Response",
+  "result": {
+    "success": true,
+    "outputs": [
+      {
+        "nodeId": "f6a1b2c3-d4e5-2345-6789-f01234567890",
+        "alias": "ElementosInseridos",
+        "dataType": "ElementId",
+        "value": [98765, 98766, 98767],
+        "isNull": false
+      },
+      {
+        "nodeId": "a1b2c3d4-e5f6-3456-7890-012345678901",
+        "alias": "StatusInsercao",
+        "dataType": "String",
+        "value": "3 equipamentos inseridos com sucesso",
+        "isNull": false
+      }
+    ],
+    "errors": [],
+    "warnings": [
+      "Equipamento na Room 12347 posicionado com offset de 0.02m do ponto original"
+    ],
+    "executionTimeMs": 4523,
+    "nodesExecuted": 14,
+    "metadata": {
+      "dynamoVersion": "3.2.1",
+      "workspaceName": "inserir_equipamentos"
+    }
+  }
+}

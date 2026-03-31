@@ -1,0 +1,242 @@
+{
+  "Uuid": "e1f2a3b4-c5d6-4e7f-8a9b-0c1d2e3f4a5b",
+  "IsCustomNode": false,
+  "Description": "Montagem automática de pranchas - ViewSheet, Viewport, ScheduleSheetInstance, TextNote com numeração sequencial",
+  "Name": "11_GerarPranchas",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0100000-0001-4a02-b000-000000000001",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0100000-0001-4b02-b000-000000000001", "Name": "", "Description": "jsonPath", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonPath = \"C:/PluginRevit/Data/Config/pranchas_input.json\";"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n0200000-0002-4a02-b000-000000000002",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p0200000-0002-4c02-b000-000000000001", "Name": "filePath", "Description": "Path to JSON file", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0200000-0002-4b02-b000-000000000001", "Name": "result", "Description": "Parsed JSON data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.Data.ParseJSON@string",
+      "Replication": "Auto",
+      "Description": "Parse a JSON string into a dictionary or list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0300000-0003-4a02-b000-000000000003",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0300000-0003-4c02-b000-000000000001", "Name": "data", "Description": "data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0300000-0003-4b02-b000-000000000001", "Name": "", "Description": "projectName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000002", "Name": "", "Description": "titleBlockName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000003", "Name": "", "Description": "viewPrefix", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000004", "Name": "", "Description": "tableNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000005", "Name": "", "Description": "legendNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000006", "Name": "", "Description": "noteText", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000007", "Name": "", "Description": "startNumber", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000008", "Name": "", "Description": "autoArrange", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000009", "Name": "", "Description": "autoTables", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000010", "Name": "", "Description": "autoLegends", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b02-b000-000000000011", "Name": "", "Description": "posConfig", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "projectName = data[\"projectName\"];\ntitleBlockName = data[\"titleBlockName\"];\nviewPrefix = data[\"viewPrefix\"];\ntableNames = data[\"tableNames\"];\nlegendNames = data[\"legendNames\"];\nnoteText = data[\"noteText\"];\nstartNumber = data[\"sheetStartNumber\"];\nautoArrange = data[\"autoArrangeViews\"];\nautoTables = data[\"autoInsertTables\"];\nautoLegends = data[\"autoInsertLegends\"];\nposConfig = data[\"templatePositionConfig\"];"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0400000-0004-4a02-b000-000000000004",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0400000-0004-4c02-b000-000000000001", "Name": "IN[0]", "Description": "projectName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000002", "Name": "IN[1]", "Description": "titleBlockName", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000003", "Name": "IN[2]", "Description": "viewPrefix", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000004", "Name": "IN[3]", "Description": "tableNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000005", "Name": "IN[4]", "Description": "legendNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000006", "Name": "IN[5]", "Description": "noteText", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000007", "Name": "IN[6]", "Description": "startNumber", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000008", "Name": "IN[7]", "Description": "autoArrange", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000009", "Name": "IN[8]", "Description": "autoTables", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000010", "Name": "IN[9]", "Description": "autoLegends", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c02-b000-000000000011", "Name": "IN[10]", "Description": "posConfig", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0400000-0004-4b02-b000-000000000001", "Name": "OUT", "Description": "sheet results", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import *\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\nimport json\nimport time\nfrom datetime import datetime\n\nstart_time = time.time()\ndoc = DocumentManager.Instance.CurrentDBDocument\n\nproject_name = str(IN[0]) if IN[0] else \"Projeto\"\ntb_name = str(IN[1]) if IN[1] else \"\"\nview_prefix = str(IN[2]) if IN[2] else \"HID\"\ntable_names = IN[3] if isinstance(IN[3], list) else []\nlegend_names = IN[4] if isinstance(IN[4], list) else []\nnote_text = str(IN[5]) if IN[5] else \"\"\nstart_num = int(IN[6]) if IN[6] else 1\nauto_arrange = bool(IN[7]) if IN[7] is not None else True\nauto_tables = bool(IN[8]) if IN[8] is not None else True\nauto_legends = bool(IN[9]) if IN[9] is not None else True\npos_cfg = IN[10] if IN[10] else {}\n\nvw_pos = pos_cfg.get(\"views\", {\"x\": 0.2, \"y\": 0.7}) if isinstance(pos_cfg, dict) else {\"x\": 0.2, \"y\": 0.7}\ntb_pos = pos_cfg.get(\"tables\", {\"x\": 0.2, \"y\": 0.25}) if isinstance(pos_cfg, dict) else {\"x\": 0.2, \"y\": 0.25}\nlg_pos = pos_cfg.get(\"legends\", {\"x\": 0.75, \"y\": 0.7}) if isinstance(pos_cfg, dict) else {\"x\": 0.75, \"y\": 0.7}\n\nvw_x = float(vw_pos.get(\"x\", 0.2)) / 0.3048 if isinstance(vw_pos, dict) else 0.656\nvw_y = float(vw_pos.get(\"y\", 0.7)) / 0.3048 if isinstance(vw_pos, dict) else 2.297\ntb_x = float(tb_pos.get(\"x\", 0.2)) / 0.3048 if isinstance(tb_pos, dict) else 0.656\ntb_y = float(tb_pos.get(\"y\", 0.25)) / 0.3048 if isinstance(tb_pos, dict) else 0.820\nlg_x = float(lg_pos.get(\"x\", 0.75)) / 0.3048 if isinstance(lg_pos, dict) else 2.461\nlg_y = float(lg_pos.get(\"y\", 0.7)) / 0.3048 if isinstance(lg_pos, dict) else 2.297\n\ntitle_block = None\ntb_collector = FilteredElementCollector(doc).OfClass(FamilySymbol).OfCategory(BuiltInCategory.OST_TitleBlocks)\nfor tb in tb_collector:\n    if tb.FamilyName == tb_name or tb.Name == tb_name:\n        title_block = tb\n        break\nif title_block is None:\n    for tb in tb_collector:\n        title_block = tb\n        break\n\nall_views = FilteredElementCollector(doc).OfClass(View).ToElements()\nmatching_views = []\nfor v in all_views:\n    try:\n        if v.IsTemplate:\n            continue\n        if hasattr(v, 'Name') and v.Name.startswith(view_prefix):\n            if isinstance(v, ViewPlan) or isinstance(v, ViewSection):\n                matching_views.append(v)\n    except:\n        continue\n\nall_schedules = {}\nfec_sched = FilteredElementCollector(doc).OfClass(ViewSchedule)\nfor vs in fec_sched:\n    all_schedules[vs.Name] = vs\n\nall_legends = {}\nfor v in all_views:\n    try:\n        if v.ViewType == ViewType.Legend:\n            all_legends[v.Name] = v\n    except:\n        continue\n\ntext_type = None\ntt_collector = FilteredElementCollector(doc).OfClass(TextNoteType)\nfor tt in tt_collector:\n    text_type = tt\n    break\n\nsheets_created = []\nviews_inserted = []\ntables_inserted = []\nlegends_inserted = []\nnotes_created = []\nerrors = []\n\nTransactionManager.Instance.EnsureInTransaction(doc)\n\nif title_block and not title_block.IsActive:\n    try:\n        title_block.Activate()\n        doc.Regenerate()\n    except:\n        pass\n\nsheet_num = start_num\n\nfor idx, view in enumerate(matching_views):\n    try:\n        num_str = str(sheet_num).zfill(2)\n        sheet_number = \"PR-\" + project_name + \"-\" + num_str\n        sheet_name = view.Name\n        \n        tb_id = title_block.Id if title_block else ElementId.InvalidElementId\n        sheet = ViewSheet.Create(doc, tb_id)\n        sheet.SheetNumber = sheet_number\n        sheet.Name = sheet_name\n        \n        view_offset = idx * (0.25 / 0.3048)\n        vp_x = vw_x + view_offset\n        vp_y = vw_y\n        \n        if Viewport.CanAddViewToSheet(doc, sheet.Id, view.Id):\n            vp = Viewport.Create(doc, sheet.Id, view.Id, XYZ(vp_x, vp_y, 0))\n            views_inserted.append({\n                \"sheetId\": sheet.Id.IntegerValue,\n                \"viewId\": view.Id.IntegerValue,\n                \"viewName\": view.Name\n            })\n        \n        if auto_tables:\n            t_offset_y = 0\n            for tn in table_names:\n                if tn in all_schedules:\n                    try:\n                        sched = all_schedules[tn]\n                        ssi_pt = XYZ(tb_x, tb_y - t_offset_y, 0)\n                        ssi = ScheduleSheetInstance.Create(doc, sheet.Id, sched.Id, ssi_pt)\n                        tables_inserted.append({\n                            \"sheetId\": sheet.Id.IntegerValue,\n                            \"scheduleName\": tn,\n                            \"scheduleId\": sched.Id.IntegerValue\n                        })\n                        t_offset_y += 0.05 / 0.3048\n                    except Exception as e:\n                        errors.append({\"type\": \"table\", \"name\": tn, \"error\": str(e)})\n        \n        if auto_legends:\n            l_offset_y = 0\n            for ln in legend_names:\n                if ln in all_legends:\n                    try:\n                        legend = all_legends[ln]\n                        if Viewport.CanAddViewToSheet(doc, sheet.Id, legend.Id):\n                            lg_pt = XYZ(lg_x, lg_y - l_offset_y, 0)\n                            Viewport.Create(doc, sheet.Id, legend.Id, lg_pt)\n                            legends_inserted.append({\n                                \"sheetId\": sheet.Id.IntegerValue,\n                                \"legendName\": ln,\n                                \"legendId\": legend.Id.IntegerValue\n                            })\n                            l_offset_y += 0.15 / 0.3048\n                    except Exception as e:\n                        errors.append({\"type\": \"legend\", \"name\": ln, \"error\": str(e)})\n        \n        if note_text and text_type:\n            try:\n                note_x = tb_x\n                note_y = tb_y - (len(table_names) * 0.05 / 0.3048) - 0.1 / 0.3048\n                note_pt = XYZ(note_x, note_y, 0)\n                opts = TextNoteOptions(text_type.Id)\n                opts.HorizontalAlignment = HorizontalTextAlignment.Left\n                tn = TextNote.Create(doc, sheet.Id, note_pt, note_text, opts)\n                notes_created.append({\n                    \"sheetId\": sheet.Id.IntegerValue,\n                    \"noteId\": tn.Id.IntegerValue\n                })\n            except Exception as e:\n                errors.append({\"type\": \"note\", \"error\": str(e)})\n        \n        sheets_created.append({\n            \"sheetId\": sheet.Id.IntegerValue,\n            \"sheetNumber\": sheet_number,\n            \"sheetName\": sheet_name,\n            \"viewCount\": 1,\n            \"tableCount\": len([t for t in tables_inserted if t[\"sheetId\"] == sheet.Id.IntegerValue]),\n            \"legendCount\": len([l for l in legends_inserted if l[\"sheetId\"] == sheet.Id.IntegerValue])\n        })\n        \n        sheet_num += 1\n    except Exception as e:\n        errors.append({\"type\": \"sheet\", \"viewName\": view.Name if hasattr(view, 'Name') else \"?\", \"error\": str(e)})\n        sheet_num += 1\n\nTransactionManager.Instance.TransactionTaskDone()\n\nend_time = time.time()\n\nif len(sheets_created) == 0:\n    status = \"NENHUMA_PRANCHA\"\nelif len(errors) > 0:\n    status = \"PARCIAL\"\nelse:\n    status = \"OK\"\n\nresult = {\n    \"success\": status == \"OK\",\n    \"sheetsCreated\": sheets_created,\n    \"sheetCount\": len(sheets_created),\n    \"viewsInserted\": views_inserted,\n    \"viewCount\": len(views_inserted),\n    \"tablesInserted\": tables_inserted,\n    \"tableCount\": len(tables_inserted),\n    \"legendsInserted\": legends_inserted,\n    \"legendCount\": len(legends_inserted),\n    \"notesCreated\": len(notes_created) > 0,\n    \"noteCount\": len(notes_created),\n    \"errors\": errors,\n    \"errorCount\": len(errors),\n    \"status\": status,\n    \"executionTimeMs\": int((end_time - start_time) * 1000),\n    \"timestamp\": datetime.utcnow().isoformat() + \"Z\"\n}\n\nsheet_ids = [s[\"sheetId\"] for s in sheets_created]\nsheet_numbers = [s[\"sheetNumber\"] for s in sheets_created]\n\nOUT = [json.dumps(result, indent=2), sheet_ids, sheet_numbers, status, sheets_created, errors]",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0500000-0005-4a02-b000-000000000005",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0500000-0005-4c02-b000-000000000001", "Name": "pyOut", "Description": "pyOut", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0500000-0005-4b02-b000-000000000001", "Name": "", "Description": "jsonResult", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b02-b000-000000000002", "Name": "", "Description": "sheetIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b02-b000-000000000003", "Name": "", "Description": "sheetNumbers", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b02-b000-000000000004", "Name": "", "Description": "status", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b02-b000-000000000005", "Name": "", "Description": "details", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b02-b000-000000000006", "Name": "", "Description": "errors", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonResult = pyOut[0];\nsheetIds = pyOut[1];\nsheetNumbers = pyOut[2];\nstatus = pyOut[3];\ndetails = pyOut[4];\nerrors = pyOut[5];"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n0600000-0006-4a02-b000-000000000006",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0600000-0006-4c02-b000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0600000-0006-4b02-b000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 300.0,
+      "WatchHeight": 200.0,
+      "Id": "n0650000-0065-4a02-b000-000000000065",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0650000-0065-4c02-b000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0650000-0065-4b02-b000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 250.0,
+      "WatchHeight": 150.0,
+      "Id": "n0700000-0007-4a02-b000-000000000007",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0700000-0007-4c02-b000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0700000-0007-4b02-b000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 450.0,
+      "WatchHeight": 300.0,
+      "Id": "n0800000-0008-4a02-b000-000000000008",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0800000-0008-4c02-b000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0800000-0008-4b02-b000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 600.0,
+      "WatchHeight": 400.0,
+      "Id": "n0900000-0009-4a02-b000-000000000009",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0900000-0009-4c02-b000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0900000-0009-4b02-b000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "p0100000-0001-4b02-b000-000000000001", "End": "p0200000-0002-4c02-b000-000000000001", "Id": "x0090001-0001-4d02-b000-000000000001", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b02-b000-000000000001", "End": "p0300000-0003-4c02-b000-000000000001", "Id": "x0090002-0002-4d02-b000-000000000002", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000001", "End": "p0400000-0004-4c02-b000-000000000001", "Id": "x0090003-0003-4d02-b000-000000000003", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000002", "End": "p0400000-0004-4c02-b000-000000000002", "Id": "x0090004-0004-4d02-b000-000000000004", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000003", "End": "p0400000-0004-4c02-b000-000000000003", "Id": "x0090005-0005-4d02-b000-000000000005", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000004", "End": "p0400000-0004-4c02-b000-000000000004", "Id": "x0090006-0006-4d02-b000-000000000006", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000005", "End": "p0400000-0004-4c02-b000-000000000005", "Id": "x0090007-0007-4d02-b000-000000000007", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000006", "End": "p0400000-0004-4c02-b000-000000000006", "Id": "x0090008-0008-4d02-b000-000000000008", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000007", "End": "p0400000-0004-4c02-b000-000000000007", "Id": "x0090009-0009-4d02-b000-000000000009", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000008", "End": "p0400000-0004-4c02-b000-000000000008", "Id": "x0090010-0010-4d02-b000-000000000010", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000009", "End": "p0400000-0004-4c02-b000-000000000009", "Id": "x0090011-0011-4d02-b000-000000000011", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000010", "End": "p0400000-0004-4c02-b000-000000000010", "Id": "x0090012-0012-4d02-b000-000000000012", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b02-b000-000000000011", "End": "p0400000-0004-4c02-b000-000000000011", "Id": "x0090013-0013-4d02-b000-000000000013", "IsHidden": "False" },
+    { "Start": "p0400000-0004-4b02-b000-000000000001", "End": "p0500000-0005-4c02-b000-000000000001", "Id": "x0090014-0014-4d02-b000-000000000014", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b02-b000-000000000002", "End": "p0600000-0006-4c02-b000-000000000001", "Id": "x0090015-0015-4d02-b000-000000000015", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b02-b000-000000000003", "End": "p0650000-0065-4c02-b000-000000000001", "Id": "x0090016-0016-4d02-b000-000000000016", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b02-b000-000000000004", "End": "p0700000-0007-4c02-b000-000000000001", "Id": "x0090017-0017-4d02-b000-000000000017", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b02-b000-000000000005", "End": "p0800000-0008-4c02-b000-000000000001", "Id": "x0090018-0018-4d02-b000-000000000018", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b02-b000-000000000001", "End": "p0900000-0009-4c02-b000-000000000001", "Id": "x0090019-0019-4d02-b000-000000000019", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DynamoCore", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0600000-0006-4a02-b000-000000000006", "n0650000-0065-4a02-b000-000000000065", "n0700000-0007-4a02-b000-000000000007", "n0800000-0008-4a02-b000-000000000008", "n0900000-0009-4a02-b000-000000000009"] },
+    { "Name": "PythonNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0400000-0004-4a02-b000-000000000004"] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "n0100000-0001-4a02-b000-000000000001", "Name": "JSON Path", "IsSetAsInput": true, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 120.0 },
+      { "Id": "n0200000-0002-4a02-b000-000000000002", "Name": "Data.ParseJSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 350.0, "Y": 120.0 },
+      { "Id": "n0300000-0003-4a02-b000-000000000003", "Name": "Extrair Configuração", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 10.0 },
+      { "Id": "n0400000-0004-4a02-b000-000000000004", "Name": "Python - Gerar Pranchas", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1200.0, "Y": 40.0 },
+      { "Id": "n0500000-0005-4a02-b000-000000000005", "Name": "Separar Resultados", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1750.0, "Y": 40.0 },
+      { "Id": "n0600000-0006-4a02-b000-000000000006", "Name": "Watch - Sheet IDs", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 20.0 },
+      { "Id": "n0650000-0065-4a02-b000-000000000065", "Name": "Watch - Sheet Numbers", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 220.0 },
+      { "Id": "n0700000-0007-4a02-b000-000000000007", "Name": "Watch - Status", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 400.0 },
+      { "Id": "n0800000-0008-4a02-b000-000000000008", "Name": "Watch - Detalhes Pranchas", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 540.0 },
+      { "Id": "n0900000-0009-4a02-b000-000000000009", "Name": "Watch - OUT_JSON", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2200.0, "Y": 800.0 }
+    ],
+    "Annotations": [
+      { "Id": "g0090001-0001-4e02-b000-000000000001", "Title": "1. CONFIGURAÇÃO", "DescriptionText": "projectName, titleBlockName, viewPrefix, tableNames[], legendNames[], noteText, sheetStartNumber, flags, posConfig", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0100000-0001-4a02-b000-000000000001", "n0200000-0002-4a02-b000-000000000002", "n0300000-0003-4a02-b000-000000000003"], "HasNestedGroups": false, "Left": 30.0, "Top": -40.0, "Width": 900.0, "Height": 420.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": -10.0, "InitialHeight": 380.0, "TextblockHeight": 30.0, "Background": "#FF48B9C7" },
+      { "Id": "g0090002-0002-4e02-b000-000000000002", "Title": "2. MONTAGEM DE PRANCHAS", "DescriptionText": "ViewSheet.Create → Viewport.Create → ScheduleSheetInstance.Create → TextNote.Create, numeração PR-<proj>-NN", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0400000-0004-4a02-b000-000000000004", "n0500000-0005-4a02-b000-000000000005"], "HasNestedGroups": false, "Left": 1180.0, "Top": -10.0, "Width": 850.0, "Height": 300.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 20.0, "InitialHeight": 260.0, "TextblockHeight": 30.0, "Background": "#FF71C6A1" },
+      { "Id": "g0090003-0003-4e02-b000-000000000003", "Title": "3. SAÍDAS", "DescriptionText": "Sheet IDs, Numbers (PR-proj-NN), Status, Detalhes e JSON completo", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0600000-0006-4a02-b000-000000000006", "n0650000-0065-4a02-b000-000000000065", "n0700000-0007-4a02-b000-000000000007", "n0800000-0008-4a02-b000-000000000008", "n0900000-0009-4a02-b000-000000000009"], "HasNestedGroups": false, "Left": 2180.0, "Top": -30.0, "Width": 660.0, "Height": 1100.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 0.0, "InitialHeight": 1060.0, "TextblockHeight": 30.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.45
+  }
+}

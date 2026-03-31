@@ -1,0 +1,217 @@
+{
+  "Uuid": "b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d2e",
+  "IsCustomNode": false,
+  "Description": "Criação automática de prumadas verticais MEP - conecta níveis com Pipes verticais contínuos",
+  "Name": "08_CriarPrumadas",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0100000-0001-4a00-e000-000000000001",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0100000-0001-4b00-e000-000000000001", "Name": "", "Description": "jsonPath", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonPath = \"C:/PluginRevit/Data/Config/prumadas_input.json\";"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n0200000-0002-4a00-e000-000000000002",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p0200000-0002-4c00-e000-000000000001", "Name": "filePath", "Description": "Path to JSON file", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0200000-0002-4b00-e000-000000000001", "Name": "result", "Description": "Parsed JSON data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.Data.ParseJSON@string",
+      "Replication": "Auto",
+      "Description": "Parse a JSON string into a dictionary or list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0300000-0003-4a00-e000-000000000003",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0300000-0003-4c00-e000-000000000001", "Name": "data", "Description": "data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0300000-0003-4b00-e000-000000000001", "Name": "", "Description": "originPts", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-e000-000000000002", "Name": "", "Description": "levelNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-e000-000000000003", "Name": "", "Description": "pipeTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-e000-000000000004", "Name": "", "Description": "systemTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-e000-000000000005", "Name": "", "Description": "diameterMm", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-e000-000000000006", "Name": "", "Description": "offsetX", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-e000-000000000007", "Name": "", "Description": "offsetY", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-e000-000000000008", "Name": "", "Description": "tolerance", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-e000-000000000009", "Name": "", "Description": "connectExisting", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "pts = data[\"originPoints\"];\noriginPts = List.Map(pts, Function(p) { return Autodesk.DesignScript.Geometry.Point.ByCoordinates(p[\"x\"], p[\"y\"], p[\"z\"]); });\nlevelNames = data[\"levels\"];\npipeTypeId = data[\"pipeTypeId\"];\nsystemTypeId = data[\"systemTypeId\"];\ndiameterMm = data[\"diameterMm\"];\noffsetX = data[\"offsetX\"];\noffsetY = data[\"offsetY\"];\ntolerance = data[\"tolerance\"];\nconnectExisting = data[\"connectToExisting\"];"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0400000-0004-4a00-e000-000000000004",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0400000-0004-4c00-e000-000000000001", "Name": "IN[0]", "Description": "originPts", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-e000-000000000002", "Name": "IN[1]", "Description": "levelNames", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-e000-000000000003", "Name": "IN[2]", "Description": "pipeTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-e000-000000000004", "Name": "IN[3]", "Description": "systemTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-e000-000000000005", "Name": "IN[4]", "Description": "diameterMm", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-e000-000000000006", "Name": "IN[5]", "Description": "offsetX", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-e000-000000000007", "Name": "IN[6]", "Description": "offsetY", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-e000-000000000008", "Name": "IN[7]", "Description": "tolerance", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4c00-e000-000000000009", "Name": "IN[8]", "Description": "connectExisting", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0400000-0004-4b00-e000-000000000001", "Name": "OUT", "Description": "results", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import *\nfrom Autodesk.Revit.DB.Plumbing import Pipe\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\nimport json\nimport math\nimport time\nfrom datetime import datetime\n\nstart_time = time.time()\ndoc = DocumentManager.Instance.CurrentDBDocument\n\norigin_pts = IN[0] if isinstance(IN[0], list) else [IN[0]]\nlevel_names = IN[1] if isinstance(IN[1], list) else [IN[1]]\npipe_type_id = int(IN[2])\nsystem_type_id = int(IN[3])\ndiameter_mm = float(IN[4])\noffset_x_mm = float(IN[5]) if IN[5] else 0\noffset_y_mm = float(IN[6]) if IN[6] else 0\ntolerance = float(IN[7]) if IN[7] else 0.01\nconnect_existing = bool(IN[8]) if IN[8] else False\n\ndiameter_ft = diameter_mm / 304.8\noffset_x_ft = offset_x_mm / 304.8\noffset_y_ft = offset_y_mm / 304.8\n\npipe_type_eid = ElementId(pipe_type_id)\nsystem_type_eid = ElementId(system_type_id)\n\nall_levels = FilteredElementCollector(doc).OfClass(Level).ToElements()\nlevel_map = {}\nfor lvl in all_levels:\n    level_map[lvl.Name] = lvl\n\nsorted_levels = []\nfor ln in level_names:\n    if ln in level_map:\n        sorted_levels.append(level_map[ln])\n\nsorted_levels.sort(key=lambda l: l.Elevation)\n\nif len(sorted_levels) < 2:\n    OUT = [json.dumps({\"success\": False, \"status\": \"ERRO_LEVELS\", \"message\": \"Need at least 2 levels\"}), [], \"ERRO_LEVELS\", []]\nelse:\n    created_pipes = []\n    failed = []\n    pipe_elements = []\n    prumada_details = []\n    total_height = 0\n    levels_used = [l.Name for l in sorted_levels]\n    \n    TransactionManager.Instance.EnsureInTransaction(doc)\n    \n    for origin in origin_pts:\n        try:\n            ox = origin.X / 304.8 + offset_x_ft\n            oy = origin.Y / 304.8 + offset_y_ft\n        except:\n            ox = 0\n            oy = 0\n        \n        prumada_pipes = []\n        \n        for i in range(len(sorted_levels) - 1):\n            try:\n                z1 = sorted_levels[i].Elevation\n                z2 = sorted_levels[i + 1].Elevation\n                \n                if abs(z2 - z1) < 0.01:\n                    continue\n                \n                p1 = XYZ(ox, oy, z1)\n                p2 = XYZ(ox, oy, z2)\n                \n                base_level = sorted_levels[i]\n                \n                pipe = Pipe.Create(doc, system_type_eid, pipe_type_eid, base_level.Id, p1, p2)\n                \n                param_diam = pipe.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM)\n                if param_diam and not param_diam.IsReadOnly:\n                    param_diam.Set(diameter_ft)\n                \n                seg_height = abs(z2 - z1)\n                total_height += seg_height\n                \n                created_pipes.append(pipe.Id.IntegerValue)\n                pipe_elements.append(pipe)\n                prumada_pipes.append(pipe)\n                \n                prumada_details.append({\n                    \"pipeId\": pipe.Id.IntegerValue,\n                    \"fromLevel\": sorted_levels[i].Name,\n                    \"toLevel\": sorted_levels[i + 1].Name,\n                    \"height_ft\": round(float(seg_height), 4),\n                    \"height_m\": round(float(seg_height * 0.3048), 4),\n                    \"x_ft\": round(float(ox), 4),\n                    \"y_ft\": round(float(oy), 4)\n                })\n            except Exception as e:\n                failed.append({\n                    \"fromLevel\": sorted_levels[i].Name if i < len(sorted_levels) else \"?\",\n                    \"toLevel\": sorted_levels[i+1].Name if i+1 < len(sorted_levels) else \"?\",\n                    \"error\": str(e)\n                })\n        \n        for i in range(len(prumada_pipes) - 1):\n            try:\n                c1 = prumada_pipes[i].ConnectorManager.Connectors\n                c2 = prumada_pipes[i + 1].ConnectorManager.Connectors\n                best_dist = float('inf')\n                best_pair = None\n                for conn1 in c1:\n                    for conn2 in c2:\n                        d = conn1.Origin.DistanceTo(conn2.Origin)\n                        if d < best_dist:\n                            best_dist = d\n                            best_pair = (conn1, conn2)\n                if best_pair and best_dist < tolerance:\n                    if not best_pair[0].IsConnected and not best_pair[1].IsConnected:\n                        best_pair[0].ConnectTo(best_pair[1])\n            except:\n                pass\n        \n        if connect_existing:\n            try:\n                fec = FilteredElementCollector(doc)\n                fec.OfClass(type(pipe_elements[0])) if pipe_elements else None\n                nearby = fec.ToElements() if pipe_elements else []\n                for ep in pipe_elements:\n                    ec = ep.ConnectorManager.Connectors\n                    for conn in ec:\n                        if conn.IsConnected:\n                            continue\n                        for other in nearby:\n                            if other.Id == ep.Id:\n                                continue\n                            try:\n                                oc = other.ConnectorManager.Connectors\n                                for oconn in oc:\n                                    if oconn.IsConnected:\n                                        continue\n                                    d = conn.Origin.DistanceTo(oconn.Origin)\n                                    if d < tolerance:\n                                        conn.ConnectTo(oconn)\n                                        break\n                            except:\n                                continue\n            except:\n                pass\n    \n    alignment_ok = True\n    for det in prumada_details:\n        if len(prumada_details) > 1:\n            ref_x = prumada_details[0][\"x_ft\"]\n            ref_y = prumada_details[0][\"y_ft\"]\n            if abs(det[\"x_ft\"] - ref_x) > tolerance or abs(det[\"y_ft\"] - ref_y) > tolerance:\n                alignment_ok = False\n                break\n    \n    TransactionManager.Instance.TransactionTaskDone()\n    \n    end_time = time.time()\n    \n    if not alignment_ok:\n        status = \"ERRO_DESALINHAMENTO\"\n    elif len(failed) > 0 and len(created_pipes) > 0:\n        status = \"PARCIAL\"\n    elif len(failed) > 0 and len(created_pipes) == 0:\n        status = \"FALHA_TOTAL\"\n    else:\n        status = \"OK\"\n    \n    result = {\n        \"success\": status == \"OK\",\n        \"pipesCreated\": created_pipes,\n        \"segmentCount\": len(created_pipes),\n        \"totalHeight_ft\": round(float(total_height), 4),\n        \"totalHeight_m\": round(float(total_height * 0.3048), 4),\n        \"levelsUsed\": levels_used,\n        \"levelCount\": len(sorted_levels),\n        \"diameter_mm\": diameter_mm,\n        \"details\": prumada_details,\n        \"failed\": failed,\n        \"failedCount\": len(failed),\n        \"alignmentValid\": alignment_ok,\n        \"status\": status,\n        \"executionTimeMs\": int((end_time - start_time) * 1000),\n        \"timestamp\": datetime.utcnow().isoformat() + \"Z\"\n    }\n    \n    OUT = [json.dumps(result, indent=2), created_pipes, status, prumada_details]",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0500000-0005-4a00-e000-000000000005",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0500000-0005-4c00-e000-000000000001", "Name": "pyOut", "Description": "pyOut", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0500000-0005-4b00-e000-000000000001", "Name": "", "Description": "jsonResult", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-e000-000000000002", "Name": "", "Description": "pipeIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-e000-000000000003", "Name": "", "Description": "status", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4b00-e000-000000000004", "Name": "", "Description": "details", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonResult = pyOut[0];\npipeIds = pyOut[1];\nstatus = pyOut[2];\ndetails = pyOut[3];"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n0600000-0006-4a00-e000-000000000006",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0600000-0006-4c00-e000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0600000-0006-4b00-e000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 250.0,
+      "WatchHeight": 150.0,
+      "Id": "n0700000-0007-4a00-e000-000000000007",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0700000-0007-4c00-e000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0700000-0007-4b00-e000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 450.0,
+      "WatchHeight": 300.0,
+      "Id": "n0800000-0008-4a00-e000-000000000008",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0800000-0008-4c00-e000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0800000-0008-4b00-e000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 600.0,
+      "WatchHeight": 400.0,
+      "Id": "n0900000-0009-4a00-e000-000000000009",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0900000-0009-4c00-e000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0900000-0009-4b00-e000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "p0100000-0001-4b00-e000-000000000001", "End": "p0200000-0002-4c00-e000-000000000001", "Id": "x0060001-0001-4d00-e000-000000000001", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b00-e000-000000000001", "End": "p0300000-0003-4c00-e000-000000000001", "Id": "x0060002-0002-4d00-e000-000000000002", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000001", "End": "p0400000-0004-4c00-e000-000000000001", "Id": "x0060003-0003-4d00-e000-000000000003", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000002", "End": "p0400000-0004-4c00-e000-000000000002", "Id": "x0060004-0004-4d00-e000-000000000004", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000003", "End": "p0400000-0004-4c00-e000-000000000003", "Id": "x0060005-0005-4d00-e000-000000000005", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000004", "End": "p0400000-0004-4c00-e000-000000000004", "Id": "x0060006-0006-4d00-e000-000000000006", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000005", "End": "p0400000-0004-4c00-e000-000000000005", "Id": "x0060007-0007-4d00-e000-000000000007", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000006", "End": "p0400000-0004-4c00-e000-000000000006", "Id": "x0060008-0008-4d00-e000-000000000008", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000007", "End": "p0400000-0004-4c00-e000-000000000007", "Id": "x0060009-0009-4d00-e000-000000000009", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000008", "End": "p0400000-0004-4c00-e000-000000000008", "Id": "x0060010-0010-4d00-e000-000000000010", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-e000-000000000009", "End": "p0400000-0004-4c00-e000-000000000009", "Id": "x0060011-0011-4d00-e000-000000000011", "IsHidden": "False" },
+    { "Start": "p0400000-0004-4b00-e000-000000000001", "End": "p0500000-0005-4c00-e000-000000000001", "Id": "x0060012-0012-4d00-e000-000000000012", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-e000-000000000002", "End": "p0600000-0006-4c00-e000-000000000001", "Id": "x0060013-0013-4d00-e000-000000000013", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-e000-000000000003", "End": "p0700000-0007-4c00-e000-000000000001", "Id": "x0060014-0014-4d00-e000-000000000014", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-e000-000000000004", "End": "p0800000-0008-4c00-e000-000000000001", "Id": "x0060015-0015-4d00-e000-000000000015", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-e000-000000000001", "End": "p0900000-0009-4c00-e000-000000000001", "Id": "x0060016-0016-4d00-e000-000000000016", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DynamoCore", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0600000-0006-4a00-e000-000000000006", "n0700000-0007-4a00-e000-000000000007", "n0800000-0008-4a00-e000-000000000008", "n0900000-0009-4a00-e000-000000000009"] },
+    { "Name": "PythonNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0400000-0004-4a00-e000-000000000004"] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "n0100000-0001-4a00-e000-000000000001", "Name": "JSON Path", "IsSetAsInput": true, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 120.0 },
+      { "Id": "n0200000-0002-4a00-e000-000000000002", "Name": "Data.ParseJSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 350.0, "Y": 120.0 },
+      { "Id": "n0300000-0003-4a00-e000-000000000003", "Name": "Extrair Campos JSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 30.0 },
+      { "Id": "n0400000-0004-4a00-e000-000000000004", "Name": "Python - Criar Prumadas", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1200.0, "Y": 60.0 },
+      { "Id": "n0500000-0005-4a00-e000-000000000005", "Name": "Separar Resultados", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1700.0, "Y": 60.0 },
+      { "Id": "n0600000-0006-4a00-e000-000000000006", "Name": "Watch - Pipe IDs", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2100.0, "Y": 40.0 },
+      { "Id": "n0700000-0007-4a00-e000-000000000007", "Name": "Watch - Status", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2100.0, "Y": 250.0 },
+      { "Id": "n0800000-0008-4a00-e000-000000000008", "Name": "Watch - Detalhes Segmentos", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2100.0, "Y": 400.0 },
+      { "Id": "n0900000-0009-4a00-e000-000000000009", "Name": "Watch - OUT_JSON", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2100.0, "Y": 650.0 }
+    ],
+    "Annotations": [
+      { "Id": "g0060001-0001-4e00-e000-000000000001", "Title": "1. ENTRADA JSON", "DescriptionText": "Lê originPoints[], levels[], pipeTypeId, systemTypeId, diameterMm, offsets, tolerance, connectToExisting", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0100000-0001-4a00-e000-000000000001", "n0200000-0002-4a00-e000-000000000002", "n0300000-0003-4a00-e000-000000000003"], "HasNestedGroups": false, "Left": 30.0, "Top": -20.0, "Width": 900.0, "Height": 370.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 10.0, "InitialHeight": 330.0, "TextblockHeight": 30.0, "Background": "#FF48B9C7" },
+      { "Id": "g0060002-0002-4e00-e000-000000000002", "Title": "2. CRIAÇÃO DE PRUMADAS", "DescriptionText": "Para cada origin: ordena levels por elevation, cria Pipe vertical entre levels consecutivos, conecta segmentos", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0400000-0004-4a00-e000-000000000004", "n0500000-0005-4a00-e000-000000000005"], "HasNestedGroups": false, "Left": 1180.0, "Top": 0.0, "Width": 800.0, "Height": 300.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 260.0, "TextblockHeight": 30.0, "Background": "#FF71C6A1" },
+      { "Id": "g0060003-0003-4e00-e000-000000000003", "Title": "3. SAÍDAS", "DescriptionText": "Pipe IDs, Status, Detalhes por segmento (Level→Level, altura) e JSON completo", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0600000-0006-4a00-e000-000000000006", "n0700000-0007-4a00-e000-000000000007", "n0800000-0008-4a00-e000-000000000008", "n0900000-0009-4a00-e000-000000000009"], "HasNestedGroups": false, "Left": 2080.0, "Top": -10.0, "Width": 680.0, "Height": 930.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 20.0, "InitialHeight": 890.0, "TextblockHeight": 30.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.5
+  }
+}

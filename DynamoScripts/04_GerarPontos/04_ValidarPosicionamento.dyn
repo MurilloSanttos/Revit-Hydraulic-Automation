@@ -1,0 +1,269 @@
+{
+  "Uuid": "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a",
+  "IsCustomNode": false,
+  "Description": "Validação de posicionamento MEP - verifica distância equipamento↔parede contra offsets esperados",
+  "Name": "04_ValidarPosicionamento",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0100000-0001-4a00-a000-000000000001",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0100000-0001-4b00-a000-000000000001", "Name": "", "Description": "jsonPath", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonPath = \"C:/PluginRevit/Data/Config/validacao_input.json\";"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n0200000-0002-4a00-a000-000000000002",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p0200000-0002-4c00-a000-000000000001", "Name": "filePath", "Description": "Path to JSON file", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0200000-0002-4b00-a000-000000000001", "Name": "result", "Description": "Parsed JSON data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.Data.ParseJSON@string",
+      "Replication": "Auto",
+      "Description": "Parse a JSON string into a dictionary or list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0300000-0003-4a00-a000-000000000003",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0300000-0003-4c00-a000-000000000001", "Name": "data", "Description": "data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0300000-0003-4b00-a000-000000000001", "Name": "", "Description": "elemIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-a000-000000000002", "Name": "", "Description": "offsets", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-a000-000000000003", "Name": "", "Description": "tolerance", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "elemIds = data[\"elementIds\"];\noffsets = data[\"expectedOffsets\"];\ntolerance = data[\"tolerance\"];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0400000-0004-4a00-a000-000000000004",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0400000-0004-4c00-a000-000000000001", "Name": "ids", "Description": "ids", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0400000-0004-4b00-a000-000000000001", "Name": "", "Description": "elements", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "elements = List.Map(ids, Function(id) { return Revit.Elements.ElementSelector.ById(id); });"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Categories, DSRevitNodesUI",
+      "SelectedIndex": 476,
+      "SelectedString": "OST_Walls",
+      "Id": "n0500000-0005-4a00-a000-000000000005",
+      "NodeType": "ExtensionNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0500000-0005-4b00-a000-000000000001", "Name": "Category", "Description": "The selected Category.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "All built-in categories."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.ElementsOfCategory, DSRevitNodesUI",
+      "Id": "n0600000-0006-4a00-a000-000000000006",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0600000-0006-4c00-a000-000000000001", "Name": "Category", "Description": "The Category", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0600000-0006-4b00-a000-000000000001", "Name": "Elements", "Description": "An element type.", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Get all elements of the specified category from the model."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0700000-0007-4a00-a000-000000000007",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0700000-0007-4c00-a000-000000000001", "Name": "IN[0]", "Description": "elements", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-a000-000000000002", "Name": "IN[1]", "Description": "walls", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-a000-000000000003", "Name": "IN[2]", "Description": "expectedOffsets", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-a000-000000000004", "Name": "IN[3]", "Description": "tolerance", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0700000-0007-4b00-a000-000000000001", "Name": "OUT", "Description": "validation results", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nclr.AddReference('ProtoGeometry')\nfrom Autodesk.Revit.DB import *\nfrom Autodesk.DesignScript.Geometry import Point as DSPoint\nfrom RevitServices.Persistence import DocumentManager\nimport json\nimport time\nfrom datetime import datetime\n\ndoc = DocumentManager.Instance.CurrentDBDocument\nstart = time.time()\n\nelements = IN[0] if isinstance(IN[0], list) else [IN[0]]\nwalls = IN[1] if isinstance(IN[1], list) else [IN[1]]\noffsets = IN[2] if isinstance(IN[2], list) else [IN[2]]\ntolerance = float(IN[3]) if IN[3] else 0.05\n\nresults = []\nstatuses = []\ndistances = []\n\nwall_elements = [UnwrapElement(w) for w in walls]\n\nfor i, elem in enumerate(elements):\n    try:\n        el = UnwrapElement(elem)\n        loc = el.Location\n        if not hasattr(loc, 'Point'):\n            results.append({\n                \"elementId\": el.Id.IntegerValue,\n                \"realDistance\": -1,\n                \"expectedOffset\": offsets[i] if i < len(offsets) else 0,\n                \"difference\": -1,\n                \"status\": \"SEM_LOCALIZACAO\"\n            })\n            statuses.append(\"SEM_LOCALIZACAO\")\n            distances.append(-1)\n            continue\n\n        pt = loc.Point\n        expected = offsets[i] if i < len(offsets) else 0\n\n        min_dist = float('inf')\n        closest_wall_id = None\n\n        for wall in wall_elements:\n            try:\n                wall_loc = wall.Location\n                if hasattr(wall_loc, 'Curve'):\n                    curve = wall_loc.Curve\n                    result = curve.Project(pt)\n                    if result is not None:\n                        dist = pt.DistanceTo(result.XYZPoint)\n                        dist_m = dist * 0.3048\n                        if dist_m < min_dist:\n                            min_dist = dist_m\n                            closest_wall_id = wall.Id.IntegerValue\n            except:\n                continue\n\n        if min_dist == float('inf'):\n            results.append({\n                \"elementId\": el.Id.IntegerValue,\n                \"realDistance\": -1,\n                \"expectedOffset\": expected,\n                \"difference\": -1,\n                \"status\": \"SEM_PAREDE\"\n            })\n            statuses.append(\"SEM_PAREDE\")\n            distances.append(-1)\n        else:\n            diff = abs(min_dist - expected)\n            if diff <= tolerance:\n                status = \"OK\"\n            else:\n                status = \"FORA_DO_OFFSET\"\n\n            results.append({\n                \"elementId\": el.Id.IntegerValue,\n                \"wallId\": closest_wall_id,\n                \"realDistance\": round(min_dist, 4),\n                \"expectedOffset\": expected,\n                \"difference\": round(diff, 4),\n                \"status\": status\n            })\n            statuses.append(status)\n            distances.append(round(min_dist, 4))\n    except Exception as e:\n        results.append({\n            \"elementId\": -1,\n            \"realDistance\": -1,\n            \"expectedOffset\": 0,\n            \"difference\": -1,\n            \"status\": \"ERRO: \" + str(e)\n        })\n        statuses.append(\"ERRO\")\n        distances.append(-1)\n\nend = time.time()\n\nok_count = sum(1 for r in results if r[\"status\"] == \"OK\")\nfail_count = sum(1 for r in results if r[\"status\"] == \"FORA_DO_OFFSET\")\nno_wall = sum(1 for r in results if r[\"status\"] == \"SEM_PAREDE\")\n\noutput = {\n    \"validated\": results,\n    \"summary\": {\n        \"total\": len(results),\n        \"ok\": ok_count,\n        \"foraDoOffset\": fail_count,\n        \"semParede\": no_wall,\n        \"erros\": len(results) - ok_count - fail_count - no_wall\n    },\n    \"tolerance\": tolerance,\n    \"timestamp\": datetime.utcnow().isoformat() + \"Z\",\n    \"executionTimeMs\": int((end - start) * 1000)\n}\n\nOUT = [json.dumps(output, indent=2), statuses, distances]",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0800000-0008-4a00-a000-000000000008",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0800000-0008-4c00-a000-000000000001", "Name": "pyOut", "Description": "pyOut", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0800000-0008-4b00-a000-000000000001", "Name": "", "Description": "jsonResult", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0800000-0008-4b00-a000-000000000002", "Name": "", "Description": "statuses", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0800000-0008-4b00-a000-000000000003", "Name": "", "Description": "distances", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonResult = pyOut[0];\nstatuses = pyOut[1];\ndistances = pyOut[2];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0900000-0009-4a00-a000-000000000009",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0900000-0009-4c00-a000-000000000001", "Name": "statuses", "Description": "statuses", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0900000-0009-4b00-a000-000000000001", "Name": "", "Description": "isOk", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0900000-0009-4b00-a000-000000000002", "Name": "", "Description": "colors", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "isOk = List.Map(statuses, Function(s) { return s == \"OK\"; });\ngreen = Color.ByARGB(255, 0, 200, 0);\nred = Color.ByARGB(255, 255, 50, 50);\nyellow = Color.ByARGB(255, 255, 200, 0);\ncolors = List.Map(statuses, Function(s) {\n    return s == \"OK\" ? green : (s == \"SEM_PAREDE\" ? yellow : red);\n});"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n1000000-0010-4a00-a000-000000000010",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p1000000-0010-4c00-a000-000000000001", "Name": "ids", "Description": "ids", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1000000-0010-4c00-a000-000000000002", "Name": "dists", "Description": "dists", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1000000-0010-4c00-a000-000000000003", "Name": "offsets", "Description": "offsets", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p1000000-0010-4c00-a000-000000000004", "Name": "statuses", "Description": "statuses", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1000000-0010-4b00-a000-000000000001", "Name": "", "Description": "table", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "headers = {\"ElementId\", \"Dist.Real\", \"Offset Esp.\", \"Status\"};\nrows = List.Transpose({ids, dists, offsets, statuses});\ntable = List.AddItemToFront(headers, rows);"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 500.0,
+      "WatchHeight": 350.0,
+      "Id": "n1100000-0011-4a00-a000-000000000011",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1100000-0011-4c00-a000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1100000-0011-4b00-a000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n1200000-0012-4a00-a000-000000000012",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1200000-0012-4c00-a000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1200000-0012-4b00-a000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 600.0,
+      "WatchHeight": 400.0,
+      "Id": "n1300000-0013-4a00-a000-000000000013",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1300000-0013-4c00-a000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1300000-0013-4b00-a000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "p0100000-0001-4b00-a000-000000000001", "End": "p0200000-0002-4c00-a000-000000000001", "Id": "x0020001-0001-4d00-a000-000000000001", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b00-a000-000000000001", "End": "p0300000-0003-4c00-a000-000000000001", "Id": "x0020002-0002-4d00-a000-000000000002", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-a000-000000000001", "End": "p0400000-0004-4c00-a000-000000000001", "Id": "x0020003-0003-4d00-a000-000000000003", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-a000-000000000001", "End": "p0600000-0006-4c00-a000-000000000001", "Id": "x0020004-0004-4d00-a000-000000000004", "IsHidden": "False" },
+    { "Start": "p0400000-0004-4b00-a000-000000000001", "End": "p0700000-0007-4c00-a000-000000000001", "Id": "x0020005-0005-4d00-a000-000000000005", "IsHidden": "False" },
+    { "Start": "p0600000-0006-4b00-a000-000000000001", "End": "p0700000-0007-4c00-a000-000000000002", "Id": "x0020006-0006-4d00-a000-000000000006", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-a000-000000000002", "End": "p0700000-0007-4c00-a000-000000000003", "Id": "x0020007-0007-4d00-a000-000000000007", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-a000-000000000003", "End": "p0700000-0007-4c00-a000-000000000004", "Id": "x0020008-0008-4d00-a000-000000000008", "IsHidden": "False" },
+    { "Start": "p0700000-0007-4b00-a000-000000000001", "End": "p0800000-0008-4c00-a000-000000000001", "Id": "x0020009-0009-4d00-a000-000000000009", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-a000-000000000002", "End": "p0900000-0009-4c00-a000-000000000001", "Id": "x0020010-0010-4d00-a000-000000000010", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-a000-000000000001", "End": "p1000000-0010-4c00-a000-000000000001", "Id": "x0020011-0011-4d00-a000-000000000011", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-a000-000000000003", "End": "p1000000-0010-4c00-a000-000000000002", "Id": "x0020012-0012-4d00-a000-000000000012", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-a000-000000000002", "End": "p1000000-0010-4c00-a000-000000000003", "Id": "x0020013-0013-4d00-a000-000000000013", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-a000-000000000002", "End": "p1000000-0010-4c00-a000-000000000004", "Id": "x0020014-0014-4d00-a000-000000000014", "IsHidden": "False" },
+    { "Start": "p0900000-0009-4b00-a000-000000000002", "End": "p1100000-0011-4c00-a000-000000000001", "Id": "x0020015-0015-4d00-a000-000000000015", "IsHidden": "False" },
+    { "Start": "p1000000-0010-4b00-a000-000000000001", "End": "p1200000-0012-4c00-a000-000000000001", "Id": "x0020016-0016-4d00-a000-000000000016", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-a000-000000000001", "End": "p1300000-0013-4c00-a000-000000000001", "Id": "x0020017-0017-4d00-a000-000000000017", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DynamoCore", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] },
+    { "Name": "DSRevitNodesUI", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0500000-0005-4a00-a000-000000000005", "n0600000-0006-4a00-a000-000000000006"] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n1100000-0011-4a00-a000-000000000011", "n1200000-0012-4a00-a000-000000000012", "n1300000-0013-4a00-a000-000000000013"] },
+    { "Name": "PythonNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0700000-0007-4a00-a000-000000000007"] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "n0100000-0001-4a00-a000-000000000001", "Name": "JSON Path", "IsSetAsInput": true, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 100.0 },
+      { "Id": "n0200000-0002-4a00-a000-000000000002", "Name": "Data.ParseJSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 350.0, "Y": 100.0 },
+      { "Id": "n0300000-0003-4a00-a000-000000000003", "Name": "Extrair Campos", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 70.0 },
+      { "Id": "n0400000-0004-4a00-a000-000000000004", "Name": "Resolver Elementos por ID", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1050.0, "Y": 50.0 },
+      { "Id": "n0500000-0005-4a00-a000-000000000005", "Name": "Categories (Walls)", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 300.0 },
+      { "Id": "n0600000-0006-4a00-a000-000000000006", "Name": "All Walls", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1050.0, "Y": 300.0 },
+      { "Id": "n0700000-0007-4a00-a000-000000000007", "Name": "Python - Validar Distâncias", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1450.0, "Y": 100.0 },
+      { "Id": "n0800000-0008-4a00-a000-000000000008", "Name": "Separar Saídas Python", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1900.0, "Y": 100.0 },
+      { "Id": "n0900000-0009-4a00-a000-000000000009", "Name": "Classificar Cores", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1900.0, "Y": 330.0 },
+      { "Id": "n1000000-0010-4a00-a000-000000000010", "Name": "Montar Tabela", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2350.0, "Y": 250.0 },
+      { "Id": "n1100000-0011-4a00-a000-000000000011", "Name": "Watch - Cores", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2750.0, "Y": 330.0 },
+      { "Id": "n1200000-0012-4a00-a000-000000000012", "Name": "Watch - Tabela Validação", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2750.0, "Y": 50.0 },
+      { "Id": "n1300000-0013-4a00-a000-000000000013", "Name": "Watch - OUT_JSON", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 2750.0, "Y": 550.0 }
+    ],
+    "Annotations": [
+      { "Id": "g0020001-0001-4e00-a000-000000000001", "Title": "1. ENTRADA JSON", "DescriptionText": "Lê JSON com elementIds, expectedOffsets e tolerance", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0100000-0001-4a00-a000-000000000001", "n0200000-0002-4a00-a000-000000000002", "n0300000-0003-4a00-a000-000000000003"], "HasNestedGroups": false, "Left": 30.0, "Top": 20.0, "Width": 880.0, "Height": 250.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 50.0, "InitialHeight": 210.0, "TextblockHeight": 30.0, "Background": "#FF48B9C7" },
+      { "Id": "g0020002-0002-4e00-a000-000000000002", "Title": "2. COLETA DE ELEMENTOS", "DescriptionText": "Resolve equipamentos por ID e coleta todas as paredes", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0400000-0004-4a00-a000-000000000004", "n0500000-0005-4a00-a000-000000000005", "n0600000-0006-4a00-a000-000000000006"], "HasNestedGroups": false, "Left": 630.0, "Top": 240.0, "Width": 680.0, "Height": 180.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 270.0, "InitialHeight": 140.0, "TextblockHeight": 30.0, "Background": "#FF71C6A1" },
+      { "Id": "g0020003-0003-4e00-a000-000000000003", "Title": "3. VALIDAÇÃO DE DISTÂNCIAS", "DescriptionText": "Python: projeta ponto na curva da parede, calcula distância, classifica OK/FORA_DO_OFFSET/SEM_PAREDE", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0700000-0007-4a00-a000-000000000007", "n0800000-0008-4a00-a000-000000000008", "n0900000-0009-4a00-a000-000000000009"], "HasNestedGroups": false, "Left": 1430.0, "Top": 40.0, "Width": 800.0, "Height": 430.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 70.0, "InitialHeight": 390.0, "TextblockHeight": 30.0, "Background": "#FFFFB347" },
+      { "Id": "g0020004-0004-4e00-a000-000000000004", "Title": "4. SAÍDAS", "DescriptionText": "Tabela, cores por status e JSON de retorno", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n1000000-0010-4a00-a000-000000000010", "n1100000-0011-4a00-a000-000000000011", "n1200000-0012-4a00-a000-000000000012", "n1300000-0013-4a00-a000-000000000013"], "HasNestedGroups": false, "Left": 2330.0, "Top": 0.0, "Width": 850.0, "Height": 800.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 760.0, "TextblockHeight": 30.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.55
+  }
+}

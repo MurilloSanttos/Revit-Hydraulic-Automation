@@ -1,0 +1,282 @@
+{
+  "Uuid": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c",
+  "IsCustomNode": false,
+  "Description": "Traçado automático de ramais de esgoto sanitário com inclinação - conecta fixtures à prumada",
+  "Name": "06_GerarRamalEsgoto",
+  "ElementResolver": { "ResolutionMap": {} },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0100000-0001-4a00-c000-000000000001",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [],
+      "Outputs": [
+        { "Id": "p0100000-0001-4b00-c000-000000000001", "Name": "", "Description": "jsonPath", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonPath = \"C:/PluginRevit/Data/Config/ramal_esgoto_input.json\";"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "n0200000-0002-4a00-c000-000000000002",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        { "Id": "p0200000-0002-4c00-c000-000000000001", "Name": "filePath", "Description": "Path to JSON file", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0200000-0002-4b00-c000-000000000001", "Name": "result", "Description": "Parsed JSON data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "FunctionSignature": "DSCore.Data.ParseJSON@string",
+      "Replication": "Auto",
+      "Description": "Parse a JSON string into a dictionary or list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0300000-0003-4a00-c000-000000000003",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0300000-0003-4c00-c000-000000000001", "Name": "data", "Description": "data", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0300000-0003-4b00-c000-000000000001", "Name": "", "Description": "fixtureIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-c000-000000000002", "Name": "", "Description": "stackPt", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-c000-000000000003", "Name": "", "Description": "pipeTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-c000-000000000004", "Name": "", "Description": "diameter", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-c000-000000000005", "Name": "", "Description": "slopePercent", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-c000-000000000006", "Name": "", "Description": "baseOffsetZ", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-c000-000000000007", "Name": "", "Description": "systemTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0300000-0003-4b00-c000-000000000008", "Name": "", "Description": "tolerance", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "fixtureIds = data[\"fixtures\"];\nsp = data[\"stackPoint\"];\nstackPt = Autodesk.DesignScript.Geometry.Point.ByCoordinates(sp[\"x\"], sp[\"y\"], sp[\"z\"]);\npipeTypeId = data[\"pipeTypeId\"];\ndiameter = data[\"diameter\"];\nslopePercent = data[\"slopePercent\"];\nbaseOffsetZ = data[\"baseOffsetZ\"];\nsystemTypeId = data[\"systemTypeId\"];\ntolerance = data[\"tolerance\"];"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0400000-0004-4a00-c000-000000000004",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0400000-0004-4c00-c000-000000000001", "Name": "ids", "Description": "ids", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0400000-0004-4b00-c000-000000000001", "Name": "", "Description": "fixtures", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0400000-0004-4b00-c000-000000000002", "Name": "", "Description": "fixPts", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "fixtures = List.Map(ids, Function(id) { return Revit.Elements.ElementSelector.ById(id); });\nfixPts = List.Map(fixtures, Function(f) { return f.GetLocation(); });"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0500000-0005-4a00-c000-000000000005",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0500000-0005-4c00-c000-000000000001", "Name": "IN[0]", "Description": "fixPts", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4c00-c000-000000000002", "Name": "IN[1]", "Description": "stackPt", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4c00-c000-000000000003", "Name": "IN[2]", "Description": "fixtureIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4c00-c000-000000000004", "Name": "IN[3]", "Description": "slopePercent", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0500000-0005-4c00-c000-000000000005", "Name": "IN[4]", "Description": "baseOffsetZ", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0500000-0005-4b00-c000-000000000001", "Name": "OUT", "Description": "ordered segments with slope", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nclr.AddReference('ProtoGeometry')\nfrom Autodesk.DesignScript.Geometry import Point as DSPoint\nimport math\n\nfix_pts = IN[0] if isinstance(IN[0], list) else [IN[0]]\nstack_pt = IN[1]\nfix_ids = IN[2] if isinstance(IN[2], list) else [IN[2]]\nslope_pct = float(IN[3])\nbase_z = float(IN[4])\n\nsx = stack_pt.X\nsy = stack_pt.Y\n\npaired = []\nfor i, pt in enumerate(fix_pts):\n    try:\n        dx = pt.X - sx\n        dy = pt.Y - sy\n        dist = math.sqrt(dx*dx + dy*dy)\n        paired.append((i, pt, dist, fix_ids[i]))\n    except:\n        continue\n\npaired.sort(key=lambda x: x[2], reverse=True)\n\nstart_pts = []\nend_pts = []\nordered_ids = []\nslopes = []\ndrops = []\n\nstack_hz = DSPoint.ByCoordinates(sx, sy, base_z)\n\ncum_drop = 0.0\n\nfor idx, item in enumerate(paired):\n    pt = item[1]\n    fid = item[3]\n    \n    dx = pt.X - sx\n    dy = pt.Y - sy\n    dist_to_stack = math.sqrt(dx*dx + dy*dy)\n    \n    seg_drop = dist_to_stack * (slope_pct / 100.0)\n    \n    z_start = base_z + seg_drop\n    z_end = base_z + cum_drop\n    \n    sp = DSPoint.ByCoordinates(pt.X, pt.Y, z_start)\n    \n    if idx < len(paired) - 1:\n        nxt = paired[idx + 1]\n        npt = nxt[1]\n        dx2 = npt.X - sx\n        dy2 = npt.Y - sy\n        d2 = math.sqrt(dx2*dx2 + dy2*dy2)\n        z_end_seg = base_z + d2 * (slope_pct / 100.0)\n        ep = DSPoint.ByCoordinates(npt.X, npt.Y, z_end_seg)\n    else:\n        ep = DSPoint.ByCoordinates(sx, sy, base_z)\n    \n    start_pts.append(sp)\n    end_pts.append(ep)\n    ordered_ids.append(fid)\n    \n    dx_seg = ep.X - sp.X\n    dy_seg = ep.Y - sp.Y\n    seg_len = math.sqrt(dx_seg*dx_seg + dy_seg*dy_seg)\n    actual_drop = sp.Z - ep.Z\n    actual_slope = (actual_drop / seg_len * 100.0) if seg_len > 0 else 0\n    slopes.append(round(actual_slope, 3))\n    drops.append(round(actual_drop, 4))\n\nOUT = [start_pts, end_pts, ordered_ids, slopes, drops, stack_hz]",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0600000-0006-4a00-c000-000000000006",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0600000-0006-4c00-c000-000000000001", "Name": "pyOut", "Description": "pyOut", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0600000-0006-4b00-c000-000000000001", "Name": "", "Description": "startPts", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4b00-c000-000000000002", "Name": "", "Description": "endPts", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4b00-c000-000000000003", "Name": "", "Description": "orderedIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4b00-c000-000000000004", "Name": "", "Description": "slopes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4b00-c000-000000000005", "Name": "", "Description": "drops", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0600000-0006-4b00-c000-000000000006", "Name": "", "Description": "stackHz", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "startPts = pyOut[0];\nendPts = pyOut[1];\norderedIds = pyOut[2];\nslopes = pyOut[3];\ndrops = pyOut[4];\nstackHz = pyOut[5];"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Id": "n0700000-0007-4a00-c000-000000000007",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        { "Id": "p0700000-0007-4c00-c000-000000000001", "Name": "IN[0]", "Description": "startPts", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-c000-000000000002", "Name": "IN[1]", "Description": "endPts", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-c000-000000000003", "Name": "IN[2]", "Description": "pipeTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-c000-000000000004", "Name": "IN[3]", "Description": "systemTypeId", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-c000-000000000005", "Name": "IN[4]", "Description": "diameter", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-c000-000000000006", "Name": "IN[5]", "Description": "orderedIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-c000-000000000007", "Name": "IN[6]", "Description": "slopes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-c000-000000000008", "Name": "IN[7]", "Description": "slopePercent", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0700000-0007-4c00-c000-000000000009", "Name": "IN[8]", "Description": "tolerance", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0700000-0007-4b00-c000-000000000001", "Name": "OUT", "Description": "pipes and JSON", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script.",
+      "Code": "import clr\nclr.AddReference('RevitAPI')\nclr.AddReference('RevitServices')\nfrom Autodesk.Revit.DB import *\nfrom Autodesk.Revit.DB.Plumbing import Pipe\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\nimport json\nimport time\nimport math\nfrom datetime import datetime\n\nstart_time = time.time()\ndoc = DocumentManager.Instance.CurrentDBDocument\n\nstart_pts = IN[0] if isinstance(IN[0], list) else [IN[0]]\nend_pts = IN[1] if isinstance(IN[1], list) else [IN[1]]\npipe_type_id = int(IN[2])\nsystem_type_id = int(IN[3])\ndiameter_mm = float(IN[4])\nordered_ids = IN[5] if isinstance(IN[5], list) else [IN[5]]\nslopes = IN[6] if isinstance(IN[6], list) else [IN[6]]\nslope_pct = float(IN[7])\ntolerance = float(IN[8]) if IN[8] else 0.01\n\ndiameter_ft = diameter_mm / 304.8\npipe_type_eid = ElementId(pipe_type_id)\nsystem_type_eid = ElementId(system_type_id)\n\nlevels = FilteredElementCollector(doc).OfClass(Level).ToElements()\nbase_level = levels[0] if levels else None\n\ncreated_pipes = []\nfailed = []\npipe_elements = []\nactual_slopes = []\n\nTransactionManager.Instance.EnsureInTransaction(doc)\n\nfor i in range(len(start_pts)):\n    try:\n        sp = start_pts[i]\n        ep = end_pts[i]\n        \n        p1 = XYZ(sp.X / 304.8, sp.Y / 304.8, sp.Z / 304.8)\n        p2 = XYZ(ep.X / 304.8, ep.Y / 304.8, ep.Z / 304.8)\n        \n        dist = p1.DistanceTo(p2)\n        if dist < 0.01:\n            failed.append({\"index\": i, \"fixtureId\": ordered_ids[i] if i < len(ordered_ids) else -1, \"error\": \"Points too close\"})\n            continue\n        \n        pipe = Pipe.Create(doc, system_type_eid, pipe_type_eid, base_level.Id, p1, p2)\n        \n        param_diam = pipe.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM)\n        if param_diam and not param_diam.IsReadOnly:\n            param_diam.Set(diameter_ft)\n        \n        param_slope = pipe.get_Parameter(BuiltInParameter.RBS_PIPE_SLOPE)\n        if param_slope and not param_slope.IsReadOnly:\n            param_slope.Set(slope_pct / 100.0)\n        \n        dz = abs(p1.Z - p2.Z)\n        dxy = math.sqrt((p2.X-p1.X)**2 + (p2.Y-p1.Y)**2)\n        actual_sl = (dz / dxy * 100.0) if dxy > 0 else 0\n        actual_slopes.append(round(actual_sl, 3))\n        \n        created_pipes.append(pipe.Id.IntegerValue)\n        pipe_elements.append(pipe)\n    except Exception as e:\n        failed.append({\"index\": i, \"fixtureId\": ordered_ids[i] if i < len(ordered_ids) else -1, \"error\": str(e)})\n\nconnectivity_ok = True\nfor i in range(len(pipe_elements) - 1):\n    try:\n        c1 = pipe_elements[i].ConnectorManager.Connectors\n        c2 = pipe_elements[i+1].ConnectorManager.Connectors\n        best_dist = float('inf')\n        best_pair = None\n        for conn1 in c1:\n            for conn2 in c2:\n                d = conn1.Origin.DistanceTo(conn2.Origin)\n                if d < best_dist:\n                    best_dist = d\n                    best_pair = (conn1, conn2)\n        if best_pair and best_dist < tolerance:\n            if not best_pair[0].IsConnected and not best_pair[1].IsConnected:\n                best_pair[0].ConnectTo(best_pair[1])\n        elif best_dist >= tolerance:\n            connectivity_ok = False\n    except:\n        connectivity_ok = False\n\nslope_ok = True\nmin_slope = slope_pct * 0.8\nfor sl in actual_slopes:\n    if sl < min_slope:\n        slope_ok = False\n        break\n\nTransactionManager.Instance.TransactionTaskDone()\n\nend_time = time.time()\navg_slope = sum(actual_slopes) / len(actual_slopes) if actual_slopes else 0\n\nif not connectivity_ok:\n    status = \"ERRO_CONECTIVIDADE\"\nelif not slope_ok:\n    status = \"ERRO_INCLINACAO\"\nelif len(failed) > 0:\n    status = \"ERRO_PARCIAL\"\nelse:\n    status = \"OK\"\n\nresult = {\n    \"success\": status == \"OK\",\n    \"createdPipes\": created_pipes,\n    \"count\": len(created_pipes),\n    \"failed\": failed,\n    \"failedCount\": len(failed),\n    \"avgSlope\": round(avg_slope, 3),\n    \"targetSlope\": slope_pct,\n    \"slopesPerSegment\": actual_slopes,\n    \"connectivityValid\": connectivity_ok,\n    \"slopeValid\": slope_ok,\n    \"status\": status,\n    \"diameter_mm\": diameter_mm,\n    \"fixtureOrder\": ordered_ids,\n    \"executionTimeMs\": int((end_time - start_time) * 1000),\n    \"timestamp\": datetime.utcnow().isoformat() + \"Z\"\n}\n\nOUT = [json.dumps(result, indent=2), created_pipes, status, actual_slopes]",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "n0800000-0008-4a00-c000-000000000008",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        { "Id": "p0800000-0008-4c00-c000-000000000001", "Name": "pyOut", "Description": "pyOut", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0800000-0008-4b00-c000-000000000001", "Name": "", "Description": "jsonResult", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0800000-0008-4b00-c000-000000000002", "Name": "", "Description": "pipeIds", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0800000-0008-4b00-c000-000000000003", "Name": "", "Description": "status", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false },
+        { "Id": "p0800000-0008-4b00-c000-000000000004", "Name": "", "Description": "actualSlopes", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows DesignScript code to be authored directly",
+      "Code": "jsonResult = pyOut[0];\npipeIds = pyOut[1];\nstatus = pyOut[2];\nactualSlopes = pyOut[3];"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 350.0,
+      "WatchHeight": 250.0,
+      "Id": "n0900000-0009-4a00-c000-000000000009",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p0900000-0009-4c00-c000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p0900000-0009-4b00-c000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 250.0,
+      "WatchHeight": 150.0,
+      "Id": "n1000000-0010-4a00-c000-000000000010",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1000000-0010-4c00-c000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1000000-0010-4b00-c000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 300.0,
+      "WatchHeight": 200.0,
+      "Id": "n1050000-0105-4a00-c000-000000000105",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1050000-0105-4c00-c000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1050000-0105-4b00-c000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "WatchWidth": 600.0,
+      "WatchHeight": 400.0,
+      "Id": "n1100000-0011-4a00-c000-000000000011",
+      "NodeType": "ExtensionNode",
+      "Inputs": [
+        { "Id": "p1100000-0011-4c00-c000-000000000001", "Name": "", "Description": "Node to show output from", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Outputs": [
+        { "Id": "p1100000-0011-4b00-c000-000000000001", "Name": "", "Description": "Node output", "UsingDefaultValue": false, "Level": 2, "UseLevels": false, "KeepListStructure": false }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    }
+  ],
+  "Connectors": [
+    { "Start": "p0100000-0001-4b00-c000-000000000001", "End": "p0200000-0002-4c00-c000-000000000001", "Id": "x0040001-0001-4d00-c000-000000000001", "IsHidden": "False" },
+    { "Start": "p0200000-0002-4b00-c000-000000000001", "End": "p0300000-0003-4c00-c000-000000000001", "Id": "x0040002-0002-4d00-c000-000000000002", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000001", "End": "p0400000-0004-4c00-c000-000000000001", "Id": "x0040003-0003-4d00-c000-000000000003", "IsHidden": "False" },
+    { "Start": "p0400000-0004-4b00-c000-000000000002", "End": "p0500000-0005-4c00-c000-000000000001", "Id": "x0040004-0004-4d00-c000-000000000004", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000002", "End": "p0500000-0005-4c00-c000-000000000002", "Id": "x0040005-0005-4d00-c000-000000000005", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000001", "End": "p0500000-0005-4c00-c000-000000000003", "Id": "x0040006-0006-4d00-c000-000000000006", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000005", "End": "p0500000-0005-4c00-c000-000000000004", "Id": "x0040007-0007-4d00-c000-000000000007", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000006", "End": "p0500000-0005-4c00-c000-000000000005", "Id": "x0040008-0008-4d00-c000-000000000008", "IsHidden": "False" },
+    { "Start": "p0500000-0005-4b00-c000-000000000001", "End": "p0600000-0006-4c00-c000-000000000001", "Id": "x0040009-0009-4d00-c000-000000000009", "IsHidden": "False" },
+    { "Start": "p0600000-0006-4b00-c000-000000000001", "End": "p0700000-0007-4c00-c000-000000000001", "Id": "x0040010-0010-4d00-c000-000000000010", "IsHidden": "False" },
+    { "Start": "p0600000-0006-4b00-c000-000000000002", "End": "p0700000-0007-4c00-c000-000000000002", "Id": "x0040011-0011-4d00-c000-000000000011", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000003", "End": "p0700000-0007-4c00-c000-000000000003", "Id": "x0040012-0012-4d00-c000-000000000012", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000007", "End": "p0700000-0007-4c00-c000-000000000004", "Id": "x0040013-0013-4d00-c000-000000000013", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000004", "End": "p0700000-0007-4c00-c000-000000000005", "Id": "x0040014-0014-4d00-c000-000000000014", "IsHidden": "False" },
+    { "Start": "p0600000-0006-4b00-c000-000000000003", "End": "p0700000-0007-4c00-c000-000000000006", "Id": "x0040015-0015-4d00-c000-000000000015", "IsHidden": "False" },
+    { "Start": "p0600000-0006-4b00-c000-000000000004", "End": "p0700000-0007-4c00-c000-000000000007", "Id": "x0040016-0016-4d00-c000-000000000016", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000005", "End": "p0700000-0007-4c00-c000-000000000008", "Id": "x0040017-0017-4d00-c000-000000000017", "IsHidden": "False" },
+    { "Start": "p0300000-0003-4b00-c000-000000000008", "End": "p0700000-0007-4c00-c000-000000000009", "Id": "x0040018-0018-4d00-c000-000000000018", "IsHidden": "False" },
+    { "Start": "p0700000-0007-4b00-c000-000000000001", "End": "p0800000-0008-4c00-c000-000000000001", "Id": "x0040019-0019-4d00-c000-000000000019", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-c000-000000000002", "End": "p0900000-0009-4c00-c000-000000000001", "Id": "x0040020-0020-4d00-c000-000000000020", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-c000-000000000003", "End": "p1000000-0010-4c00-c000-000000000001", "Id": "x0040021-0021-4d00-c000-000000000021", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-c000-000000000004", "End": "p1050000-0105-4c00-c000-000000000001", "Id": "x0040022-0022-4d00-c000-000000000022", "IsHidden": "False" },
+    { "Start": "p0800000-0008-4b00-c000-000000000001", "End": "p1100000-0011-4c00-c000-000000000001", "Id": "x0040023-0023-4d00-c000-000000000023", "IsHidden": "False" }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    { "Name": "DynamoCore", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": [] },
+    { "Name": "CoreNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0900000-0009-4a00-c000-000000000009", "n1000000-0010-4a00-c000-000000000010", "n1050000-0105-4a00-c000-000000000105", "n1100000-0011-4a00-c000-000000000011"] },
+    { "Name": "PythonNodeModels", "Version": "3.0.0.0", "ReferenceType": "Package", "Nodes": ["n0500000-0005-4a00-c000-000000000005", "n0700000-0007-4a00-c000-000000000007"] }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    { "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670", "Name": "Properties", "Version": "3.0", "Data": {} }
+  ],
+  "Author": "Murillo Santtos",
+  "Linting": { "activeLinter": "None", "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a", "warningCount": 0, "errorCount": 0 },
+  "Bindings": [],
+  "View": {
+    "Dynamo": { "ScaleFactor": 1.0, "HasRunWithoutCrash": false, "IsVisibleInDynamoLibrary": true, "Version": "3.0.0.0", "RunType": "Manual", "RunPeriod": "1000" },
+    "Camera": { "Name": "_Background Preview", "EyeX": -17.0, "EyeY": 24.0, "EyeZ": 50.0, "LookX": 12.0, "LookY": -13.0, "LookZ": -58.0, "UpX": 0.0, "UpY": 1.0, "UpZ": 0.0 },
+    "ConnectorPins": [],
+    "NodeViews": [
+      { "Id": "n0100000-0001-4a00-c000-000000000001", "Name": "JSON Path", "IsSetAsInput": true, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 50.0, "Y": 120.0 },
+      { "Id": "n0200000-0002-4a00-c000-000000000002", "Name": "Data.ParseJSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 350.0, "Y": 120.0 },
+      { "Id": "n0300000-0003-4a00-c000-000000000003", "Name": "Extrair Campos JSON", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 650.0, "Y": 40.0 },
+      { "Id": "n0400000-0004-4a00-c000-000000000004", "Name": "Resolver Fixtures", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1100.0, "Y": 50.0 },
+      { "Id": "n0500000-0005-4a00-c000-000000000005", "Name": "Python - Ordenar e Calcular Inclinação", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1500.0, "Y": 60.0 },
+      { "Id": "n0600000-0006-4a00-c000-000000000006", "Name": "Separar Dados Inclinados", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 1950.0, "Y": 60.0 },
+      { "Id": "n0700000-0007-4a00-c000-000000000007", "Name": "Python - Criar Pipes com Slope", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2400.0, "Y": 60.0 },
+      { "Id": "n0800000-0008-4a00-c000-000000000008", "Name": "Separar Resultados", "IsSetAsInput": false, "IsSetAsOutput": false, "Excluded": false, "ShowGeometry": true, "X": 2850.0, "Y": 60.0 },
+      { "Id": "n0900000-0009-4a00-c000-000000000009", "Name": "Watch - Pipe IDs", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 3250.0, "Y": 40.0 },
+      { "Id": "n1000000-0010-4a00-c000-000000000010", "Name": "Watch - Status", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 3250.0, "Y": 230.0 },
+      { "Id": "n1050000-0105-4a00-c000-000000000105", "Name": "Watch - Inclinações", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 3250.0, "Y": 380.0 },
+      { "Id": "n1100000-0011-4a00-c000-000000000011", "Name": "Watch - OUT_JSON", "IsSetAsInput": false, "IsSetAsOutput": true, "Excluded": false, "ShowGeometry": true, "X": 3250.0, "Y": 550.0 }
+    ],
+    "Annotations": [
+      { "Id": "g0040001-0001-4e00-c000-000000000001", "Title": "1. ENTRADA JSON", "DescriptionText": "Lê fixtures[], stackPoint, pipeTypeId, diameter, slopePercent, baseOffsetZ, systemTypeId", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0100000-0001-4a00-c000-000000000001", "n0200000-0002-4a00-c000-000000000002", "n0300000-0003-4a00-c000-000000000003"], "HasNestedGroups": false, "Left": 30.0, "Top": -10.0, "Width": 900.0, "Height": 330.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 20.0, "InitialHeight": 290.0, "TextblockHeight": 30.0, "Background": "#FF48B9C7" },
+      { "Id": "g0040002-0002-4e00-c000-000000000002", "Title": "2. ORDENAÇÃO + INCLINAÇÃO", "DescriptionText": "Ordena fixtures por distância à prumada (mais longe primeiro), calcula Z com slope", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0400000-0004-4a00-c000-000000000004", "n0500000-0005-4a00-c000-000000000005", "n0600000-0006-4a00-c000-000000000006"], "HasNestedGroups": false, "Left": 1080.0, "Top": 0.0, "Width": 1150.0, "Height": 280.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 240.0, "TextblockHeight": 30.0, "Background": "#FF71C6A1" },
+      { "Id": "g0040003-0003-4e00-c000-000000000003", "Title": "3. CRIAÇÃO DE PIPES COM SLOPE", "DescriptionText": "Pipe.Create + diâmetro + RBS_PIPE_SLOPE + ConnectorManager", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0700000-0007-4a00-c000-000000000007", "n0800000-0008-4a00-c000-000000000008"], "HasNestedGroups": false, "Left": 2380.0, "Top": 0.0, "Width": 750.0, "Height": 260.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 30.0, "InitialHeight": 220.0, "TextblockHeight": 30.0, "Background": "#FFFFB347" },
+      { "Id": "g0040004-0004-4e00-c000-000000000004", "Title": "4. SAÍDAS", "DescriptionText": "Pipe IDs, Status, Inclinações por segmento e JSON completo", "IsExpanded": true, "WidthAdjustment": 0.0, "HeightAdjustment": 0.0, "Nodes": ["n0900000-0009-4a00-c000-000000000009", "n1000000-0010-4a00-c000-000000000010", "n1050000-0105-4a00-c000-000000000105", "n1100000-0011-4a00-c000-000000000011"], "HasNestedGroups": false, "Left": 3230.0, "Top": -10.0, "Width": 650.0, "Height": 830.0, "FontSize": 24.0, "GroupStyleId": "00000000-0000-0000-0000-000000000000", "InitialTop": 20.0, "InitialHeight": 790.0, "TextblockHeight": 30.0, "Background": "#FFD4B483" }
+    ],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 0.5
+  }
+}

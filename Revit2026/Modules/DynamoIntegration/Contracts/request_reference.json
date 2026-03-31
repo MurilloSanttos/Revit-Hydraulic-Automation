@@ -1,0 +1,87 @@
+{
+  "protocolVersion": "1.0.0",
+  "requestId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "timestamp": "2026-03-31T14:30:00.000Z",
+  "command": "RunWorkspace",
+  "expectReturn": true,
+  "payload": {
+    "workspace": {
+      "path": "C:/PluginRevit/DynamoScripts/04_Insercao/inserir_equipamentos.dyn",
+      "workspaceId": "ws-001-inserir-equip",
+      "version": "1.0.0"
+    },
+    "inputs": [
+      {
+        "nodeId": "f8a1b2c3-d4e5-6789-0abc-def123456789",
+        "nodeName": "RoomIds",
+        "dataType": "ElementId",
+        "value": [12345, 12346, 12347]
+      },
+      {
+        "nodeId": "a1b2c3d4-e5f6-7890-1234-abcdef567890",
+        "nodeName": "FamilyName",
+        "dataType": "String",
+        "value": "Bacia Sanitária com Caixa Acoplada"
+      },
+      {
+        "nodeId": "b2c3d4e5-f6a1-8901-2345-bcdef6789012",
+        "nodeName": "DiametroDN",
+        "dataType": "Number",
+        "value": 100
+      },
+      {
+        "nodeId": "c3d4e5f6-a1b2-9012-3456-cdef78901234",
+        "nodeName": "AutoConectar",
+        "dataType": "Boolean",
+        "value": true
+      },
+      {
+        "nodeId": "d4e5f6a1-b2c3-0123-4567-def890123456",
+        "nodeName": "PontosInsercao",
+        "dataType": "List",
+        "value": [
+          { "x": 1.5, "y": 2.0, "z": 0.0 },
+          { "x": 3.0, "y": 2.0, "z": 0.0 },
+          { "x": 4.5, "y": 2.0, "z": 0.0 }
+        ]
+      },
+      {
+        "nodeId": "e5f6a1b2-c3d4-1234-5678-ef9012345678",
+        "nodeName": "Parametros",
+        "dataType": "Dict",
+        "value": {
+          "Sistema": "Esgoto Sanitário",
+          "SubSistema": "Primário",
+          "Pavimento": "Térreo"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "nodeId": "f6a1b2c3-d4e5-2345-6789-f01234567890",
+        "alias": "ElementosInseridos",
+        "expectedType": "ElementId"
+      },
+      {
+        "nodeId": "a1b2c3d4-e5f6-3456-7890-012345678901",
+        "alias": "StatusInsercao",
+        "expectedType": "String"
+      }
+    ],
+    "execution": {
+      "mode": "Run",
+      "timeoutMs": 60000,
+      "forceRecompute": false
+    },
+    "errorHandling": {
+      "stopOnNodeError": true,
+      "returnPartialResults": false,
+      "retryCount": 1
+    },
+    "metadata": {
+      "etapa": "E04_Insercao",
+      "componente": "InsertEquipmentEventHandler",
+      "projetoId": "proj-hidraulica-001"
+    }
+  }
+}
